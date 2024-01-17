@@ -1,0 +1,12 @@
+@import url("https://fonts.googleapis.com/css2?family=Bai+Jamjuree:wght@200;400&display=swap");
+* {
+  margin: 0;
+  font-family: "Bai Jamjuree", sans-serif;
+  font-size: 18;
+  padding: 0;
+  box-sizing: border-box;
+  scrollbar-color: #720391 #ffffff;
+}
+.App {
+  width: 100%;
+}
