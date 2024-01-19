@@ -95,14 +95,14 @@ const BeforeCaseDetail = ({ onBeforeCaseDataSubmit }) => {
           </FormControl>
         </Grid>
 
-        {groupdate == "1" && (
+      
           <Grid xs={12} xl={4} md={4}>
             <Item>
               <LocalizationProvider dateAdapter={AdapterDayjs}>
                 <DatePicker
                   sx={{ width: "100%" }}
                   name="TimeBar"
-                  label="ครบกำหนดปิดหมาย"
+                  label="ครบกำหนดปิดหมาย / วันที่ครบกำหนดยื่นคำให้การ"
                   format="DD-MM-YYYY"
                   value={caseData.ReciveWarrantDate}
                   onChange={handletimebar}
@@ -110,23 +110,8 @@ const BeforeCaseDetail = ({ onBeforeCaseDataSubmit }) => {
               </LocalizationProvider>
             </Item>
           </Grid>
-        )}
-        {groupdate == "2" && (
-          <Grid xs={12} xl={4} md={4}>
-            <Item>
-              <LocalizationProvider dateAdapter={AdapterDayjs}>
-                <DatePicker
-                  sx={{ width: "100%" }}
-                  name="TimeBar"
-                  label="วันที่ครบกำหนดยื่นคำให้การ"
-                  format="DD-MM-YYYY"
-                  value={caseData.DuedateSummittree}
-                  onChange={handleDueDate}
-                />
-              </LocalizationProvider>
-            </Item>
-          </Grid>
-        )}
+        
+        
         <Grid xs={12} md={4} xl={4}>
           <Item>
             <TextField onChange={e=>handleblacknum(e.target.value)} fullWidth label="หมายเลขคดีดำ" />

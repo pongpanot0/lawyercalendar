@@ -55,7 +55,6 @@ const columnNotice = [
     headerName: "ค่าใช้จ่าย",
     width: 100,
   },
-
 ];
 const BeforebaseSetting = () => {
   const { id } = useParams();
@@ -87,6 +86,10 @@ const BeforebaseSetting = () => {
       console.log(error.message);
     }
   };
+  const loaddata = () => {
+    getNotice(tsbref);
+    setOpen(false);
+  };
   const getReciveType = async () => {
     try {
       const response = await apiService.getbeforecase();
@@ -110,19 +113,19 @@ const BeforebaseSetting = () => {
     getLawyerID();
     getReciveType();
     getInsuredType();
-    
   }, []);
   const [noticeData, setNoticeData] = React.useState([]);
- 
-  const [docstatus, setdocstatus] = React.useState("");
 
+  const [docstatus, setdocstatus] = React.useState("");
+  const [tsbref, settsbref] = React.useState("");
   const getData = async () => {
     try {
       const response = await apiService.getbeforecaseDocumentsbyID(id);
+      console.log(response.data);
+      getcustomerresponses(response.data[0]?.clientID)
       setCaseData(response.data[0]);
-      console.log(response);
-     console.log(response.data[0]?.tsb_ref);
-      getNotice(response.data[0]?.tsb_ref)
+      getNotice(response.data[0]?.tsb_ref);
+      settsbref(response.data[0]?.tsb_ref);
       switch (response.data[0]?.DocumentStatus) {
         case 1:
           // Code to open a new task or perform any action when DocumentStatus is 1
@@ -140,7 +143,6 @@ const BeforebaseSetting = () => {
   const getNotice = async (tsb_ref) => {
     try {
       const response = await apiService.getNoticeByDocumentID(tsb_ref);
-      console.log(response.data);
       setNoticeData(response.data);
     } catch (error) {
       console.log(error.message);
@@ -161,8 +163,9 @@ const BeforebaseSetting = () => {
   const handleLawyer = (event) => {
     setCaseData({
       ...caseData,
-      Lawyer: event.target.value,
+      LawyerID: event.target.value,
     });
+    console.log(event.target.value);
   };
   const handleCustomer_ref = (event) => {
     setCaseData({
@@ -189,7 +192,6 @@ const BeforebaseSetting = () => {
     });
   };
   const handleDateReceived = (event) => {
-    console.log(event);
     setCaseData({
       ...caseData,
       DateReceived: event,
@@ -214,9 +216,29 @@ const BeforebaseSetting = () => {
     timebar: "",
     DateReceived: "",
     insurance_type: "",
+    customer_reponsive: "",
+    tsb_ref: "",
+
   });
   const history = useNavigate();
-
+  const update = async () => {
+    try {
+      const response = await apiService.updateBeforecase(caseData)
+      getData()
+    } catch (error) {
+      console.log(error.message);
+    }
+  };
+  const [cusresponse,setcusresponse] = React.useState([])
+  const getcustomerresponses = async () => {
+    try {
+      const response = await apiService.customerresponses()
+      console.log(response.data);
+      setcusresponse(response.data)
+    } catch (error) {
+      console.log(error.message);
+    }
+  }
   const handleClick = () => {
     // Push the data along with the route to ReceiverComponent
     history("/beforecasetocase", { state: caseData });
@@ -225,7 +247,22 @@ const BeforebaseSetting = () => {
   return (
     <div>
       <Grid item container>
-        <Grid xs={12} md={2} xl={2}></Grid>
+        <Grid xs={12} md={2} xl={2}>
+          {dis == false && (
+            <Item>
+              <Button
+                variant="contained"
+                onClick={(e) => update()}
+                startIcon={<FaEdit />}
+                
+                fullWidth
+              >
+                {" "}
+                Update{" "}
+              </Button>{" "}
+            </Item>
+          )}
+        </Grid>
         <Grid xs={12} md={2} xl={2}>
           <Item>
             <Button
@@ -273,12 +310,53 @@ const BeforebaseSetting = () => {
                 <TextField
                   InputLabelProps={{ shrink: true }}
                   className="TextField"
+                  disabled={true}
+                  id=""
+                  value={caseData.tsb_ref}
+                  type="text"
+                  label="TSB Ref."
+                />
+              </Item>{" "}
+            </Grid>
+            <Grid xs={12} md={6} xl={6}>
+              {" "}
+              <Item>
+                <FormControl fullWidth>
+                  <InputLabel id="demo-simple-select-label">
+                    ผู้ส่งมอบงาน
+                  </InputLabel>
+                  <Select
+                    labelId="demo-simple-select-label"
+                    id="demo-simple-select"
+                    value={caseData.customer_reponsive}
+                    label="ทนายผู้รับเอกสาร"
+                    InputLabelProps={{ shrink: true }}
+                    onChange={handleLawyer}
+                    disabled={dis}
+                    required={true}
+                  >
+                    {cusresponse.map((res) => {
+                      return (
+                        <MenuItem value={res.customer_responses_id}>
+                          {res.customer_responses_firstname} {res.customer_responses_lastname}
+                        </MenuItem>
+                      );
+                    })}
+                  </Select>
+                </FormControl>
+              </Item>{" "}
+            </Grid>
+            <Grid xs={12} md={6} xl={6}>
+              <Item>
+                <TextField
+                  InputLabelProps={{ shrink: true }}
+                  className="TextField"
                   disabled={dis}
                   id=""
                   value={caseData.Customer_ref}
                   onChange={(e) => handleCustomer_ref(e)}
                   type="text"
-                  label="Customer_ref"
+                  label="Claim No."
                 />
               </Item>{" "}
             </Grid>
@@ -293,7 +371,7 @@ const BeforebaseSetting = () => {
                   type="text"
                   value={caseData.assured}
                   onChange={(e) => handleassured(e)}
-                  label="assured"
+                  label="ผู้รับประกัน"
                 />
               </Item>{" "}
             </Grid>
@@ -344,9 +422,7 @@ const BeforebaseSetting = () => {
               {" "}
               <Item>
                 <FormControl fullWidth>
-                  <InputLabel id="demo-simple-select-label">
-                    ClientID
-                  </InputLabel>
+                  <InputLabel id="demo-simple-select-label">ลูกค้า</InputLabel>
                   <Select
                     labelId="demo-simple-select-label"
                     id="demo-simple-select"
@@ -373,7 +449,7 @@ const BeforebaseSetting = () => {
               <Item>
                 <FormControl fullWidth>
                   <InputLabel id="demo-simple-select-label">
-                    ReciveType
+                    ประเภทการรับเอกสาร
                   </InputLabel>
                   <Select
                     labelId="demo-simple-select-label"
@@ -405,7 +481,7 @@ const BeforebaseSetting = () => {
                   className="TextField"
                   id=""
                   type="text"
-                  label="DocumentStatus"
+                  label="สถานะก่อนฟ้อง"
                   value={docstatus}
                 />
               </Item>{" "}
@@ -414,12 +490,14 @@ const BeforebaseSetting = () => {
               {" "}
               <Item>
                 <FormControl fullWidth>
-                  <InputLabel id="demo-simple-select-label">Lawyer</InputLabel>
+                  <InputLabel id="demo-simple-select-label">
+                    ทนายผู้รับเอกสาร
+                  </InputLabel>
                   <Select
                     labelId="demo-simple-select-label"
                     id="demo-simple-select"
                     value={caseData.LawyerID}
-                    label="LawyerID"
+                    label="ทนายผู้รับเอกสาร"
                     InputLabelProps={{ shrink: true }}
                     onChange={handleLawyer}
                     disabled={dis}
@@ -446,9 +524,9 @@ const BeforebaseSetting = () => {
                   className="TextField"
                   id=""
                   type="text"
-                  label="DateReceived"
+                  label="วันที่ได้รับเอกสาร"
                   onChange={(e) => handleDateReceived(e)}
-                  value={dayjs(caseData.DateReceived).format("YYYY-MM-DD")}
+                  value={dayjs(caseData.DateReceived).format("DD/MM/YYYY")}
                 />
               </Item>{" "}
             </Grid>
@@ -462,8 +540,8 @@ const BeforebaseSetting = () => {
                   disabled={dis}
                   id=""
                   type="text"
-                  label="timebar"
-                  value={dayjs(caseData.timebar).format("YYYY-MM-DD")}
+                  label="Timebar"
+                  value={dayjs(caseData.timebar).format("DD/MM/YYYY")}
                 />
               </Item>{" "}
             </Grid>
@@ -478,7 +556,7 @@ const BeforebaseSetting = () => {
                   <DataGrid
                     rows={noticeData}
                     columns={columnNotice}
-                    getRowId={(row,index) => row.CaseNotice_id}
+                    getRowId={(row, index) => row.CaseNotice_id}
                     initialState={{
                       pagination: {
                         paginationModel: { page: 0, pageSize: 5 },
@@ -515,7 +593,7 @@ const BeforebaseSetting = () => {
           <CloseIcon />
         </IconButton>
         <DialogContent dividers={scroll === "paper"}>
-          <InsertNotice beforecase_id={id} />
+          <InsertNotice beforecase_id={tsbref} loaddata={loaddata} />
         </DialogContent>
       </Dialog>
     </div>

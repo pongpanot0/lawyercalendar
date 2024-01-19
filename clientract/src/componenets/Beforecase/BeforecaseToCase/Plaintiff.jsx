@@ -27,6 +27,7 @@ const Plaintiff = ({ PlaintiffSubmit }) => {
     values.splice(index, 1);
     setInputFields(values);
   };
+ 
   return (
     <div style={{ marginTop: 20 }}>
       <Button
@@ -34,7 +35,7 @@ const Plaintiff = ({ PlaintiffSubmit }) => {
         style={{ marginTop: 5 }}
         onClick={handleAddFields}
       >
-        Add New Row
+        เพิ่มโจทก์
       </Button>
 
       {inputFields.map((inputField, index) => (
@@ -54,7 +55,7 @@ const Plaintiff = ({ PlaintiffSubmit }) => {
                   handleChangeInput(index, "firstname", event)
                 }
                 fullWidth
-                label="FirstName"
+                label="ชื่อ"
               />
             </Item>
           </Grid>
@@ -68,7 +69,7 @@ const Plaintiff = ({ PlaintiffSubmit }) => {
                   handleChangeInput(index, "lastname", event)
                 }
                 fullWidth
-                label="Lastname"
+                label="นามสกุล"
               />
             </Item>
           </Grid>

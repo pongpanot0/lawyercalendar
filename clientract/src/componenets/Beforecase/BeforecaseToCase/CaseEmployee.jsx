@@ -79,7 +79,7 @@ const CaseEmployee = ({ onDataSubmit , onCloseDialog}) => {
         style={{ marginTop: 5 }}
         onClick={handleAddFields}
       >
-        Add New Row
+        เพิ่ม
       </Button>
    
       {inputFields.map((inputField, index) => (

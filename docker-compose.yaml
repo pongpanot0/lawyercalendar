@@ -1,0 +1,39 @@
+version: '3'
+services:
+  react-app:
+    build:
+      context: ./client
+      dockerfile: Dockerfile
+    ports:
+      - "3088:3088"
+    environment:
+      - REACT_APP_API_URL=http://backend:3089
+      - DOCKER_BUILDKIT=0
+    depends_on:
+      - backend
+
+  backend:
+    build:
+      context: ./server
+      dockerfile: Dockerfile
+    restart: always  # Add this line to enable automatic restart
+    ports:
+      - "3089:3089"
+    environment:
+      - SQL_SERVER_USER=nutdanai.te
+      - SQL_SERVER_PASSWORD=MC@n429
+      - SQL_SERVER_HOST=192.168.1.30
+      - SQL_SERVER_DATABASE=electrichome
+      - DOCKER_BUILDKIT=0
+  backend-mariadb:
+    image: mariadb:latest
+    restart: always
+    ports:
+      - "3306:3306"
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_DATABASE=lawyer_production
+      - MYSQL_USER=root
+      - MYSQL_PASSWORD=root
+    volumes:
+      - ./mariadb_data:/var/lib/mysql  # Adjust the volume path as needed

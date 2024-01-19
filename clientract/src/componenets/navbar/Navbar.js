@@ -1,92 +1,3 @@
-/* import React, { useState } from "react";
-
-import { Link } from "react-router-dom";
-import { SidebarData } from "./Sidebardata";
-import "./Navbar.css";
-
-import { Box, Container, Grid } from "@mui/material";
-import Drawer from "@mui/material/Drawer";
-
-import Toolbar from "@mui/material/Toolbar";
-import { lighten } from "polished";
-import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
-import Home from "../Home";
-import Case from "../Case/Case";
-
-import Steppercase from "../Case/create-case/Steppercase";
-import Customer from "../Customer/Customer";
-import CreateCustomer from "../Customer/create-customer/CreateCustomer";
-import Employee from "../Employee/Employee";
-import CreateEmployee from "../Employee/create-employee/CreateEmployee";
-import Setting from "../Setting/Setting";
-import Casedetail from "../Case/Casedetail/Casedetail";
-import Expenses from "../Expenses/Expenses";
-import Beforecase from "../Beforecase/Beforecase";
-import Insertbefore from "../Beforecase/Insertbeforecase/Insertbefore";
-import InsertExpenses from "../Expenses/InsertExpenses/InsertExpenses";
-import Testsendline from "../Setting/SettingLine/Testsendline";
-import Notice from "../InsertNotice/Notice/Notice";
-import InsertNotice from "../InsertNotice/InsertNotice";
-import BeforebaseSetting from "../Beforecase/BeforecaseSetting/BeforebaseSetting";
-function Navbar({ navbarColor, loaddata }) {
-  const drawerWidth = 240;
-  const [sidebar, setSidebar] = useState(true);
-
-  const showSidebar = () => setSidebar(!sidebar);
-  const hover = lighten(0.2, navbarColor);
-
-  return (
-    <>
-      <style>
-        {`
-      .nav-text a:hover {
-        background-color: ${hover};
-      }`}
-      </style>
-      <Box sx={{ display: "flex" }}>
-        <Drawer
-          variant="permanent"
-          sx={{
-            width: drawerWidth,
-            flexShrink: 0,
-            [`& .MuiDrawer-paper`]: {
-              width: drawerWidth,
-              boxSizing: "border-box",
-            },
-          }}
-        >
-          <Toolbar />
-
-          <nav
-            className="nav-menu active"
-            style={{ backgroundColor: navbarColor }}
-          >
-            <ul className="nav-menu-items" onClick={showSidebar}>
-              {SidebarData.map((item, index) => {
-                return (
-                  <li key={index} className={item.cName}>
-                    <Link to={item.path}>
-                      {item.icon}
-                      <span>{item.title}</span>
-                    </Link>
-                  </li>
-                );
-              })}
-            </ul>
-          </nav>
-        </Drawer>
-
-        <Container maxWidth="xl" sx={{ flexGrow: 1, p: 3 }}>
-          
-        </Container>
-      </Box>
-    </>
-  );
-}
-
-export default Navbar;
- */
-
 import React, { useState } from "react";
 import {
   FaTh,
@@ -97,12 +8,21 @@ import {
   FaShoppingBag,
   FaThList,
 } from "react-icons/fa";
+import { FaRegCirclePlay } from "react-icons/fa6";
+
 import { lighten } from "polished";
+import { FaRightFromBracket } from "react-icons/fa6";
+import { FaFolderOpen } from "react-icons/fa6";
+
 import { NavLink } from "react-router-dom";
 import "./Navbar.css";
 import * as FaIcons from "react-icons/fa";
 import * as AiIcons from "react-icons/ai";
 import * as IoIcons from "react-icons/io";
+import { FaRegAddressBook } from "react-icons/fa6";
+import { FaMoneyBill } from "react-icons/fa6";
+import { FaGears } from "react-icons/fa6";
+
 const Navbar = ({ children, navbarColor, loaddata }) => {
   const [isOpen, setIsOpen] = useState(false);
   const toggle = () => setIsOpen(!isOpen);
@@ -117,7 +37,13 @@ const Navbar = ({ children, navbarColor, loaddata }) => {
     {
       title: "BeforeCase",
       path: "/beforecase",
-      icon: <IoIcons.IoIosPaper />,
+      icon: <FaFolderOpen />,
+      cName: "nav-text",
+    },
+    {
+      title: "Notice",
+      path: "/notice",
+      icon: <FaRegCirclePlay />,
       cName: "nav-text",
     },
     {
@@ -129,34 +55,35 @@ const Navbar = ({ children, navbarColor, loaddata }) => {
     {
       title: "Customer",
       path: "/Customer",
-      icon: <FaIcons.FaCartPlus />,
+      icon: <FaIcons.FaRegAddressBook />,
       cName: "nav-text",
     },
     {
       title: "Expenses",
       path: "/expenses",
-      icon: <IoIcons.IoMdPeople />,
-      cName: "nav-text",
-    },
-    {
-      title: "Notice",
-      path: "/notice",
-      icon: <IoIcons.IoMdPeople />,
+      icon: <FaMoneyBill />,
       cName: "nav-text",
     },
 
     {
       title: "Setting",
       path: "/setting",
-      icon: <FaIcons.FaEnvelopeOpenText />,
+      icon: <FaGears />,
       cName: "nav-text",
     },
-    {
+   /*  {
       title: "Support",
       path: "/support",
       icon: <IoIcons.IoMdHelpCircle />,
       cName: "nav-text",
+    }, */
+    {
+      title: "Logout",
+      path: "/Logout",
+      icon: <FaRightFromBracket />,
+      cName: "nav-text",
     },
+    
   ];
   return (
     <div className="container">
@@ -184,7 +111,10 @@ const Navbar = ({ children, navbarColor, loaddata }) => {
           <h1 style={{ display: isOpen ? "block" : "none" }} className="logo">
             Lawyer
           </h1>
-          <div style={{ marginLeft: isOpen ? "50px" : "0px" ,cursor:'pointer'}} className="bars">
+          <div
+            style={{ marginLeft: isOpen ? "50px" : "0px", cursor: "pointer" }}
+            className="bars"
+          >
             <FaBars onClick={toggle} />
           </div>
         </div>
@@ -204,6 +134,7 @@ const Navbar = ({ children, navbarColor, loaddata }) => {
             </div>
           </NavLink>
         ))}
+      
       </div>
       <main className="scrollable-content">{children}</main>
     </div>

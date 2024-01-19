@@ -4,25 +4,25 @@ import React from "react";
 import { styled } from "@mui/material/styles";
 import { Link, NavLink } from "react-router-dom";
 import apiService from "../Shared/Apiserver";
+import dayjs from "dayjs";
 const Item = styled("div")(({ theme }) => ({
   ...theme.typography.body2,
   padding: theme.spacing(1),
   textAlign: "center",
-  
 }));
 const Beforecase = () => {
   const columns = [
-    { field: "tsb_ref", headerName: "tsb_ref", width: 200 },
-    { field: "beforecase_name", headerName: "Last name", width: 200 },
+    { field: "tsb_ref", headerName: "TSB Ref.", width: 200 },
+    { field: "beforecase_name", headerName: "ประเภทการรับเอกสาร", width: 200 },
     {
       field: "ClientName",
-      headerName: "ClientName",
+      headerName: "ลูกค้า",
 
       width: 200,
     },
     {
       field: "Employees",
-      headerName: "Employees",
+      headerName: "ผู้รับเอกสาร",
 
       width: 200,
       valueGetter: (params) =>
@@ -42,11 +42,23 @@ const Beforecase = () => {
 
       width: 200,
     },
-    { field: "DateReceived", headerName: "DateReceived", width: 200 },
-    { field: "timebar", headerName: "Timebar", width: 200 },
+    {
+      field: "DateReceived",
+      headerName: "วันที่รับเอกสาร",
+      width: 200,
+      valueGetter: (params) =>
+        `${dayjs(params.row.DateReceived).format("DD/MM/YYYY")}`,
+    },
+    {
+      field: "timebar",
+      headerName: "Timebar",
+      width: 200,
+      valueGetter: (params) =>
+        `${dayjs(params.row.timebar).format("DD/MM/YYYY")}`,
+    },
     {
       field: "ACtion",
-      headerName: "ACtion",
+      headerName: "Action",
       width: 200,
       renderCell: (params) => {
         return (
@@ -82,7 +94,7 @@ const Beforecase = () => {
       <Grid item container spacing={2}>
         <Grid xs={12} md={12} xl={12}>
           <Link to={"/beforecase-create"}>
-            <Button variant="contained">New Data</Button>
+            <Button variant="contained">เพิ่มข้อมูล</Button>
           </Link>
         </Grid>
         <Grid xs={12} md={12} xl={12}>

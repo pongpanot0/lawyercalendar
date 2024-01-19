@@ -23,7 +23,7 @@ exports.getTask = async (req, res) => {
    
       const sql = `select * from case_todolist where case_timeline_id ='${case_timeline_id}'`;
       const query = await api(sql);
-  
+      console.log(query);
       res.send({
         status: 200,
         data: query,

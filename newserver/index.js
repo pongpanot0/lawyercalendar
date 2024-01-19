@@ -22,7 +22,8 @@ fs.readdirSync("routes").forEach(function (file) {
   require("./routes/" + routeName)(app);
 });
 const newDate = dayjs(new Date).format('MMYY')
-console.log(newDate);
+
+
 app.listen(PORT, () => {
   console.log(`Example app listening at http://0.0.0.0:${PORT}`);
 });

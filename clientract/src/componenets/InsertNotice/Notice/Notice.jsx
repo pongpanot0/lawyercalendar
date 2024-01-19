@@ -4,7 +4,7 @@ import { styled } from "@mui/material/styles";
 import { DataGrid } from "@mui/x-data-grid";
 import { Link } from "react-router-dom";
 import apiService from "../../Shared/Apiserver";
-
+import dayjs from 'dayjs'
 const Item = styled("div")(({ theme }) => ({
   ...theme.typography.body2,
   padding: theme.spacing(1),
@@ -13,29 +13,31 @@ const Item = styled("div")(({ theme }) => ({
 
 const Notice = () => {
   const columns = [
-    { field: "CaseNotice_ref", headerName: "CaseNotice_ref", width: 200 },
-    { field: "Customer_ref", headerName: "Caseref", width: 200 },
+    { field: "CaseNotice_ref", headerName: "TSB Ref.", width: 200 },
     {
       field: "CaseNotice_amount",
-      headerName: "expenses",
+      headerName: "ค่าใช้จ่าย",
       type: "number",
       width: 200,
     },
     {
       field: "CaseNotice_to",
-      headerName: "CaseNotice_to",
+      headerName: "ส่งถึง",
 
       width: 200,
     },
 
     {
       field: "CaseNotice_senddate",
-      headerName: "CaseNotice_senddate",
+      headerName: "วันที่ส่ง",
       width: 200,
+      valueGetter: (params) =>
+      `${dayjs(params.row.CaseNotice_senddate).format('DD/MM/YYYY') || ""}`,
+      
     },
     {
       field: "employee_firstname",
-      headerName: "Full name",
+      headerName: "ผู้ส่ง",
 
       sortable: false,
       width: 300,

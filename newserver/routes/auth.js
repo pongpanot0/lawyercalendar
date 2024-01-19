@@ -1,8 +1,8 @@
 const auth = require("../controller/auth");
 
 module.exports = function (app) {
-  app.post(`/user/create`, auth.creteUsers);
-  
+  app.post(`/register`, auth.creteUsers);
+  app.post(`/login`, auth.login);
   
 };
 

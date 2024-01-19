@@ -8,17 +8,20 @@ exports.createxpenses = async (req, res) => {
       expensesType,
       expenses_ref,
       expenses,
+      paid_type
     } = req.body.data;
 
     const PaymentStatus = 1;
 
-    const sql = `insert into caseexpenses ( CaseID,
+    const sql = `insert into caseexpenses (
+      paid_type,
       PaymentStatus,
       Payer,
       PaymentDate,
       expensesType,
       expenses_ref,
-      expenses) values ( '${CaseID}',
+      expenses) values ( 
+        '${paid_type}',
         '${PaymentStatus}',
         '${Payer}',
         '${PaymentDate}',
@@ -44,6 +47,7 @@ exports.getexpenses = async (req, res) => {
     const query = await api(sql);
     res.send({ status: 200, data: query });
   } catch (error) {
+
     res.send({ status: 400, data: error.message });
   }
 };

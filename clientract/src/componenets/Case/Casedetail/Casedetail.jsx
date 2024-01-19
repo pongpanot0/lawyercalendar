@@ -12,6 +12,10 @@ import "./Casedetail.css";
 import AttachMoneyIcon from "@mui/icons-material/AttachMoney";
 import TimelineDetail from "./Timeline/Timeline";
 import ViewTimelineIcon from "@mui/icons-material/ViewTimeline";
+import { FaBusinessTime } from "react-icons/fa6";
+
+import dayjs from "dayjs";
+import ExpanTime from "./Timeline/ExpanTime";
 const Item = styled("div")(({ theme }) => ({
   ...theme.typography.body2,
   padding: theme.spacing(1),
@@ -31,15 +35,34 @@ function Casedetail() {
   const [isHovered, setIsHovered] = React.useState(false);
   const [isHovered2, setIsHovered2] = React.useState(false);
   const [isHovered3, setIsHovered3] = React.useState(false);
+  const [isHovered4, setIsHovered4] = React.useState(false);
+  const [panif,setPanif] = React.useState('')
+  const [expencliam,setexpenclam] = React.useState('')
+  const loaddata = async () =>{
+    getData()
+  }
   const getData = async () => {
     try {
       const response = await apiService.getCaseByid(id);
       setCaseData(response.data[0]);
-
+      setCaseLawyer(response.caseLawyer);
       setcaseExpensesr(response.caseExpenses);
       setCaseNotices(response.CaseNotices);
-
-      setCaseLawyer(response.caseLawyer);
+     
+      const formattedClaimAmount = Number(response.data[0].claimAmount).toLocaleString('en-US', {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+      });
+      console.log(caseData.claimAmount);
+      setexpenclam(formattedClaimAmount)
+      
+      if (response.data[0].plaintiff_type == 1) {
+        return setPanif("เป็นโจทก์");
+      }
+      if (response.data[0].plaintiff_type == 2) {
+        return setPanif(`เป็นจำเลย`);
+      }
+  
     } catch (error) {
       console.log(error.message);
     }
@@ -62,7 +85,7 @@ function Casedetail() {
                     InputLabelProps={{ shrink: true }}
                     className="TextField"
                     id=""
-                    label="rednum"
+                    label="หมายเลขแดง"
                     value={caseData.rednum}
                   />
                 </Item>
@@ -74,7 +97,7 @@ function Casedetail() {
                     InputLabelProps={{ shrink: true }}
                     className="TextField"
                     id=""
-                    label="blacknum"
+                    label="หมายเลขดำ"
                     value={caseData.blacknum}
                   />
                 </Item>
@@ -86,7 +109,7 @@ function Casedetail() {
                     InputLabelProps={{ shrink: true }}
                     className="TextField"
                     id=""
-                    label="tsb_ref"
+                    label="TSB Ref."
                     value={caseData.tsb_ref}
                   />
                 </Item>
@@ -99,7 +122,7 @@ function Casedetail() {
                     aria-readonly={true}
                     className="TextField"
                     id=""
-                    label="ClientName"
+                    label="ลูกค้า"
                     value={caseData.ClientName}
                   />
                 </Item>
@@ -112,7 +135,7 @@ function Casedetail() {
                     InputLabelProps={{ shrink: true }}
                     className="TextField"
                     id=""
-                    label="Customer_ref"
+                    label="Claim No."
                     value={caseData.Customer_ref}
                   />
                 </Item>
@@ -125,8 +148,8 @@ function Casedetail() {
                     className="TextField"
                     InputLabelProps={{ shrink: true }}
                     id=""
-                    label="claimAmount"
-                    value={caseData.claimAmount}
+                    label="Claim Amount"
+                    value={expencliam}
                   />
                 </Item>
               </Grid>
@@ -138,7 +161,7 @@ function Casedetail() {
                     className="TextField"
                     InputLabelProps={{ shrink: true }}
                     id=""
-                    label="CaseTypeName"
+                    label="ประเภทคดี"
                     value={caseData.CaseTypeName}
                   />
                 </Item>
@@ -151,7 +174,7 @@ function Casedetail() {
                     InputLabelProps={{ shrink: true }}
                     className="TextField"
                     id=""
-                    label="insurance_type"
+                    label="ประเภทประกันภัย"
                     value={caseData.insurance_type}
                   />
                 </Item>
@@ -164,12 +187,15 @@ function Casedetail() {
                     className="TextField"
                     InputLabelProps={{ shrink: true }}
                     id=""
-                    label="plaintiff_type"
-                    value={caseData.plaintiff_type}
+                    label="ประเภท"
+                    value={
+                      panif}
                   />
+                  
                 </Item>
               </Grid>
-              <Grid xs={12} xl={6} md={6}>
+             
+              <Grid xs={12} xl={12} md={12}>
                 {" "}
                 <Item>
                   <TextField
@@ -177,21 +203,8 @@ function Casedetail() {
                     className="TextField"
                     InputLabelProps={{ shrink: true }}
                     id=""
-                    label="DuedateSummittree"
-                    value={caseData.DuedateSummittree}
-                  />
-                </Item>
-              </Grid>
-              <Grid xs={12} xl={6} md={6}>
-                {" "}
-                <Item>
-                  <TextField
-                    aria-readonly={true}
-                    className="TextField"
-                    InputLabelProps={{ shrink: true }}
-                    id=""
-                    label="ReciveWarrantDate"
-                    value={caseData.ReciveWarrantDate}
+                    label="ครบกำหนดปิดหมาย / วันที่ครบกำหนดยื่นคำให้การ "
+                    value={caseData.ReciveWarrantDate ? dayjs(caseData.ReciveWarrantDate).format("DD/MM/YYYY") : ""}
                   />
                 </Item>
               </Grid>
@@ -205,7 +218,7 @@ function Casedetail() {
                     rows={4}
                     InputLabelProps={{ shrink: true }}
                     id=""
-                    label="case_remark"
+                    label="หมายเหตุ"
                     value={caseData.case_remark}
                   />
                 </Item>
@@ -222,7 +235,7 @@ function Casedetail() {
                         <TextField
                           className="TextField"
                           id=""
-                          label="caseref"
+                          label="ทนาย"
                           value={res.name}
                           InputLabelProps={{ shrink: true }}
                           aria-readonly={true}
@@ -234,7 +247,7 @@ function Casedetail() {
                         <TextField
                           className="TextField"
                           id=""
-                          label="caseref"
+                          label="ประเภท"
                           aria-readonly={true}
                           InputLabelProps={{ shrink: true }}
                           value={res.employeescasetype_name}
@@ -296,8 +309,7 @@ function Casedetail() {
                       }}
                     >
                       <AttachMoneyIcon />
-                      {(isHovered2 || showform === 2) && <span>Expanses</span>}
-                      
+                      {(isHovered2 || showform === 2) && <span>ค่าใช้จ่าย</span>}
                     </Button>
                     <Button
                       variant="contained"
@@ -321,7 +333,29 @@ function Casedetail() {
                     >
                       <ViewTimelineIcon />
                       {(isHovered3 || showform === 3) && <span>Timeline</span>}
-                     
+                    </Button>
+                    <Button
+                      variant="contained"
+                      fullWidth
+                      onClick={(e) => setshowform(4)}
+                      onMouseEnter={() => setIsHovered4(true)}
+                      onMouseLeave={() => setIsHovered4(false)}
+                      style={{
+                        width: isHovered4 || showform == 4 ? "100%" : "auto",
+                        transition: "width 0.3s ease-in-out",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "space-between",
+                      }}
+                      sx={{
+                        ":active": {
+                          width: "100%",
+                          transition: "width 0.3s ease-in-out",
+                        },
+                      }}
+                    >
+                      <FaBusinessTime />
+                      {(isHovered4 || showform === 4) && <span>ขยายเวลา</span>}
                     </Button>
                   </Stack>
                 </Item>
@@ -329,9 +363,12 @@ function Casedetail() {
 
               <Grid xs={12} md={12} xl={12}>
                 {showform == 1 && <Notice CaseNotices={CaseNotices} />}
-                {showform == 2 && <Expenses caseExpenses={caseExpenses} />}
+                {showform == 2 && <Expenses caseExpenses={caseExpenses} loaddata={loaddata} />}
                 {showform == 3 && (
-                  <TimelineDetail id={id} caseExpenses={caseExpenses} />
+                  <TimelineDetail id={id} caseExpenses={caseExpenses} loaddata={loaddata} />
+                )}
+                 {showform == 4 && (
+                  <ExpanTime id={id} tsb_ref={caseData.tsb_ref} caseExpenses={caseExpenses} loaddata2={loaddata} />
                 )}
               </Grid>
             </Grid>

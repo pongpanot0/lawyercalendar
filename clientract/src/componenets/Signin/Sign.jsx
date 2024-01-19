@@ -1,16 +1,16 @@
 import React from "react";
-import "./Login.scss";
+import "./Signin.scss";
 import apiService from "../Shared/Apiserver";
 
 import { useNavigate, useParams } from "react-router-dom";
-const Login = () => {
+const Sign = () => {
+  const { id } = useParams();
   const [username, setUsername] = React.useState("");
   const [password, setPassword] = React.useState("");
   const navigate = useNavigate();
   const postData = async () => {
     try {
-      const reponse = await apiService.login(username, password);
-      console.log(reponse);
+      const reponse = await apiService.signin(username, password, id);
       if (reponse.status == 200) {
         localStorage.setItem("token", reponse.token);
         navigate("/");
@@ -46,13 +46,11 @@ const Login = () => {
           </div>
           <div class="form-container sign-in-container">
             <div className="form">
-              <h1>Sign in</h1>
-
-              <span>or use your account</span>
+              <h1>Register</h1>
               <input
                 type="text"
                 onChange={(e) => setUsername(e.target.value)}
-                placeholder="Email"
+                placeholder="username"
               />
               <input
                 type="password"
@@ -85,9 +83,8 @@ const Login = () => {
           </div>
         </div>
       </div>
-     
     </div>
   );
 };
 
-export default Login;
+export default Sign;

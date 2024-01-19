@@ -1,6 +1,46 @@
 const moment = require("moment/moment");
 const api = require("../sql");
 const dayjs = require("dayjs");
+const jwt = require("jsonwebtoken");
+const secretKey = "1234"; // Replace with your actual secret key
+function jwtVerify(params) {
+  try {
+    const token = jwt.decode(params.token);
+    return token.employee_id;
+  } catch (error) {
+    return "Something Wrong";
+  }
+}
+exports.updateBeforecase = async (req, res) => {
+  try {
+    const {
+      tsb_ref,Receiver,LawyerID,clientID,Customer_ref,claimamount,assured,DateReceived,insurance_type,customer_reponsive
+    } = req.body.data
+    const update = `update casedocuments set 
+    Receiver='${Receiver}',
+    LawyerID='${LawyerID}',
+    clientID='${clientID}',
+    Customer_ref='${Customer_ref}',
+    claimamount='${claimamount}',
+    assured='${assured}',
+    DateReceived='${DateReceived}',
+    insurance_type='${insurance_type}',
+    customer_reponsive='${customer_reponsive}'
+    where tsb_ref ='${tsb_ref}'`;
+    const query = await api(update)
+    res.send({
+      status:200,
+      data:query
+    })
+  } catch (error) {
+    res.send({
+      status:400,
+      data:error.message
+    })
+    
+  }
+};
+
 exports.createbeforebasetype = async (req, res) => {
   try {
     const beforecase_name = req.body.data;
@@ -45,14 +85,13 @@ exports.createbeforecase = async (req, res) => {
       assured,
       timebar,
       insurance_type,
+      customer_responses_id,
     } = req.body.data;
-    /*   console.log(req.body.data); 
-    const daterecivetimeThai = dayjs(DateReceived).format('YYYY-MM-DD')
-      const timebartimeThai = dayjs(DateReceived).format('YYYY-MM-DD')
-      console.log(daterecivetimeThai); */
 
+    const header = req.headers;
+    const jwts = jwtVerify(header);
     let DocumentStatus = 1;
-    const getLastDataQuery = `SELECT MAX(CAST(SUBSTRING(tsb_ref, 8) AS UNSIGNED)) AS lastRefNumber FROM casedocuments`;
+    const getLastDataQuery = `SELECT MAX(CAST(SUBSTRING(tsb_ref, 4) AS UNSIGNED)) AS lastRefNumber FROM casedocuments`;
     const querylastData = await api(getLastDataQuery);
 
     let lastRefNumber = 0;
@@ -61,8 +100,8 @@ exports.createbeforecase = async (req, res) => {
     }
 
     const newRef = "R" + (lastRefNumber + 1).toString().padStart(3, "0");
-
-    const sql = `insert into casedocuments (tsb_ref,clientID,LawyerID,DocumentStatus,DateReceived,Receiver,Customer_ref,claimamount,assured,timebar,insurance_type) values ('${newRef}','${clientID}','${Lawyer}','${DocumentStatus}','${DateReceived}','${ReciveType}','${Customer_ref}','${claimamount}','${assured}','${timebar}','${insurance_type}')`;
+    
+    const sql = `insert into casedocuments (customer_reponsive,created_by,tsb_ref,clientID,LawyerID,DocumentStatus,DateReceived,Receiver,Customer_ref,claimamount,assured,timebar,insurance_type) values ('${customer_responses_id}','${jwts}','${newRef}','${clientID}','${Lawyer}','${DocumentStatus}','${DateReceived}','${ReciveType}','${Customer_ref}','${claimamount}','${assured}','${timebar}','${insurance_type}')`;
     const query = await api(sql);
     res.send({
       status: 200,
@@ -78,10 +117,14 @@ exports.createbeforecase = async (req, res) => {
 };
 exports.getbeforecaseDocuments = async (req, res) => {
   try {
+    const header = req.headers;
+    const jwts = jwtVerify(header);
+
     const sql = `select c.*,e.employee_firstname,e.employee_lastname,b.beforecase_name,ci.ClientName from casedocuments  c
     join employees e on(c.LawyerID = e.employee_id)
     join beforecase b on(c.Receiver = b.beforecase_id)
     join clients ci on (c.clientID = ci.clientID) 
+    where c.case_documentstatus = 0
     `;
     const query = await api(sql);
     res.send({
@@ -89,6 +132,7 @@ exports.getbeforecaseDocuments = async (req, res) => {
       data: query,
     });
   } catch (error) {
+    console.log(error.message);
     res.send({
       status: 400,
       data: error.message,
@@ -99,6 +143,8 @@ exports.getbeforecaseDocuments = async (req, res) => {
 exports.getbeforecaseDocumentsbyID = async (req, res) => {
   try {
     const ids = req.body.data;
+    const header = req.headers;
+    const jwts = jwtVerify(header);
     const sql = `select it.insurance_type_name,c.*,e.employee_firstname,e.employee_lastname,b.beforecase_name,ci.ClientName from casedocuments  c
     join employees e on(c.LawyerID = e.employee_id)
     join beforecase b on(c.Receiver = b.beforecase_id)
@@ -106,7 +152,7 @@ exports.getbeforecaseDocumentsbyID = async (req, res) => {
     join insurance_type it on (it.insurance_type_id = c.insurance_type)
     where DocumentID = ${ids}
     `;
-    console.log({ids});
+
     const query = await api(sql);
     res.send({
       status: 200,
@@ -123,17 +169,19 @@ exports.getbeforecaseDocumentsbyID = async (req, res) => {
 
 exports.createBeforeCaseTocase = async (req, res) => {
   try {
-  
+    const header = req.headers;
+    const jwts = jwtVerify(header);
+
     const plainiffArray = req.body.data.plainiffArray;
     const DefenantArray = req.body.data.DefenantArray;
-    
     const caseData = req.body.data.caseData;
     const BeforeFromArray = req.body.data.BeforeFromArray;
     const tsb_ref = req.body.data.tsb_ref;
-    const FromCase =req.body.data.FromCase
-    const sqlupdate = `update casedocuments set case_documentstatus=1 where tsb_ref='${tsb_ref}'`
-    const querysqlupdate = await api(sqlupdate)
+    const FromCase = req.body.data.FromCase;
+    const sqlupdate = `update casedocuments set case_documentstatus=1 where tsb_ref='${tsb_ref}'`;
+    const querysqlupdate = await api(sqlupdate);
     const sql = `insert into cases (
+      customer_resposive,
       ClientID,
       CaseTypeID,
       CourtID,
@@ -151,6 +199,7 @@ exports.createBeforeCaseTocase = async (req, res) => {
     )
     values
     (
+      '${caseData.customer_reponsive}',
       '${caseData.clientID}',
       '${caseData.CaseType}',
       '${caseData.courtID}',
@@ -170,21 +219,19 @@ exports.createBeforeCaseTocase = async (req, res) => {
     const querysql = await api(sql);
     const insertId = querysql.insertId;
 
-
     plainiffArray.forEach(async (element) => {
-    
-      const sqlplainiff = `insert into case_plainiff (case_plainiff_firstname,case_plainiff_lastname,case_id) values (${element.firstname},"${element.lastname}","${insertId}")`;
+      const sqlplainiff = `insert into case_plainiff (case_plainiff_firstname,case_plainiff_lastname,case_id) values ('${element.firstname}',"${element.lastname}","${insertId}")`;
       const querysqlplainiff = await api(sqlplainiff);
     });
     DefenantArray.forEach(async (element) => {
-      const sqlDefenantArray = `insert into case_defendant (case_defendant_firstname,case_defendant_lastname,case_id) values (${element.firstname},"${element.lastname}","${insertId}")`;
+      const sqlDefenantArray = `insert into case_defendant (case_defendant_firstname,case_defendant_lastname,case_id) values ('${element.firstname}',"${element.lastname}","${insertId}")`;
       const querysqlDefenantArray = await api(sqlDefenantArray);
     });
     FromCase.forEach(async (element) => {
       const sqlFromCaseArray = `insert into caselawyer (caselawyer_case_id,caselawyer_employee_id,caselawyer_employee_type) values ("${insertId}",${element.value},"${element.age}")`;
       const querysqlFromCaseArray = await api(sqlFromCaseArray);
     });
-    
+
     res.send({
       status: 200,
     });

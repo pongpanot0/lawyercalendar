@@ -29,7 +29,7 @@ import Tasklist from "./Tasklist";
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
 });
-const TimelineDetail = ({ id }) => {
+const TimelineDetail = ({ id ,loaddata }) => {
   const [open, setOpen] = React.useState(false);
   const [open2, setOpen2] = React.useState(false);
   const [idtotask, setidtotask] = React.useState("");
@@ -55,9 +55,10 @@ const TimelineDetail = ({ id }) => {
       console.log(error.message);
     }
   };
-  const handleDataBeforeFromCaseEmployee = (data) => {
+  
+  const handleDataBeforeFromCaseEmployee =  async (data) => {
     // Handle the data received from CaseEmployee
-
+    getData();
     setOpen(!open);
   };
 
@@ -77,7 +78,7 @@ const TimelineDetail = ({ id }) => {
     try {
       // Your existing code for updating the task data
       // ...
-      console.log(taskId);
+
       // Now update the todolistData state in the parent component
       const updatedData = await apiService.gettask(taskId);
       console.log(updatedData);
@@ -103,6 +104,7 @@ const TimelineDetail = ({ id }) => {
       </Grid>
       <Timeline position="alternate">
         {timelineData.map((res) => {
+          console.log(res);
           return (
             <TimelineItem>
               <TimelineOppositeContent color="text.secondary">
@@ -130,7 +132,7 @@ const TimelineDetail = ({ id }) => {
                       onClick={(e) => handleClickOpen2(res)}
                     >
                       {" "}
-                      TODO LIST: 10/10
+                      TODO LIST: {res.case_todolist_sucess_1_count}/{res.total_count}
                     </Button>
                   </CardActions>
                 </Card>

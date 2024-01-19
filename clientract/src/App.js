@@ -6,6 +6,7 @@ import {
   Route,
   Routes,
   Navigate,
+  useNavigate,
 } from "react-router-dom";
 import Home from "./componenets/Home";
 import Case from "./componenets/Case/Case";
@@ -36,6 +37,9 @@ import { lighten } from "polished";
 import Loader from "./componenets/Loader/Loader";
 import Login from "./componenets/Login/Login";
 import BeforeCaseTocase from "./componenets/Beforecase/BeforecaseToCase/BeforeCaseTocase";
+import Logout from "./componenets/Logout";
+import Sign from "./componenets/Signin/Sign";
+import InsertExpensesnull from "./componenets/Expenses/InsertExpenses/InsertExpensesNull";
 function App() {
   const [themeSettings, setthemeSettings] = React.useState([
     {
@@ -201,44 +205,61 @@ function App() {
       },
     },
   });
+  const navigate = useNavigate();
+  const token = localStorage.getItem("token");
 
   return (
     <div>
       <ThemeProvider theme={theme}>
         <CssBaseline />
-        <Navbar
-          navbarColor={themeSettings[0]?.settingsusers_primarycolor}
-          loaddata={LoadData}
-        >
-          <div style={{ marginTop: 20 }}>
-            <Routes>
-              <Route path="/" exact element={<Home />} />
-              <Route path="/case" element={<Case />} />
-              <Route path="/Customer" element={<Customer />} />
-              <Route path="/case-create" element={<Steppercase />} />
-              <Route path="/customer-create" element={<CreateCustomer />} />
-              <Route path="/employee" element={<Employee />} />
-              <Route path="/employee-create" element={<CreateEmployee />} />
-              <Route
-                path="/setting"
-                element={<Setting loaddata={LoadData} />}
-              />
-              <Route path="/casedetail/:id" element={<Casedetail />} />
-              <Route path="/expenses" element={<Expenses />} />
-              <Route path="/beforecase" element={<Beforecase />} />
-              <Route path="/beforecasetocase" element={<BeforeCaseTocase />} />
-              <Route
-                path="/beforecase-setting/:id"
-                element={<BeforebaseSetting />}
-              />
-              <Route path="/beforecase-create" element={<Insertbefore />} />
-              <Route path="/expenses-create" element={<InsertExpenses />} />
-              <Route path="/testsendline" element={<Testsendline />} />
-              <Route path="/notice" element={<Notice />} />
-              <Route path="/insert-notice" element={<InsertNotice />} />
-            </Routes>
-          </div>
-        </Navbar>
+        {token && (
+          <Navbar
+            navbarColor={themeSettings[0]?.settingsusers_primarycolor}
+            loaddata={LoadData}
+          >
+            <div style={{ marginTop: 20 }}>
+              <Routes>
+                <Route path="/" exact element={<Home />} />
+                <Route path="/case" element={<Case />} />
+                <Route path="/Customer" element={<Customer />} />
+                <Route path="/case-create" element={<Steppercase />} />
+                <Route path="/customer-create" element={<CreateCustomer />} />
+                <Route path="/employee" element={<Employee />} />
+                <Route path="/employee-create" element={<CreateEmployee />} />
+                <Route
+                  path="/setting"
+                  element={<Setting loaddata={LoadData} />}
+                />
+                <Route path="/casedetail/:id" element={<Casedetail />} />
+                <Route path="/expenses" element={<Expenses />} />
+                <Route path="/beforecase" element={<Beforecase />} />
+                <Route
+                  path="/beforecasetocase"
+                  element={<BeforeCaseTocase />}
+                />
+                <Route path="/Logout" element={<Logout />} />
+                <Route
+                  path="/beforecase-setting/:id"
+                  element={<BeforebaseSetting />}
+                />
+                <Route path="/beforecase-create" element={<Insertbefore />} />
+                <Route path="/expenses-create" element={<InsertExpenses />} />
+                <Route path="/testsendline" element={<Testsendline />} />
+                <Route path="/notice" element={<Notice />} />
+                <Route path="/insert-notice" element={<InsertNotice />} />
+                <Route path="/insert-expenesnull" element={<InsertExpensesnull />} />
+                
+              </Routes>
+            </div>
+          </Navbar>
+        )}
+        {!token && (
+          <Routes>
+            <Route path="/" exact element={<Home />} />
+            <Route path="/login" exact element={<Login />} />
+            <Route path="/register/:id" exact element={<Sign />} />
+          </Routes>
+        )}
         {/*    <Routes>
           <Route
             path="/login"

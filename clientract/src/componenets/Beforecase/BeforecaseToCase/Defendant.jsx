@@ -43,7 +43,7 @@ const Defendant = ({ onBeforeDefenantSubmit }) => {
           style={{ marginTop: 5 }}
           onClick={handleAddFields}
         >
-          Add New Row
+          เพิ่มจำเลย
         </Button>
   
         {inputFields.map((inputField, index) => (
@@ -63,7 +63,7 @@ const Defendant = ({ onBeforeDefenantSubmit }) => {
                     handleChangeInput(index, "firstname", event)
                   }
                   fullWidth
-                  label="FirstName"
+                  label="ชื่อ"
                 />
               </Item>
             </Grid>
@@ -77,7 +77,7 @@ const Defendant = ({ onBeforeDefenantSubmit }) => {
                     handleChangeInput(index, "lastname", event)
                   }
                   fullWidth
-                  label="Lastname"
+                  label="นามสกุล"
                 />
               </Item>
             </Grid>

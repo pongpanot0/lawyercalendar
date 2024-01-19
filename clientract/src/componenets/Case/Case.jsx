@@ -33,19 +33,19 @@ const ButtonCell = (params) => {
 const columns = [
   {
     field: "tsb_ref",
-    headerName: "Caseref",
+    headerName: "TSB Ref.",
     width: 220,
     editable: true,
   },
   {
     field: "Customer_ref",
-    headerName: "Customer_ref",
+    headerName: "Claim No.",
     width: 220,
     editable: true,
   },
   {
     field: "plaintiff_type",
-    headerName: "plaintiff_type",
+    headerName: "ประเภท",
     width: 220,
     editable: true,
     valueGetter: (params) => {
@@ -61,14 +61,14 @@ const columns = [
 
   {
     field: "ClientName",
-    headerName: "ClientName",
+    headerName: "ลูกค้า",
 
     width: 220,
     editable: true,
   },
   {
     field: "CaseTypeName",
-    headerName: "CaseTypeName",
+    headerName: "ประเภทคดี",
     sortable: false,
     width: 220,
   },

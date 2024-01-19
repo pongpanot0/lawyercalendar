@@ -25,6 +25,8 @@
     "moment": "^2.29.4",
     "mysql": "^2.18.1",
     "mysql2": "^3.6.1",
-    "nodemon": "^3.0.1"
+    "nodemailer": "^6.9.8",
+    "nodemon": "^3.0.1",
+    "smtp-server": "^3.13.0"
   }
 }

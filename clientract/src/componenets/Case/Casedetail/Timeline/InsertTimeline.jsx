@@ -61,7 +61,7 @@ const InsertTimeline = ({ id,onClose }) => {
     try {
       const response = await apiService.createcaseTimeline(timelineData);
       console.log(response);
-      onClose();
+      onClose(id);
     } catch (error) {
         console.log(error.message);
     }

@@ -33,11 +33,17 @@ function Employee() {
   React.useEffect(() => {
     getEmployeesData();
   }, []);
+  const loaddata = () =>{
+    getEmployeesData()
+    setOpen(false)
+  }
   const getEmployeesData = async () => {
     try {
       const response = await apiService.getEmployee();
       setemployeeData(response.data);
-    } catch (error) {}
+    } catch (error) {
+      console.log(error.message);
+    }
   };
   return (
     <div>
@@ -75,19 +81,7 @@ function Employee() {
                       </ListItemAvatar>
                       <ListItemText
                         primary={`คุณ ${res.employee_firstname} ${res.employee_lastname}`}
-                        secondary={
-                          <React.Fragment>
-                            <Typography
-                              sx={{ display: "inline" }}
-                              component="span"
-                              variant="body2"
-                              color="text.primary"
-                            >
-                              {res.employee_email}
-                            </Typography>
                         
-                          </React.Fragment>
-                        }
                       />
                     </ListItem>
                     <Divider variant="inset" component="li" color="primary" />
@@ -107,7 +101,7 @@ function Employee() {
             {"เพิ่มข้อมูลพนักงาน"}
           </DialogTitle>
           <DialogContent>
-            <CreateEmployee />
+            <CreateEmployee loaddata={loaddata}/>
           </DialogContent>
         </Dialog>
       </Paper>

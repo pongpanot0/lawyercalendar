@@ -11,12 +11,14 @@ import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { FaTrash } from "react-icons/fa";
+import SweetAlert from "../Shared/SweetAlrt";
 const Item = styled("div")(({ theme }) => ({
   ...theme.typography.body2,
   padding: theme.spacing(1),
   textAlign: "center",
 }));
-const InsertNotice = ({ beforecase_id }) => {
+const InsertNotice = ({ beforecase_id,loaddata }) => {
+
   
   React.useEffect(() => {
     getEmployees();
@@ -24,6 +26,7 @@ const InsertNotice = ({ beforecase_id }) => {
   }, []);
   const [Employee, setEmployee] = React.useState([]);
   const [cases, setCase] = React.useState([]);
+
   const [caseDataArray, setCaseDataArray] = useState([
     {
       DocumentID: beforecase_id,
@@ -94,10 +97,14 @@ const InsertNotice = ({ beforecase_id }) => {
       console.log(error.message);
     }
   };
+  const [showSweetAlert, setShowSweetAlert] = useState(false);
+
+   
   const postData = async () => {
     try {
-      console.log(caseDataArray);
-      const response = await apiService.createnotice(caseDataArray);
+      
+      const response = await apiService.createnotice(caseDataArray);  
+      loaddata()
     } catch (error) {}
   };
   const updateCaseDataArray = (index, updatedData) => {
@@ -134,6 +141,7 @@ const InsertNotice = ({ beforecase_id }) => {
   };
   return (
     <div>
+        {showSweetAlert && <SweetAlert text="สร้าง Notice สำเร็จ" path="/lawyer/beforecase" />}
       <Grid item container>
         <Grid xs={12} md={8} xl={8}></Grid>
         <Grid xs={12} md={2} xl={2}>
@@ -157,7 +165,7 @@ const InsertNotice = ({ beforecase_id }) => {
               fullWidth
               color="primary"
             >
-              Add Data
+              ยืนยันข้อมูล
             </Button>
           </Item>
         </Grid>
@@ -173,7 +181,7 @@ const InsertNotice = ({ beforecase_id }) => {
                   <Item>
                     <FormControl fullWidth>
                       <InputLabel id={`payer-label-${index}`}>
-                        Lawyer id
+                        ผู้ส่ง
                       </InputLabel>
                       <Select
                         labelId={`payer-label-${index}`}
@@ -195,23 +203,7 @@ const InsertNotice = ({ beforecase_id }) => {
                 <Grid xs={12} md={4} xl={4}>
                   {" "}
                   <Item>
-                    <FormControl fullWidth>
-                      <InputLabel id={`case-id-label-${index}`}>
-                        Case ID
-                      </InputLabel>
-                      <Select
-                        disabled={true}
-                        labelId={`case-id-label-${index}`}
-                        value={beforecase_id}
-                        onChange={(e) => CaseID(beforecase_id, index)}
-                      >
-                        {cases.map((res) => (
-                          <MenuItem key={res.DocumentID} value={res.DocumentID}>
-                            {res.Customer_ref}
-                          </MenuItem>
-                        ))}
-                      </Select>
-                    </FormControl>
+                    <TextField label="TSB Ref." value={beforecase_id} fullWidth></TextField>
                   </Item>
                 </Grid>
                 <Grid xs={12} md={4} xl={4}>
@@ -219,7 +211,7 @@ const InsertNotice = ({ beforecase_id }) => {
                   <Item>
                     <TextField
                       onChange={(e) => CaseNotice_to(e, index)}
-                      placeholder="CaseNotice_to"
+                      placeholder="ส่งถึง"
                       fullWidth
                     />
                   </Item>
@@ -243,6 +235,7 @@ const InsertNotice = ({ beforecase_id }) => {
                         name={`date-received-${index}`}
                         format="DD-MM-YYYY"
                         value={caseData.PaymentDate}
+                        label="วันที่ส่ง"
                         onChange={(e) => handleDateReceived(e, index)}
                       />
                     </LocalizationProvider>
@@ -258,7 +251,7 @@ const InsertNotice = ({ beforecase_id }) => {
                         fullWidth
                         onClick={() => removeCaseData(index)}
                       >
-                        Remove
+                        ยกเลิกแถว
                       </Button>
                     )}
                   </Item>{" "}

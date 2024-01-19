@@ -1,20 +1,34 @@
 // apiService.js
 import axios from "axios";
 
-const baseURL = "http://localhost:3123"; // Replace with your API base URL
+/* https://mcon-oil.mconcrete.co.th/api_lawyer */
 
+const baseURL = "https://mcon-oil.mconcrete.co.th/api_lawyer/"; // Replace with your API base URL
+const token = localStorage.getItem('token')
 const axiosInstance = axios.create({
   baseURL,
   timeout: 5000, // Adjust timeout as needed
   headers: {
     "Content-Type": "application/json",
+    "token":token
     // Add any other common headers here
   },
 });
 
 const apiService = {
   // Example API function
-
+  
+  async updateBeforecase(data) {
+    try {
+      const response = await axiosInstance.post("/beforecase/update", {
+        data,
+      });
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching posts:", error);
+      throw error;
+    }
+  },
   async CreateBeforeCaseToCase(data) {
     try {
       const response = await axiosInstance.post("/BeforeCaseTocase/create", {
@@ -212,7 +226,30 @@ const apiService = {
       throw error;
     }
   },
-
+  
+  async customerresponsesAll(data) {
+    try {
+      const response = await axiosInstance.post("/customerresponses/get/all",{
+        data
+      });
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching posts:", error);
+      throw error;
+    }
+  },
+  async customerresponses(data) {
+    try {
+      const response = await axiosInstance.post("/customerresponses/get",{
+        data
+      });
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching posts:", error);
+      throw error;
+    }
+  },
+  
   //courts
   async getcourts(data) {
     try {
@@ -276,6 +313,31 @@ const apiService = {
       throw error;
     }
   },
+
+  
+  async creatcaseeExpantime(data) {
+    try {
+      const response = await axiosInstance.post("/Expantime/create", {
+        data,
+      });
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching posts:", error);
+      throw error;
+    }
+  },
+  async getcaseeExpantime(data) {
+    try {
+      const response = await axiosInstance.post("/Expantime/get", {
+        data,
+      });
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching posts:", error);
+      throw error;
+    }
+  },
+  
   async creatcaseeexpenses(data) {
     try {
       const response = await axiosInstance.post("/caseexpenses/create", {
@@ -449,6 +511,34 @@ const apiService = {
     try {
       const response = await axiosInstance.post("/task/update", {
         data,
+      });
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching posts:", error);
+      throw error;
+    }
+  },
+  
+
+
+async signin(username,password,employee_id) {
+  try {
+    const response = await axiosInstance.post("/register", {
+      employee_username:username,
+      employee_password:password,
+      employee_id:employee_id
+    });
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching posts:", error);
+    throw error;
+  }
+},
+  async login(username,password) {
+    try {
+      const response = await axiosInstance.post("/login", {
+        username:username,
+        password:password
       });
       return response.data;
     } catch (error) {

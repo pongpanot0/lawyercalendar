@@ -14,6 +14,7 @@ import CaseEmployee from "./CaseEmployee";
 import BeforeCaseDetail from "./BeforeCaseDetail";
 import Plaintiff from "./Plaintiff";
 import Defendant from "./Defendant";
+import SweetAlert from "../../Shared/SweetAlrt";
 const Item = styled("div")(({ theme }) => ({
   ...theme.typography.body2,
   padding: theme.spacing(1),
@@ -65,6 +66,20 @@ const BeforeCaseTocase = () => {
       ClientName: "",
     },
   ]);
+
+const [wait,setWait] = React.useState(true)
+const [cusreponse,setcusresponse] = React.useState([])
+const getCusresponsive =  async (data) =>{
+  try {
+    console.log(state);
+    const response = await apiService.customerresponses(state.clientID)
+    console.log(response);
+    setcusresponse(response.data)
+    setWait(false)
+  } catch (error) {
+    
+  }
+}
   React.useEffect(() => {
     getClientID();
     getLawyerID();
@@ -72,6 +87,7 @@ const BeforeCaseTocase = () => {
     getInsuredType();
     getCasetypedata();
     getcourtsData();
+    getCusresponsive()
   }, []);
 
   const handleChange5 = (event) => {
@@ -122,6 +138,7 @@ const BeforeCaseTocase = () => {
     insurance_type: state.insurance_type,
     CaseType: "",
     courtID: "",
+    customer_reponsive:state.customer_reponsive
   });
   const [dis, setDis] = React.useState(true);
 
@@ -169,11 +186,12 @@ const BeforeCaseTocase = () => {
         plainiffArray: plainiffArray,
         DefenantArray: DefenantArray,
         caseData: caseData,
-        tsb_ref:state.tsb_ref
+        tsb_ref: state.tsb_ref,
+        customer_resposive:state.customer_reponsive
       };
-     
+
       const response = await apiService.CreateBeforeCaseToCase(data);
-      console.log(response);
+      setShowSweetAlert(true);
     } catch (error) {
       console.log(error.message);
     }
@@ -193,19 +211,27 @@ const BeforeCaseTocase = () => {
   const [plainiffArray, setplainiffArray] = React.useState([]);
   const handleDataPlaintiffCaseEmployee = (data) => {
     // Handle the data received from CaseEmployee
-    console.log("Data from CaseEmployee:", data);
+   
     setplainiffArray(data);
   };
   const [DefenantArray, setDefenantArray] = React.useState([]);
   const handleDataDefenantCaseEmployee = (data) => {
     // Handle the data received from CaseEmployee
     setDefenantArray(data);
-    console.log("Data from CaseEmployee:", data);
+   
   };
-
+  const handlecustomer_responses_id = (event) => {
+    setCaseData({
+      ...caseData,
+      customer_responses_id: event.target.value,
+    });
+  };
+  const [showSweetAlert, setShowSweetAlert] = useState(false);
+ 
   return (
     <div>
       {" "}
+      {showSweetAlert && <SweetAlert text="สร้างฟ้องสำเร็จ" path="/case" />}
       <Grid xs={12} md={6} xl={6}>
         <Divider textAlign="right">TSB Ref.{state.tsb_ref}</Divider>
         <Grid item container>
@@ -218,7 +244,7 @@ const BeforeCaseTocase = () => {
               color="primary"
             >
               {" "}
-              Add data
+              เพิ่มข้อมูล
             </Button>
           </Grid>
           <Grid xs={12} md={6} xl={6}>
@@ -231,7 +257,7 @@ const BeforeCaseTocase = () => {
                 value={caseData.Customer_ref}
                 onChange={(e) => handleCustomer_ref(e)}
                 type="text"
-                label="Customer_ref"
+                label="Claim No."
               />
             </Item>{" "}
           </Grid>
@@ -246,7 +272,7 @@ const BeforeCaseTocase = () => {
                 type="text"
                 value={caseData.assured}
                 onChange={(e) => handleassured(e)}
-                label="assured"
+                label="ผู้เอาประกัน"
               />
             </Item>{" "}
           </Grid>
@@ -297,12 +323,12 @@ const BeforeCaseTocase = () => {
             {" "}
             <Item>
               <FormControl fullWidth>
-                <InputLabel id="demo-simple-select-label">ClientID</InputLabel>
+                <InputLabel id="demo-simple-select-label">ลูกค้า</InputLabel>
                 <Select
                   labelId="demo-simple-select-label"
                   id="demo-simple-select"
                   value={caseData.clientID}
-                  label="ClientID"
+                  label="ลูกค้า"
                   InputLabelProps={{ shrink: true }}
                   onChange={handleChange5}
                   disabled={dis}
@@ -316,8 +342,33 @@ const BeforeCaseTocase = () => {
                 </Select>
               </FormControl>
             </Item>{" "}
+          
           </Grid>
-
+          <Grid xs={12} md={6} xl={6}>
+            {" "}
+            <Item>
+          <FormControl fullWidth>
+            <InputLabel id="demo-simple-select-label">ผู้ส่งมอบงาน</InputLabel>
+            <Select
+              labelId="demo-simple-select-label"
+              id="demo-simple-select"
+              disabled={true}
+              value={caseData.customer_reponsive}
+              label="ผู้ส่งมอบงาน"
+              InputLabelProps={{ shrink: true }}
+              onChange={handlecustomer_responses_id}
+              required={true}
+            >
+              {cusreponse.map((res) => {
+                return (
+                  <MenuItem value={res.customer_responses_id}>{res.customer_responses_firstname} {res.customer_responses_lastname}</MenuItem>
+                );
+              })}
+            </Select>
+          </FormControl>
+        </Item>
+          
+          </Grid>
           <Grid xs={12} md={6} xl={6}>
             {" "}
             <Item>
@@ -346,7 +397,7 @@ const BeforeCaseTocase = () => {
             {" "}
             <Item>
               <FormControl fullWidth>
-                <InputLabel id="demo-simple-select-label">CourtID</InputLabel>
+                <InputLabel id="demo-simple-select-label">ศาล</InputLabel>
                 <Select
                   labelId="demo-simple-select-label"
                   id="demo-simple-select22"
@@ -368,7 +419,7 @@ const BeforeCaseTocase = () => {
             </Item>{" "}
           </Grid>
 
-          <Grid xs={12} md={6} xl={6}>
+          <Grid xs={12} md={12} xl={12}>
             {" "}
             <Item>
               <TextField
@@ -378,7 +429,7 @@ const BeforeCaseTocase = () => {
                 disabled={dis}
                 id=""
                 type="text"
-                label="timebar"
+                label="Timebar"
                 value={dayjs(caseData.timebar).format("YYYY-MM-DD")}
               />
             </Item>{" "}

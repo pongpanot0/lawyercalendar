@@ -16,7 +16,7 @@ exports.createCustomer = async (req, res) => {
     const sql = `insert into clients (ClientName,ClientType,ClientHomenum,ClientProvince,Clientamphure,Clienttambon,Clientzipcode,ClientTax) 
     values ("${ClientName}","${ClientType}","${ClientHomenum}","${ClientProvince}","${Clientamphure}","${Clienttambon}","${Clientzipcode}","${ClientTax}")`;
     const query = await api(sql);
- 
+
     const insertId = query.insertId;
 
     customerRes.forEach(async (element) => {
@@ -40,9 +40,30 @@ exports.createCustomer = async (req, res) => {
 };
 exports.getCustomer = async (req, res) => {
   try {
-    const sql = `select  a.*,b.*, (SELECT count(*) FROM cases c WHERE c.ClientID = a.ClientID) AS TotalValue  from clients a left join customertypes b on (a.ClientType = b.customertypes_id) `;
+    const sql = `select  a.*,b.*, 
+    (SELECT count(*) FROM cases c WHERE c.ClientID = a.ClientID) AS TotalValue   ,
+    (SELECT count(*) FROM customer_responses cr WHERE cr.customer_id = a.ClientID) as crtotalValue
+    
+    from clients a left join customertypes b on 
+    (a.ClientType = b.customertypes_id) `;
     const query = await api(sql);
-
+    console.log(query);
+    res.send({
+      status: 200,
+      data: query,
+    });
+  } catch (error) {
+    res.send({
+      status: 400,
+      data: error.message,
+    });
+  }
+};
+exports.getCustomerresponses = async (req, res) => {
+  try {
+    const data = req.body.data;
+    const sql = `select * from customer_responses`;
+    const query = await api(sql);
     res.send({
       status: 200,
       data: query,

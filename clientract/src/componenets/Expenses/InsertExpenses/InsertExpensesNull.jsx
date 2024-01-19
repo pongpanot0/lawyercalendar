@@ -9,12 +9,13 @@ import apiService from "../../Shared/Apiserver";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
+import SweetAlert from "../../Shared/SweetAlrt";
 const Item = styled("div")(({ theme }) => ({
   ...theme.typography.body2,
   padding: theme.spacing(1),
   textAlign: "center",
 }));
-const InsertExpenses = ({ loaddata }) => {
+const InsertExpensesnull = () => {
   const handleChange5 = (event) => {
     setCaseData({
       ...caseData,
@@ -63,6 +64,7 @@ const InsertExpenses = ({ loaddata }) => {
   const [expenseType, setexpenseType] = React.useState([]);
   const [Employee, setEmployee] = React.useState([]);
   const [cases, setCase] = React.useState([]);
+  const [Show,setShow] = React.useState(false)
   const getExpensesType = async () => {
     try {
       const response = await apiService.getexpensesType();
@@ -110,7 +112,7 @@ const InsertExpenses = ({ loaddata }) => {
     try {
       const response = await apiService.creatcaseeexpenses(caseData);
       console.log(response.data);
-      loaddata();
+      setShow(true)
       
     } catch (error) {
       console.log(error.message);
@@ -119,6 +121,7 @@ const InsertExpenses = ({ loaddata }) => {
 
   return (
     <Grid container item>
+        {Show &&  <SweetAlert path={"/expenses"} text={"สร้างค่าใช้จ่ายสำเร็จ"}/>}
       <Grid xs={12} md={6} xl={6}>
         <Item>
           <TextField
@@ -239,4 +242,4 @@ const InsertExpenses = ({ loaddata }) => {
   );
 };
 
-export default InsertExpenses;
+export default InsertExpensesnull;

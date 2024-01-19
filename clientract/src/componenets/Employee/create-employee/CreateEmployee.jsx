@@ -14,7 +14,7 @@ const Item = styled("div")(({ theme }) => ({
   textAlign: "center",
  
 }));
-function CreateEmployee() {
+function CreateEmployee({loaddata}) {
   const [age, setAge] = React.useState("");
 
   const handleChange = (event) => {
@@ -39,6 +39,7 @@ function CreateEmployee() {
         employee_cardno: employee_cardno,
       };
       const response = await apiService.createEmployee(data);
+      loaddata()
     } catch (error) {
       console.log(error.message);
     }

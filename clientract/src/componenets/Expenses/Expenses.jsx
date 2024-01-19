@@ -7,6 +7,7 @@ import apiService from "../Shared/Apiserver";
 import TableChartIcon from "@mui/icons-material/TableChart";
 import BarChartIcon from "@mui/icons-material/BarChart";
 import ExpensesChart from "./ExpensesChart";
+import dayjs from "dayjs";
 const Item = styled("div")(({ theme }) => ({
   ...theme.typography.body2,
   padding: theme.spacing(1),
@@ -14,16 +15,16 @@ const Item = styled("div")(({ theme }) => ({
 }));
 const Expenses = () => {
   const columns = [
-    { field: "expensesType_name", headerName: "expensesType_name", width: 200 },
+    { field: "expensesType_name", headerName: "ประเภท", width: 200 },
     {
       field: "expenses",
-      headerName: "expenses",
+      headerName: "จำนวนเงิน",
       type: "number",
       width: 200,
     },
     {
       field: "employee_firstname",
-      headerName: "Full name",
+      headerName: "ผู้จ่าย",
 
       sortable: false,
       width: 300,
@@ -32,7 +33,15 @@ const Expenses = () => {
           params.row.employee_lastname || ""
         }`,
     },
-    { field: "PaymentDate", headerName: "PaymentDate", width: 200 },
+    {
+      field: "PaymentDate",
+      headerName: "วันที่จ่าย",
+      width: 200,
+      valueGetter: (params) =>
+        `${dayjs(params.row.PaymentDate).format('DD/MM/YYYY') || ""}`,
+    },
+
+    ,
   ];
 
   React.useEffect(() => {
@@ -76,10 +85,10 @@ const Expenses = () => {
         {showValues == 1 && (
           <Grid container item spacing={2}>
             <Grid xs={12} md={12} xl={12}>
-              <Link to={"/expenses-create"}>
+              <Link to={"/insert-expenesnull"}>
                 <Button variant="contained" color="primary">
                   {" "}
-                  Add data
+                  เพิ่มข้อมูล
                 </Button>
               </Link>
             </Grid>

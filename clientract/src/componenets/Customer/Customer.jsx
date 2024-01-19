@@ -23,6 +23,13 @@ const columns = [
     width: 200,
     type: "number",
   },
+  {
+    field: "crtotalValue",
+    headerName: "จำนวน ผู้รับผิดชอบ ทั้งหมด",
+    width: 300,
+    type: "number",
+  },
+  
 ];
 
 function Customer() {
@@ -71,7 +78,7 @@ function Customer() {
             <Grid xs={12} xl={12} alignItems={"end"} alignContent={"end"}>
               <Link to={"/customer-create"}>
                 {" "}
-                <Button variant="contained">Open modal </Button>
+                <Button variant="contained">เพิ่มข้อมูล</Button>
               </Link>
             </Grid>
             <Grid xs={12} sm={12} xl={12} mt={3}>

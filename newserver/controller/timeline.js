@@ -59,11 +59,42 @@ exports.createcaseTimeline = async (req, res) => {
 exports.getcaseTimeline = async (req, res) => {
   try {
     const case_id = req.body.data;
-    const sql = `select ct.*,ts.timeline_status_name 
-        from case_timeline ct 
-        join timeline_status ts on (ts.timeline_status_id = ct.case_timebar_status )
-        where case_id=${case_id}`;
+    const sql = `SELECT
+    ct.*,
+    ts.timeline_status_name,
+    COALESCE(success_count, 0) AS case_todolist_sucess_0_count,
+    COALESCE(failure_count, 0) AS case_todolist_sucess_1_count,
+    COALESCE(success_count, 0) + COALESCE(failure_count, 0) AS total_count
+  FROM
+    case_timeline ct
+  JOIN
+    timeline_status ts ON ts.timeline_status_id = ct.case_timebar_status
+  LEFT JOIN (
+    SELECT
+      case_timeline_id,
+      COUNT(*) AS success_count
+    FROM
+      case_todolist
+    WHERE
+      case_todolist_sucess = 0
+    GROUP BY
+      case_timeline_id
+  ) AS success_counts ON success_counts.case_timeline_id = ct.case_timeline_id
+  LEFT JOIN (
+    SELECT
+      case_timeline_id,
+      COUNT(*) AS failure_count
+    FROM
+      case_todolist
+    WHERE
+      case_todolist_sucess = 1
+    GROUP BY
+      case_timeline_id
+  ) AS failure_counts ON failure_counts.case_timeline_id = ct.case_timeline_id
+  WHERE
+    ct.case_id = ${case_id};`;
     const query = await api(sql);
+    console.log(query);
     res.send({
       status: 400,
       data: query,

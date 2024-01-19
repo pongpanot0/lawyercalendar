@@ -29,6 +29,9 @@ function Expenses({ caseExpenses }) {
   const handleClose = () => {
     setOpen(false);
   };
+  const loaddata = () =>{
+    setOpen(false);
+  }
   return (
     <Container maxWidth="xl" >
       <Grid item container>
@@ -91,7 +94,7 @@ function Expenses({ caseExpenses }) {
         aria-describedby="alert-dialog-description"
       >
         <DialogContent>
-          <InsertExpenses />
+          <InsertExpenses loaddata={loaddata}/>
         </DialogContent>
       </Dialog>
     </Container>

@@ -11,7 +11,15 @@ import { CardActionArea } from "@mui/material";
 import * as FaIcons from "react-icons/fa";
 import "./Home.css";
 import { BarChart } from "@mui/x-charts/BarChart";
+import { useNavigate } from "react-router-dom";
 const Home = () => {
+  const navigate = useNavigate()
+  React.useEffect(()=>{
+    const token = localStorage.getItem('token')
+    if(!token){
+      navigate('/login')
+    }
+  })
   return (
     <>
       <Grid container spacing={2} mt={1}>

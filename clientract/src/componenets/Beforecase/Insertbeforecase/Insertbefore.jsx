@@ -11,6 +11,7 @@ import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import dayjs from "dayjs";
+import SweetAlert from "../../Shared/SweetAlrt";
 const Item = styled("div")(({ theme }) => ({
   ...theme.typography.body2,
   padding: theme.spacing(1),
@@ -24,7 +25,20 @@ const Insertbefore = () => {
       ...caseData,
       clientID: event.target.value,
     });
+    getCusresponsive(event.target.value)
   };
+  const [wait,setWait] = React.useState(true)
+  const [cusreponse,setcusresponse] = React.useState([])
+  const getCusresponsive =  async (data) =>{
+    try {
+      const response = await apiService.customerresponses(data)
+      console.log(response);
+      setcusresponse(response.data)
+      setWait(false)
+    } catch (error) {
+      
+    }
+  }
   const handleReciveType = (event) => {
     setCaseData({
       ...caseData,
@@ -43,6 +57,13 @@ const Insertbefore = () => {
       Customer_ref: event.target.value,
     });
   };
+  const handlecustomer_responses_id = (event) => {
+    setCaseData({
+      ...caseData,
+      customer_responses_id: event.target.value,
+    });
+  };
+  
   const handleClainmamount = (event) => {
     setCaseData({
       ...caseData,
@@ -87,6 +108,7 @@ const Insertbefore = () => {
     timebar: "",
     DateReceived: "",
     insurance_type:"",
+    customer_responses_id:""
   });
   React.useEffect(() => {
     getClientID();
@@ -123,17 +145,23 @@ const Insertbefore = () => {
     } catch (error) {}
   };
 
+
+  const [showSweetAlert, setShowSweetAlert] = useState(false);
   const postData = async () => {
     try {
       const response = await apiService.createbeforecasedocuments(caseData);
-    } catch (error) {}
+      setShowSweetAlert(true);
+    } catch (error) {
+      console.log(error.message);
+    }
   };
   return (
     <Grid container item>
       <Grid xs={12} md={6} xl={6}>
         <Item>
+        {showSweetAlert && <SweetAlert text="สร้างก่อนฟ้องสำเร็จ" path="/beforecase" />}
           <FormControl fullWidth>
-            <InputLabel id="demo-simple-select-label">ClientID</InputLabel>
+            <InputLabel id="demo-simple-select-label">ลูกค้า</InputLabel>
             <Select
               labelId="demo-simple-select-label"
               id="demo-simple-select"
@@ -155,7 +183,30 @@ const Insertbefore = () => {
       <Grid xs={12} md={6} xl={6}>
         <Item>
           <FormControl fullWidth>
-            <InputLabel id="demo-simple-select-label">ReciveType</InputLabel>
+            <InputLabel id="demo-simple-select-label">ผู้ส่งมอบงาน</InputLabel>
+            <Select
+              labelId="demo-simple-select-label"
+              id="demo-simple-select"
+              disabled={wait}
+              value={caseData.customer_responses_id}
+              label="ClientID"
+              InputLabelProps={{ shrink: true }}
+              onChange={handlecustomer_responses_id}
+              required={true}
+            >
+              {cusreponse.map((res) => {
+                return (
+                  <MenuItem value={res.customer_responses_id}>{res.customer_responses_firstname} {res.customer_responses_lastname}</MenuItem>
+                );
+              })}
+            </Select>
+          </FormControl>
+        </Item>
+      </Grid>
+      <Grid xs={12} md={6} xl={6}>
+        <Item>
+          <FormControl fullWidth>
+            <InputLabel id="demo-simple-select-label">ประเภทการรับข้อมูล</InputLabel>
             <Select
               labelId="demo-simple-select-label"
               id="demo-simple-select"
@@ -237,10 +288,10 @@ const Insertbefore = () => {
           />
         </Item>
       </Grid>
-      <Grid xs={12} md={12} xl={12}>
+      <Grid xs={12} md={6} xl={6}>
         <Item>
           <FormControl fullWidth>
-            <InputLabel id="demo-simple-select-label">Lawyer</InputLabel>
+            <InputLabel id="demo-simple-select-label">ทนายผู้รับเอกสาร</InputLabel>
             <Select
               labelId="demo-simple-select-label"
               id="demo-simple-select"
@@ -268,7 +319,7 @@ const Insertbefore = () => {
               sx={{ width: "100%" }}
               name="DateReceived"
               format="DD-MM-YYYY"
-              label="DateReceived"
+              label="วันที่ได้รับเอกสาร"
               value={caseData.DateReceived}
               onChange={handleDateReceived}
             />
@@ -298,7 +349,7 @@ const Insertbefore = () => {
             fullWidth
           >
             {" "}
-            Add data
+            เพิ่มข้อมูล
           </Button>
         </Item>
       </Grid>

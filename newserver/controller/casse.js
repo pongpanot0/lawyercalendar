@@ -38,6 +38,47 @@ exports.createCase = async (req, res) => {
     });
   }
 };
+exports.getExpantime = async (req, res) => {
+  try {
+    const tsb_ref = req.body.data;
+    console.log(req.body.data);
+    const sql = `select * from  case_expantime where tsb_ref='${tsb_ref}'`;
+    const query = await api(sql);
+    console.log(query);
+    res.send({
+      status: 200,
+      date: query,
+    });
+  } catch (error) {
+    res.send({
+      status: 400,
+      data: error.message,
+    });
+  }
+};
+exports.createExpantime = async (req, res) => {
+  try {
+    const { case_expantime_date, case_expantime_remark, tsb_ref } =
+      req.body.data;
+
+    const sql = `insert into case_expantime (case_expantime_date,case_expantime_remark,tsb_ref) values
+    ('${case_expantime_date}','${case_expantime_remark}','${tsb_ref}') `;
+
+    const update = `update cases set ReciveWarrantDate='${case_expantime_date}' where tsb_ref='${tsb_ref}'`;
+    const queryupdate = await api(update);
+    const query = await api(sql);
+    res.send({
+      status: 200,
+      date: query,
+    });
+  } catch (error) {
+    console.log(error.message);
+    res.send({
+      status: 400,
+      data: error.message,
+    });
+  }
+};
 exports.getCase = async (req, res) => {
   try {
     const sql = `select a.*,c.ClientName,ct.CaseTypeName  
@@ -73,6 +114,7 @@ exports.getCaseByid = async (req, res) => {
   WHERE
     a.CaseID = ${CaseID} `;
     const query = await api(sql);
+   
     const sqlCaselawyer = `select cl.caselawyer_case_id,
     eplt.employeescasetype_name as employeescasetype_name,
     CONCAT(epl.employee_firstname, ' ', epl.employee_lastname) as name
@@ -80,13 +122,14 @@ exports.getCaseByid = async (req, res) => {
     LEFT JOIN employees epl ON (cl.caselawyer_employee_id = epl.employee_id)
     LEFT JOIN employeescasetype eplt ON (eplt.employeescasetype_id = cl.caselawyer_employee_type)
     where cl.caselawyer_case_id=${CaseID}`;
+
     const querysqlCaselawyer = await api(sqlCaselawyer);
 
     const sqlcaseNotice = `select 
     cn.*,CONCAT(ep.employee_firstname, ' ', ep.employee_lastname) as name 
     from casenotice cn  
     LEFT JOIN employees ep ON (cn.CaseNotice_lawyer_id = ep.employee_id)
-    where cn.CaseNotice_case_id=${CaseID}
+    where cn.CaseNotice_ref='${query[0]?.tsb_ref}'
     `;
     const querysqlcaseNotice = await api(sqlcaseNotice);
 
@@ -96,10 +139,10 @@ exports.getCaseByid = async (req, res) => {
     from caseexpenses  cx 
     LEFT JOIN employees eplcx ON (cx.Payer = eplcx.employee_id)
     LEFT JOIN expensestype cxt ON (cx.expensesType = cxt.expensesType_id)
-    where cx.CaseID=${CaseID}
+    where cx.expenses_ref='${query[0]?.tsb_ref}'
     `;
     const querysqlcaseExpenses = await api(sqlcaseExpenses);
-  
+
     res.send({
       status: 200,
       data: query,
