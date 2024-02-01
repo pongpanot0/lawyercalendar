@@ -25,20 +25,18 @@ const Insertbefore = () => {
       ...caseData,
       clientID: event.target.value,
     });
-    getCusresponsive(event.target.value)
+    getCusresponsive(event.target.value);
   };
-  const [wait,setWait] = React.useState(true)
-  const [cusreponse,setcusresponse] = React.useState([])
-  const getCusresponsive =  async (data) =>{
+  const [wait, setWait] = React.useState(true);
+  const [cusreponse, setcusresponse] = React.useState([]);
+  const getCusresponsive = async (data) => {
     try {
-      const response = await apiService.customerresponses(data)
+      const response = await apiService.customerresponses(data);
       console.log(response);
-      setcusresponse(response.data)
-      setWait(false)
-    } catch (error) {
-      
-    }
-  }
+      setcusresponse(response.data);
+      setWait(false);
+    } catch (error) {}
+  };
   const handleReciveType = (event) => {
     setCaseData({
       ...caseData,
@@ -51,10 +49,22 @@ const Insertbefore = () => {
       Lawyer: event.target.value,
     });
   };
+  const handleisplanif = (event) => {
+    setCaseData({
+      ...caseData,
+      isplanif: event.target.value,
+    });
+  };
   const handleCustomer_ref = (event) => {
     setCaseData({
       ...caseData,
       Customer_ref: event.target.value,
+    });
+  };
+  const handlepolicy_ref = (event) => {
+    setCaseData({
+      ...caseData,
+      policy_ref: event.target.value,
     });
   };
   const handlecustomer_responses_id = (event) => {
@@ -63,7 +73,7 @@ const Insertbefore = () => {
       customer_responses_id: event.target.value,
     });
   };
-  
+
   const handleClainmamount = (event) => {
     setCaseData({
       ...caseData,
@@ -90,36 +100,53 @@ const Insertbefore = () => {
     });
   };
   const handleinsurance_type = (event) => {
-    console.log(event);
     setCaseData({
       ...caseData,
       insurance_type: event.target.value,
     });
   };
-  
+  const handletsb_ref = (event) => {
+    setCaseData({
+      ...caseData,
+      tsb_ref: event.target.value,
+    });
+  };
+
+  React.useEffect(() => {
+    getClientID();
+    getLawyerID();
+    getReciveType();
+    getInsuredType();
+    gettsbRef();
+  }, []);
+  const [ClientID, setClientIDData] = React.useState([]);
+  const [LawyerID, setLawyerIDData] = React.useState([]);
+  const [ReciveType, setReciveTypeData] = React.useState([]);
+  const [InsuredType, setInsuredTypeData] = React.useState([]);
+  const gettsbRef = async () => {
+    try {
+      const response = await apiService.gettsbref();
+      console.log(response);
+      caseData.tsb_ref = response.data;
+    } catch (error) {
+      console.log(error.message);
+    }
+  };
   const [caseData, setCaseData] = useState({
     ReciveType: "",
     Lawyer: "", // Added caseType
     clientID: "", // Added clientID
     Customer_ref: "",
     policy_ref: "",
-    claimamount: "",
+    claimamount: 0,
     assured: "",
     timebar: "",
     DateReceived: "",
-    insurance_type:"",
-    customer_responses_id:""
+    insurance_type: "",
+    customer_responses_id: "",
+    isplanif: 1,
+    tsb_ref: "",
   });
-  React.useEffect(() => {
-    getClientID();
-    getLawyerID();
-    getReciveType();
-    getInsuredType();
-  }, []);
-  const [ClientID, setClientIDData] = React.useState([]);
-  const [LawyerID, setLawyerIDData] = React.useState([]);
-  const [ReciveType, setReciveTypeData] = React.useState([]);
-  const [InsuredType,setInsuredTypeData] = React.useState([])
   const getClientID = async () => {
     try {
       const response = await apiService.getcustomer();
@@ -145,7 +172,6 @@ const Insertbefore = () => {
     } catch (error) {}
   };
 
-
   const [showSweetAlert, setShowSweetAlert] = useState(false);
   const postData = async () => {
     try {
@@ -157,9 +183,11 @@ const Insertbefore = () => {
   };
   return (
     <Grid container item>
-      <Grid xs={12} md={6} xl={6}>
+      <Grid xs={12} md={4} xl={4}>
         <Item>
-        {showSweetAlert && <SweetAlert text="สร้างก่อนฟ้องสำเร็จ" path="/beforecase" />}
+          {showSweetAlert && (
+            <SweetAlert text="สร้างก่อนฟ้องสำเร็จ" path="/beforecase" />
+          )}
           <FormControl fullWidth>
             <InputLabel id="demo-simple-select-label">ลูกค้า</InputLabel>
             <Select
@@ -180,7 +208,7 @@ const Insertbefore = () => {
           </FormControl>
         </Item>
       </Grid>
-      <Grid xs={12} md={6} xl={6}>
+      <Grid xs={12} md={4} xl={4}>
         <Item>
           <FormControl fullWidth>
             <InputLabel id="demo-simple-select-label">ผู้ส่งมอบงาน</InputLabel>
@@ -196,22 +224,27 @@ const Insertbefore = () => {
             >
               {cusreponse.map((res) => {
                 return (
-                  <MenuItem value={res.customer_responses_id}>{res.customer_responses_firstname} {res.customer_responses_lastname}</MenuItem>
+                  <MenuItem value={res.customer_responses_id}>
+                    {res.customer_responses_firstname}{" "}
+                    {res.customer_responses_lastname}
+                  </MenuItem>
                 );
               })}
             </Select>
           </FormControl>
         </Item>
       </Grid>
-      <Grid xs={12} md={6} xl={6}>
+      <Grid xs={12} md={4} xl={4}>
         <Item>
           <FormControl fullWidth>
-            <InputLabel id="demo-simple-select-label">ประเภทการรับข้อมูล</InputLabel>
+            <InputLabel id="demo-simple-select-label">
+              ประเภทการรับงาน
+            </InputLabel>
             <Select
               labelId="demo-simple-select-label"
               id="demo-simple-select"
               value={caseData.ReciveType}
-              label="Age"
+              label="ประเภทการรับงาน"
               InputLabelProps={{ shrink: true }}
               onChange={handleReciveType}
               required={true}
@@ -233,15 +266,67 @@ const Insertbefore = () => {
             aria-readonly={true}
             className="TextField"
             id=""
+            onChange={handletsb_ref}
+            label="TSB Ref."
+            value={caseData.tsb_ref}
+          />
+        </Item>
+      </Grid>{" "}
+      <Grid xs={12} md={6} xl={6}>
+        <Item>
+          <FormControl fullWidth>
+            <InputLabel id="demo-simple-select-label">
+              ทนายผู้รับเอกสาร
+            </InputLabel>
+            <Select
+              labelId="demo-simple-select-label"
+              id="demo-simple-select"
+              value={caseData.Lawyer}
+              label="Age"
+              InputLabelProps={{ shrink: true }}
+              onChange={handleLawyer}
+              required={true}
+            >
+              {LawyerID.map((res) => {
+                return (
+                  <MenuItem value={res.employee_id}>
+                    {res.employee_firstname} {res.employee_lastname}
+                  </MenuItem>
+                );
+              })}
+            </Select>
+          </FormControl>
+        </Item>
+      </Grid>
+      <Grid xs={12} md={6} xl={6}>
+        <Item>
+          <TextField
+            aria-readonly={true}
+            className="TextField"
+            id=""
             onChange={handleCustomer_ref}
             label="Claim No."
             value={caseData.Customer_ref}
           />
         </Item>
       </Grid>
+
       <Grid xs={12} md={6} xl={6}>
         <Item>
-        <FormControl fullWidth>
+          <TextField
+            aria-readonly={true}
+            className="TextField"
+            id=""
+            onChange={handlepolicy_ref}
+            label="Policy No."
+            value={caseData.policy_ref}
+          />
+        </Item>
+      </Grid>
+    
+      <Grid xs={12} md={6} xl={6}>
+        <Item>
+          <FormControl fullWidth>
             <InputLabel id="demo-simple-select-label">ประเภทประกัน</InputLabel>
             <Select
               labelId="demo-simple-select-label"
@@ -288,26 +373,24 @@ const Insertbefore = () => {
           />
         </Item>
       </Grid>
+     
       <Grid xs={12} md={6} xl={6}>
         <Item>
           <FormControl fullWidth>
-            <InputLabel id="demo-simple-select-label">ทนายผู้รับเอกสาร</InputLabel>
+            <InputLabel id="demo-simple-select-label">
+              สถานะในการดำเนินการ
+            </InputLabel>
             <Select
               labelId="demo-simple-select-label"
               id="demo-simple-select"
-              value={caseData.Lawyer}
+              value={caseData.isplanif}
               label="Age"
               InputLabelProps={{ shrink: true }}
-              onChange={handleLawyer}
+              onChange={handleisplanif}
               required={true}
             >
-              {LawyerID.map((res) => {
-                return (
-                  <MenuItem value={res.employee_id}>
-                    {res.employee_firstname} {res.employee_lastname}
-                  </MenuItem>
-                );
-              })}
+              <MenuItem value={1}>{"ผู้เรียกร้อง"}</MenuItem>
+              <MenuItem value={2}>{"ผู้ที่เรียกร้อง"}</MenuItem>
             </Select>
           </FormControl>
         </Item>

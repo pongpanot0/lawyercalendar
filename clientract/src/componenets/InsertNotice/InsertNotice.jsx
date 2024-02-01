@@ -1,4 +1,13 @@
-import { Button, Card, Chip, Divider, Grid, TextField } from "@mui/material";
+import {
+  Button,
+  Card,
+  Checkbox,
+  Chip,
+  Divider,
+  FormControlLabel,
+  Grid,
+  TextField,
+} from "@mui/material";
 import React, { useState } from "react";
 import { styled } from "@mui/material/styles";
 import apiService from "../Shared/Apiserver";
@@ -17,16 +26,14 @@ const Item = styled("div")(({ theme }) => ({
   padding: theme.spacing(1),
   textAlign: "center",
 }));
-const InsertNotice = ({ beforecase_id,loaddata }) => {
-
-  
+const InsertNotice = ({ beforecase_id, loaddata }) => {
   React.useEffect(() => {
     getEmployees();
     getCaseData();
   }, []);
   const [Employee, setEmployee] = React.useState([]);
   const [cases, setCase] = React.useState([]);
-
+  const [waitnotice, setwaitnotice] = React.useState("");
   const [caseDataArray, setCaseDataArray] = useState([
     {
       DocumentID: beforecase_id,
@@ -35,10 +42,16 @@ const InsertNotice = ({ beforecase_id,loaddata }) => {
       PaymentDate: "",
       expensesType: 6,
       expenses_ref: beforecase_id,
-      expenses: "",
+      expenses: 0,
+
       // Add other fields as needed
     },
   ]);
+
+  const waitNotice = (event) => {
+    setwaitnotice(event.target.checked);
+  };
+
   const Payer = (event, index) => {
     updateCaseDataArray(index, {
       ...caseDataArray[index],
@@ -67,13 +80,6 @@ const InsertNotice = ({ beforecase_id,loaddata }) => {
     });
   };
 
-  const NoticeRef = (event, index) => {
-    updateCaseDataArray(index, {
-      ...caseDataArray[index],
-      NoticeRef: event.target.value,
-    });
-  };
-
   const Expenses = (event, index) => {
     updateCaseDataArray(index, {
       ...caseDataArray[index],
@@ -99,12 +105,17 @@ const InsertNotice = ({ beforecase_id,loaddata }) => {
   };
   const [showSweetAlert, setShowSweetAlert] = useState(false);
 
-   
   const postData = async () => {
     try {
-      
-      const response = await apiService.createnotice(caseDataArray);  
-      loaddata()
+      const response = await apiService.createnotice(caseDataArray);
+      loaddata();
+    } catch (error) {}
+  };
+  const postWaitNotice = async () => {
+    try {
+      const response = await apiService.createwaitnotice(beforecase_id);
+      console.log(response);
+      loaddata();
     } catch (error) {}
   };
   const updateCaseDataArray = (index, updatedData) => {
@@ -121,9 +132,9 @@ const InsertNotice = ({ beforecase_id,loaddata }) => {
       return newArray;
     });
   };
+
   const [numberOfNotices, setNumberOfNotices] = React.useState(1);
 
-  
   const addNewCaseData = () => {
     setCaseDataArray((prevArray) => [
       ...prevArray,
@@ -134,132 +145,181 @@ const InsertNotice = ({ beforecase_id,loaddata }) => {
         PaymentDate: "",
         expensesType: "",
         expenses_ref: beforecase_id,
-        expenses: "",
+        expenses: 0,
+        waitnotice: "",
         // Add other fields as needed
       },
     ]);
   };
   return (
     <div>
-        {showSweetAlert && <SweetAlert text="สร้าง Notice สำเร็จ" path="/lawyer/beforecase" />}
+      {showSweetAlert && (
+        <SweetAlert text="สร้าง Notice สำเร็จ" path="/lawyer/beforecase" />
+      )}
+      {showSweetAlert && (
+        <SweetAlert text="สร้าง Notice สำเร็จ" path="/lawyer/beforecase" />
+      )}
+
       <Grid item container>
-        <Grid xs={12} md={8} xl={8}></Grid>
-        <Grid xs={12} md={2} xl={2}>
-          <Item>
-            <Button
-              variant="contained"
-              onClick={addNewCaseData}
-              fullWidth
-              color="primary"
-            >
-              เพิ่ม Notice
-            </Button>
-          </Item>
+        <Grid xs={12} md={12} xl={12}>
+          <Divider>ส่วนที่ 1</Divider>
+          <FormControlLabel
+            style={{ width: "100%" }}
+            control={
+              <Checkbox
+                checked={waitnotice}
+                onChange={(e) => waitNotice(e)}
+                inputProps={{ "aria-label": "controlled" }}
+              />
+            }
+            label="รอออก Notice"
+          />
         </Grid>
+        {waitnotice == true && (
+          <Grid xs={12} md={12} xl={12}>
+            <Item>
+              <Button
+                variant="contained"
+                onClick={(e) => postWaitNotice(e)}
+                fullWidth
+                color="primary"
+              >
+                บันทึกข้อมูล
+              </Button>
+            </Item>
+          </Grid>
+        )}
 
-        <Grid xs={12} md={2} xl={2}>
-          <Item>
-            <Button
-              variant="contained"
-              onClick={(e) => postData(e)}
-              fullWidth
-              color="primary"
-            >
-              ยืนยันข้อมูล
-            </Button>
-          </Item>
-        </Grid>
-        <Grid item container>
-          {caseDataArray.map((caseData, index) => (
-            <>
-              <Grid item container key={index}>
-                <Grid xs={12} md={12} xl={12}>
-                  <Divider>ส่วนที่ {index + 1}</Divider>
-                </Grid>
-
-                <Grid xs={12} md={4} xl={4}>
-                  <Item>
-                    <FormControl fullWidth>
-                      <InputLabel id={`payer-label-${index}`}>
-                        ผู้ส่ง
-                      </InputLabel>
-                      <Select
-                        labelId={`payer-label-${index}`}
-                        value={caseData.Payer}
-                        onChange={(e) => Payer(e, index)}
-                      >
-                        {Employee.map((res) => (
-                          <MenuItem
-                            key={res.employee_id}
-                            value={res.employee_id}
-                          >
-                            {res.employee_firstname} {res.employee_lastname}
-                          </MenuItem>
-                        ))}
-                      </Select>
-                    </FormControl>
-                  </Item>
-                </Grid>
-                <Grid xs={12} md={4} xl={4}>
-                  {" "}
-                  <Item>
-                    <TextField label="TSB Ref." value={beforecase_id} fullWidth></TextField>
-                  </Item>
-                </Grid>
-                <Grid xs={12} md={4} xl={4}>
-                  {" "}
-                  <Item>
-                    <TextField
-                      onChange={(e) => CaseNotice_to(e, index)}
-                      placeholder="ส่งถึง"
-                      fullWidth
-                    />
-                  </Item>
-                </Grid>
-                <Grid xs={12} md={4} xl={4}>
-                  <Item>
-                    {" "}
-                    <TextField
-                      onChange={(e) => Expenses(e, index)}
-                      placeholder="ค่าใช้จ่าย"
-                      fullWidth
-                    />
-                  </Item>
-                </Grid>
-                <Grid xs={12} md={4} xl={4}>
-                  <Item>
-                    {" "}
-                    <LocalizationProvider dateAdapter={AdapterDayjs}>
-                      <DatePicker
-                        sx={{ width: "100%" }}
-                        name={`date-received-${index}`}
-                        format="DD-MM-YYYY"
-                        value={caseData.PaymentDate}
-                        label="วันที่ส่ง"
-                        onChange={(e) => handleDateReceived(e, index)}
-                      />
-                    </LocalizationProvider>
-                  </Item>
-                </Grid>
-                <Grid xs={12} md={4} xl={4}>
-                  <Item>
-                    {" "}
-                    {caseDataArray.length > 1 && (
-                      <Button
-                        startIcon={<FaTrash />}
-                        variant="contained"
-                        fullWidth
-                        onClick={() => removeCaseData(index)}
-                      >
-                        ยกเลิกแถว
-                      </Button>
-                    )}
-                  </Item>{" "}
-                </Grid>
+        {waitnotice == false && (
+          <>
+            <Grid item container>
+              <Grid xs={12} md={12} xl={12}>
+                {" "}
+                <Divider>ส่วนที่ 2</Divider>
               </Grid>
-            </>
-          ))}
-        </Grid>
+              <Grid xs={12} md={8} xl={8}></Grid>
+              <Grid xs={12} md={2} xl={2}>
+                <Item>
+                  <Button
+                    variant="contained"
+                    onClick={addNewCaseData}
+                    fullWidth
+                    color="primary"
+                  >
+                    เพิ่ม Notice
+                  </Button>
+                </Item>
+              </Grid>
+
+              <Grid xs={12} md={2} xl={2}>
+                <Item>
+                  <Button
+                    variant="contained"
+                    onClick={(e) => postData(e)}
+                    fullWidth
+                    color="primary"
+                  >
+                    ยืนยันข้อมูล
+                  </Button>
+                </Item>
+              </Grid>
+
+              {caseDataArray.map((caseData, index) => (
+                <>
+                  <Grid item container key={index}>
+                    <Grid xs={12} md={12} xl={12}>
+                      <Divider>Notice ใบที่ {index + 1}</Divider>
+                    </Grid>
+
+                    <Grid xs={12} md={4} xl={4}>
+                      <Item>
+                        <FormControl fullWidth>
+                          <InputLabel id={`payer-label-${index}`}>
+                            ผู้ส่ง
+                          </InputLabel>
+                          <Select
+                            labelId={`payer-label-${index}`}
+                            value={caseData.Payer}
+                            onChange={(e) => Payer(e, index)}
+                          >
+                            {Employee.map((res) => (
+                              <MenuItem
+                                key={res.employee_id}
+                                value={res.employee_id}
+                              >
+                                {res.employee_firstname} {res.employee_lastname}
+                              </MenuItem>
+                            ))}
+                          </Select>
+                        </FormControl>
+                      </Item>
+                    </Grid>
+                    <Grid xs={12} md={4} xl={4}>
+                      {" "}
+                      <Item>
+                        <TextField
+                          label="TSB Ref."
+                          value={beforecase_id}
+                          fullWidth
+                        ></TextField>
+                      </Item>
+                    </Grid>
+                    <Grid xs={12} md={4} xl={4}>
+                      {" "}
+                      <Item>
+                        <TextField
+                          onChange={(e) => CaseNotice_to(e, index)}
+                          placeholder="ส่งถึง"
+                          fullWidth
+                        />
+                      </Item>
+                    </Grid>
+                    <Grid xs={12} md={4} xl={4}>
+                      <Item>
+                        {" "}
+                        <TextField
+                          onChange={(e) => Expenses(e, index)}
+                          placeholder="ค่าใช้จ่าย"
+                          fullWidth
+                        />
+                      </Item>
+                    </Grid>
+                    <Grid xs={12} md={4} xl={4}>
+                      <Item>
+                        {" "}
+                        <LocalizationProvider dateAdapter={AdapterDayjs}>
+                          <DatePicker
+                            sx={{ width: "100%" }}
+                            name={`date-received-${index}`}
+                            format="DD-MM-YYYY"
+                            value={caseData.PaymentDate}
+                            label="วันที่ส่ง"
+                            onChange={(e) => handleDateReceived(e, index)}
+                          />
+                        </LocalizationProvider>
+                      </Item>
+                    </Grid>
+                    <Grid xs={12} md={4} xl={4}>
+                      <Item>
+                        {" "}
+                        {caseDataArray.length > 1 && (
+                          <Button
+                            startIcon={<FaTrash />}
+                            variant="contained"
+                            fullWidth
+                            onClick={() => removeCaseData(index)}
+                          >
+                            ยกเลิกแถว
+                          </Button>
+                        )}
+                      </Item>{" "}
+                    </Grid>
+                  </Grid>
+                </>
+              ))}
+            </Grid>
+          </>
+        )}
       </Grid>
     </div>
   );

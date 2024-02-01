@@ -5,9 +5,15 @@ import 'package:google_nav_bar/google_nav_bar.dart';
 import 'package:lawyerapp/page/componnets/Homepage.dart';
 import 'package:lawyerapp/page/componnets/calendar.dart';
 import 'package:lawyerapp/page/componnets/expenses.dart';
+import 'package:lawyerapp/page/componnets/setting.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
+import '../themes.dart';
 
 class Mainscreen extends StatefulWidget {
-  const Mainscreen({super.key});
+  final String data;
+
+  const Mainscreen({Key? key, required this.data});
 
   @override
   State<Mainscreen> createState() => _MainscreenState();
@@ -19,9 +25,7 @@ class _MainscreenState extends State<Mainscreen> {
     Homepage(),
     CalendarViewPage(),
     ExpensesPage(),
-    Text(
-      'Profile',
-    ),
+    SettingPage()
   ];
 
   String message = "";
@@ -39,11 +43,49 @@ class _MainscreenState extends State<Mainscreen> {
   }
 
   int counter = 2;
+  late MyTheme myTheme = Theme2();
+  String data = ""; // กำหนดค่าเริ่มต้นของ data
+  @override
+  void initState() {
+    super.initState();
+    _loadCurrentTheme();
+    if (data == "update") {
+      _loadCurrentTheme();
+    }
+  }
+
+  _loadCurrentTheme() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? themeName = prefs.getString('current_theme');
+
+    setState(() {
+      if (themeName == 'theme1') {
+        myTheme = Theme1();
+      } else if (themeName == 'theme2') {
+        myTheme = Theme2();
+      } else if (themeName == 'theme3') {
+        myTheme = Theme3();
+      }
+    });
+  }
+
+  _switchTheme(MyTheme newTheme) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      myTheme = newTheme;
+      if (newTheme is Theme1) {
+        prefs.setString('current_theme', 'theme1');
+      } else if (newTheme is Theme2) {
+        prefs.setString('current_theme', 'theme2');
+      } else if (newTheme is Theme3) {
+        prefs.setString('current_theme', 'theme3');
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-     
       body: Stack(children: <Widget>[
         Container(
           decoration: BoxDecoration(
@@ -59,16 +101,16 @@ class _MainscreenState extends State<Mainscreen> {
         )
       ]),
       bottomNavigationBar: Container(
-        color: Colors.blue.shade400,
+        color: myTheme.bottomColor,
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 15.0, vertical: 20),
           child: GNav(
               duration: Duration(milliseconds: 400),
               iconSize: 24,
-              backgroundColor: Colors.blue.shade400,
+              backgroundColor: myTheme.bottomColor,
               color: Colors.white,
-              activeColor: Colors.white,
-              tabBackgroundColor: Colors.blue.shade800,
+              activeColor: myTheme.fontColors,
+              tabBackgroundColor: myTheme.activeColors,
               gap: 8,
               selectedIndex: _selectedIndex,
               padding: EdgeInsets.all(16),
@@ -87,7 +129,7 @@ class _MainscreenState extends State<Mainscreen> {
                   text: 'Calendar',
                 ),
                 GButton(
-                  icon: Icons.insert_chart,
+                  icon: Icons.attach_money_rounded,
                   text: 'Expenses',
                 ),
                 GButton(

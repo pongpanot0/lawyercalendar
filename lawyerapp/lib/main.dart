@@ -4,9 +4,12 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:lawyerapp/firebase_options.dart';
 import 'package:lawyerapp/page/Mainscreen.dart';
-
+import 'package:lawyerapp/page/componnets/splashscreen.dart';
+import 'package:lawyerapp/service/notification_service.dart';
 import 'package:flutter/material.dart';
+import 'package:lawyerapp/page/componnets/Apiservice.dart';
 import 'package:lawyerapp/page/login.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
@@ -15,6 +18,7 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+
   FirebaseMessaging messaging = FirebaseMessaging.instance;
   FirebaseMessaging.instance.getToken().then((value) {
     print("getToken :$value");
@@ -41,14 +45,29 @@ void main() async {
   });
 
   FirebaseMessaging.onBackgroundMessage(_firebaseMessageingBackgroundHandler);
+
+  FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+    // Handle foreground messages
+
+    notificationService.sendNotification();
+  });
   runApp(MyApp());
 }
 
+NotificationService notificationService = NotificationService();
 Future<void> _firebaseMessageingBackgroundHandler(RemoteMessage message) async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
   print("_FirebaseMessageBackgroundHandler: $message");
+}
+
+@pragma('vm:entry-point') //สำคัญสำหรับ Run background
+Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
+  print("Handling a background message: ${message.messageId}");
+  // Process the message and handle notifications, etc.
+  notificationService
+      .sendNotification(); // Ensure notificationService is properly initialized
 }
 
 class MyApp extends StatelessWidget {
@@ -59,8 +78,37 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       themeMode: ThemeMode.system,
-      home: LoginPage(),
+      home: FutureBuilder<String?>(
+        future: ApiService().getToken(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            // Loading state
+            return CircularProgressIndicator();
+          } else if (snapshot.hasData && snapshot.data != null) {
+            // Token exists, navigate to main screen
+            return SplashScreen();
+          } else {
+            // No token, show login screen
+            return LoginPage();
+          }
+        },
+      ),
       navigatorKey: navigatorKey,
     );
+  }
+
+  String? getTokenSync() {
+    SharedPreferences prefs;
+    String? token;
+
+    // Try to get the token synchronously
+    try {
+      prefs = SharedPreferences.getInstance() as SharedPreferences;
+      token = prefs.getString('token');
+    } catch (e) {
+      token = null;
+    }
+
+    return token;
   }
 }

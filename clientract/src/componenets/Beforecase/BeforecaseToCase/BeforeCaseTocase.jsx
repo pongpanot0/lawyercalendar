@@ -15,6 +15,7 @@ import BeforeCaseDetail from "./BeforeCaseDetail";
 import Plaintiff from "./Plaintiff";
 import Defendant from "./Defendant";
 import SweetAlert from "../../Shared/SweetAlrt";
+import Complainant from "./Complainant";
 const Item = styled("div")(({ theme }) => ({
   ...theme.typography.body2,
   padding: theme.spacing(1),
@@ -67,19 +68,16 @@ const BeforeCaseTocase = () => {
     },
   ]);
 
-const [wait,setWait] = React.useState(true)
-const [cusreponse,setcusresponse] = React.useState([])
-const getCusresponsive =  async (data) =>{
-  try {
-    console.log(state);
-    const response = await apiService.customerresponses(state.clientID)
-    console.log(response);
-    setcusresponse(response.data)
-    setWait(false)
-  } catch (error) {
-    
-  }
-}
+  const [wait, setWait] = React.useState(true);
+  const [cusreponse, setcusresponse] = React.useState([]);
+  const getCusresponsive = async (data) => {
+    try {
+      const response = await apiService.customerresponses(state.clientID);
+
+      setcusresponse(response.data);
+      setWait(false);
+    } catch (error) {}
+  };
   React.useEffect(() => {
     getClientID();
     getLawyerID();
@@ -87,7 +85,7 @@ const getCusresponsive =  async (data) =>{
     getInsuredType();
     getCasetypedata();
     getcourtsData();
-    getCusresponsive()
+    getCusresponsive();
   }, []);
 
   const handleChange5 = (event) => {
@@ -118,7 +116,6 @@ const getCusresponsive =  async (data) =>{
   };
 
   const handleinsurance_type = (event) => {
-    console.log(event);
     setCaseData({
       ...caseData,
       insurance_type: event.target.value,
@@ -138,7 +135,7 @@ const getCusresponsive =  async (data) =>{
     insurance_type: state.insurance_type,
     CaseType: "",
     courtID: "",
-    customer_reponsive:state.customer_reponsive
+    customer_reponsive: state.customer_reponsive,
   });
   const [dis, setDis] = React.useState(true);
 
@@ -179,7 +176,6 @@ const getCusresponsive =  async (data) =>{
   };
   const postToapi = async () => {
     try {
-      console.log(state);
       const data = {
         FromCase: FromCase,
         BeforeFromArray: BeforeFromArray,
@@ -187,7 +183,8 @@ const getCusresponsive =  async (data) =>{
         DefenantArray: DefenantArray,
         caseData: caseData,
         tsb_ref: state.tsb_ref,
-        customer_resposive:state.customer_reponsive
+        customer_resposive: state.customer_reponsive,
+        ComplaintArray:ComplaintArray
       };
 
       const response = await apiService.CreateBeforeCaseToCase(data);
@@ -211,14 +208,18 @@ const getCusresponsive =  async (data) =>{
   const [plainiffArray, setplainiffArray] = React.useState([]);
   const handleDataPlaintiffCaseEmployee = (data) => {
     // Handle the data received from CaseEmployee
-   
+
     setplainiffArray(data);
   };
   const [DefenantArray, setDefenantArray] = React.useState([]);
+  const [ComplaintArray, setComplaintArray] = React.useState([]);
+  const handleDataPlaniff = (data) => {
+    // Handle the data received from CaseEmployee
+    setComplaintArray(data);
+  };
   const handleDataDefenantCaseEmployee = (data) => {
     // Handle the data received from CaseEmployee
     setDefenantArray(data);
-   
   };
   const handlecustomer_responses_id = (event) => {
     setCaseData({
@@ -227,7 +228,7 @@ const getCusresponsive =  async (data) =>{
     });
   };
   const [showSweetAlert, setShowSweetAlert] = useState(false);
- 
+
   return (
     <div>
       {" "}
@@ -342,32 +343,50 @@ const getCusresponsive =  async (data) =>{
                 </Select>
               </FormControl>
             </Item>{" "}
-          
           </Grid>
           <Grid xs={12} md={6} xl={6}>
             {" "}
             <Item>
-          <FormControl fullWidth>
-            <InputLabel id="demo-simple-select-label">ผู้ส่งมอบงาน</InputLabel>
-            <Select
-              labelId="demo-simple-select-label"
-              id="demo-simple-select"
-              disabled={true}
-              value={caseData.customer_reponsive}
-              label="ผู้ส่งมอบงาน"
-              InputLabelProps={{ shrink: true }}
-              onChange={handlecustomer_responses_id}
-              required={true}
-            >
-              {cusreponse.map((res) => {
-                return (
-                  <MenuItem value={res.customer_responses_id}>{res.customer_responses_firstname} {res.customer_responses_lastname}</MenuItem>
-                );
-              })}
-            </Select>
-          </FormControl>
-        </Item>
-          
+              <FormControl fullWidth>
+                <InputLabel id="demo-simple-select-label">
+                  ผู้ส่งมอบงาน
+                </InputLabel>
+                <Select
+                  labelId="demo-simple-select-label"
+                  id="demo-simple-select"
+                  disabled={true}
+                  value={caseData.customer_reponsive}
+                  label="ผู้ส่งมอบงาน"
+                  InputLabelProps={{ shrink: true }}
+                  onChange={handlecustomer_responses_id}
+                  required={true}
+                >
+                  {cusreponse.map((res) => {
+                    return (
+                      <MenuItem value={res.customer_responses_id}>
+                        {res.customer_responses_firstname}{" "}
+                        {res.customer_responses_lastname}
+                      </MenuItem>
+                    );
+                  })}
+                </Select>
+              </FormControl>
+            </Item>
+          </Grid>
+          <Grid xs={12} md={12} xl={12}>
+            {" "}
+            <Item>
+              <TextField
+                InputLabelProps={{ shrink: true }}
+                aria-readonly={true}
+                className="TextField"
+                disabled={dis}
+                id=""
+                type="text"
+                label="Timebar"
+                value={dayjs(caseData.timebar).format("YYYY-MM-DD")}
+              />
+            </Item>{" "}
           </Grid>
           <Grid xs={12} md={6} xl={6}>
             {" "}
@@ -420,59 +439,29 @@ const getCusresponsive =  async (data) =>{
           </Grid>
 
           <Grid xs={12} md={12} xl={12}>
-            {" "}
-            <Item>
-              <TextField
-                InputLabelProps={{ shrink: true }}
-                aria-readonly={true}
-                className="TextField"
-                disabled={dis}
-                id=""
-                type="text"
-                label="Timebar"
-                value={dayjs(caseData.timebar).format("YYYY-MM-DD")}
-              />
-            </Item>{" "}
-          </Grid>
-          <Grid xs={12} md={12} xl={12}>
             <BeforeCaseDetail
               onBeforeCaseDataSubmit={handleDataBeforeFromCaseEmployee}
+              isplanif={state.isplanif}
             />{" "}
           </Grid>
-          <Grid xs={12} md={10} xl={10}></Grid>
-          <Grid xs={12} md={2} xl={2}>
-            <Item>
-              <Button variant="contained" fullWidth color="primary">
-                เพิ่มผู้รับผิดชอบ
-              </Button>
-            </Item>
-          </Grid>
-          <Grid xs={12} md={12} xl={12}>
+
+          <Grid xs={12} md={12} xl={12} mt={5}>
             <CaseEmployee onDataSubmit={handleDataFromCaseEmployee} />{" "}
           </Grid>
 
-          <Grid xs={12} md={10} xl={10}></Grid>
-          <Grid xs={12} md={2} xl={2}>
-            <Item>
-              <Button variant="contained" fullWidth color="primary">
-                เพิ่มโจทก์
-              </Button>
-            </Item>
-          </Grid>
           <Grid xs={12} md={12} xl={12}>
             <Plaintiff PlaintiffSubmit={handleDataPlaintiffCaseEmployee} />{" "}
           </Grid>
           <Grid xs={12} md={10} xl={10}></Grid>
-          <Grid xs={12} md={2} xl={2}>
-            <Item>
-              <Button variant="contained" fullWidth color="primary">
-                เพิ่มจำเลย
-              </Button>
-            </Item>
-          </Grid>
+
           <Grid xs={12} md={12} xl={12}>
             <Defendant
               onBeforeDefenantSubmit={handleDataDefenantCaseEmployee}
+            />{" "}
+          </Grid>
+          <Grid xs={12} md={12} xl={12}>
+            <Complainant
+              Complainantsubmit={handleDataPlaniff}
             />{" "}
           </Grid>
         </Grid>

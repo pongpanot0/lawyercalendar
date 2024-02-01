@@ -226,7 +226,7 @@ const Createcase = ({ onCaseDataChange }) => {
           {" "}
           <Item>
             <FormControl fullWidth>
-              <InputLabel id="demo-simple-select-label">ClientID</InputLabel>
+              <InputLabel id="demo-simple-select-label">ลูกค้า</InputLabel>
               <Select
                 labelId="demo-simple-select-label"
                 id="demo-simple-select2"

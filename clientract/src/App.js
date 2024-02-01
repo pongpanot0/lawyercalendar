@@ -54,35 +54,19 @@ function App() {
   const [isLoading, setIsLoading] = useState(true);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   React.useEffect(() => {
-    getThemdata();
-    const fetchData = async () => {
-      try {
-        // Your data loading logic here...
-
-        // Simulate a delay of 2 seconds (you can adjust this according to your needs)
-        await new Promise((resolve) => setTimeout(resolve, 2000));
-
-        // Set isLoading to false to hide the loader
-        setIsLoading(false);
-
-        // Check if the user is authenticated (e.g., has a token in localStorage)
-        const token = localStorage.getItem("token");
-        setIsAuthenticated(token !== null);
-      } catch (error) {
-        console.error("Error loading data:", error);
-        // Handle errors here...
-        setIsLoading(false);
-      }
-    };
-    /*     fetchData(); */
+    if (token) {
+      getThemdata();
+    }
   }, []);
-  const hover = lighten(0.2, themeSettings[0]?.settingsusers_primarybutton);
+  const hover = lighten(
+    0.2,
+    themeSettings[0]?.settingsusers_primarybutton ?? "#0062b1"
+  );
   const getThemdata = async () => {
     try {
       const response = await apiService.getsetting(1);
 
       setthemeSettings(response.data);
-      console.log(response.data);
     } catch (error) {
       console.error("Error fetching setting:", error);
     }
@@ -210,11 +194,20 @@ function App() {
 
   return (
     <div>
+      {!token && (
+        <Routes>
+          <Route path="/" exact element={<Home />} />
+          <Route path="/login" exact element={<Login />} />
+          <Route path="/register/:id" exact element={<Sign />} />
+        </Routes>
+      )}
       <ThemeProvider theme={theme}>
         <CssBaseline />
         {token && (
           <Navbar
-            navbarColor={themeSettings[0]?.settingsusers_primarycolor}
+            navbarColor={
+              themeSettings[0]?.settingsusers_primarycolor ?? "#ffffff"
+            }
             loaddata={LoadData}
           >
             <div style={{ marginTop: 20 }}>
@@ -244,22 +237,18 @@ function App() {
                 />
                 <Route path="/beforecase-create" element={<Insertbefore />} />
                 <Route path="/expenses-create" element={<InsertExpenses />} />
-                <Route path="/testsendline" element={<Testsendline />} />
+                <Route path="/lawyer/Testsendline" element={<Testsendline />} />
                 <Route path="/notice" element={<Notice />} />
                 <Route path="/insert-notice" element={<InsertNotice />} />
-                <Route path="/insert-expenesnull" element={<InsertExpensesnull />} />
-                
+                <Route
+                  path="/insert-expenesnull"
+                  element={<InsertExpensesnull />}
+                />
               </Routes>
             </div>
           </Navbar>
         )}
-        {!token && (
-          <Routes>
-            <Route path="/" exact element={<Home />} />
-            <Route path="/login" exact element={<Login />} />
-            <Route path="/register/:id" exact element={<Sign />} />
-          </Routes>
-        )}
+
         {/*    <Routes>
           <Route
             path="/login"

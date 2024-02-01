@@ -24,6 +24,9 @@ fs.readdirSync("routes").forEach(function (file) {
 const newDate = dayjs(new Date).format('MMYY')
 
 
+// Read SQL script
+
+
 app.listen(PORT, () => {
   console.log(`Example app listening at http://0.0.0.0:${PORT}`);
 });

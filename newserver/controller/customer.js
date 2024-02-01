@@ -47,7 +47,6 @@ exports.getCustomer = async (req, res) => {
     from clients a left join customertypes b on 
     (a.ClientType = b.customertypes_id) `;
     const query = await api(sql);
-    console.log(query);
     res.send({
       status: 200,
       data: query,

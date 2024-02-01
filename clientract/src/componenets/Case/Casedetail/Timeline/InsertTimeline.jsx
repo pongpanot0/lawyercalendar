@@ -19,7 +19,8 @@ const Item = styled("div")(({ theme }) => ({
   padding: theme.spacing(1),
   textAlign: "center",
 }));
-const InsertTimeline = ({ id,onClose }) => {
+const InsertTimeline = ({ id, onClose }) => {
+  console.log(id);
   const [timelineTypeData, settimelineTypeData] = React.useState([]);
   React.useEffect(() => {
     getData();
@@ -28,12 +29,12 @@ const InsertTimeline = ({ id,onClose }) => {
     case_timebar_status: "",
     case_timebar_incoming: "",
     case_timeline_detail: "",
-    case_id:id,
+    case_id: id,
   });
   const getData = async () => {
     try {
       const response = await apiService.gettimelimetype();
-      console.log(response);
+
       settimelineTypeData(response.data);
     } catch (error) {
       console.log(error.message);
@@ -60,10 +61,9 @@ const InsertTimeline = ({ id,onClose }) => {
   const postData = async () => {
     try {
       const response = await apiService.createcaseTimeline(timelineData);
-      console.log(response);
       onClose(id);
     } catch (error) {
-        console.log(error.message);
+      console.log(error.message);
     }
   };
   return (

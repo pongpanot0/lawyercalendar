@@ -2,11 +2,11 @@ import React from "react";
 import TextField from "@mui/material/TextField";
 import { Button, Container, Grid } from "@mui/material";
 import apiService from "../../Shared/Apiserver";
-function CustomerType() {
+function CustomerType({okdata}) {
   const [customertypes_name, setcustomertypes_name] = React.useState("");
   const postData = async () => {
     const response = await apiService.CreateCustomerType(customertypes_name);
-    console.log(customertypes_name);
+    okdata()
   };
   return (
     <Container maxWidth="xl">
@@ -17,13 +17,13 @@ function CustomerType() {
             onChange={(e) => setcustomertypes_name(e.target.value)}
             fullWidth
             id=""
-            label="CustomerType Name"
+            label="ประเภทลูกค้า"
           />
         </Grid>
         <Grid xs={12} mt={2} mb={2}>
           {" "}
           <Button onClick={(e) => postData(e)} variant="contained" fullWidth>
-            Add data
+            เพิ่ม
           </Button>
         </Grid>
       </Grid>

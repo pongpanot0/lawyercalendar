@@ -1,4 +1,14 @@
 const api = require("../sql");
+const jwt = require("jsonwebtoken");
+const secretKey = "1234"; // Replace with your actual secret key
+function jwtVerify(params) {
+  try {
+    const token = jwt.decode(params.token);
+    return token.employee_id;
+  } catch (error) {
+    return "Something Wrong";
+  }
+}
 exports.createsetting = async (req, res) => {
   try {
     const {
@@ -31,8 +41,8 @@ exports.createsetting = async (req, res) => {
 };
 exports.getsetting = async (req, res) => {
   try {
-    const user_id = req.body.data;
-   
+    const user_id = jwtVerify(req.headers)
+    
     const sql = `select * from settingsusers where settingsusers_user_id=${user_id}`;
     const query = await api(sql);
     res.send({

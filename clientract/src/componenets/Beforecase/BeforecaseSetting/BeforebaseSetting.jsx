@@ -27,6 +27,7 @@ import {
 import { FaClosedCaptioning, FaEdit, FaSeedling } from "react-icons/fa";
 import InsertNotice from "../../InsertNotice/InsertNotice";
 import { DataGrid } from "@mui/x-data-grid";
+import CloseBeforecase from "./CloseBeforecase";
 
 const Item = styled("div")(({ theme }) => ({
   ...theme.typography.body2,
@@ -35,11 +36,18 @@ const Item = styled("div")(({ theme }) => ({
   color: theme.palette.text.secondary,
 }));
 const columnNotice = [
-  { field: "CaseNotice_ref", headerName: "ID", width: 100 },
+  { field: "CaseNotice_ref", headerName: "TSB Ref.", width: 100 },
   {
     field: "CaseNotice_to",
     headerName: "ส่งถึง",
     width: 200,
+    valueGetter: (params) => {
+      if (params.row.CaseNotice_to !== "undefined") {
+        return params.row.CaseNotice_to;
+      } else {
+        return "ยังไม่ได้เพิ่มผู้ส่ง";
+      }
+    },
   },
   {
     field: "CaseNotice_lawyer_id",
@@ -54,6 +62,21 @@ const columnNotice = [
     field: "CaseNotice_amount",
     headerName: "ค่าใช้จ่าย",
     width: 100,
+  },
+  {
+    field: "CaseNotice_iswait",
+    headerName: "สถานะ Notice",
+    width: 200,
+    valueGetter: (params) => {
+      switch (params.row.CaseNotice_iswait) {
+        case 0:
+          return "ออก Notice แล้ว";
+        case 1:
+          return "รอออก Notice";
+        default:
+          break;
+      }
+    },
   },
 ];
 const BeforebaseSetting = () => {
@@ -88,7 +111,9 @@ const BeforebaseSetting = () => {
   };
   const loaddata = () => {
     getNotice(tsbref);
+    getData();
     setOpen(false);
+    setOpen3(false);
   };
   const getReciveType = async () => {
     try {
@@ -118,22 +143,24 @@ const BeforebaseSetting = () => {
 
   const [docstatus, setdocstatus] = React.useState("");
   const [tsbref, settsbref] = React.useState("");
+  const [gridStatus, setGridstatus] = React.useState(6);
   const getData = async () => {
     try {
       const response = await apiService.getbeforecaseDocumentsbyID(id);
-      console.log(response.data);
-      getcustomerresponses(response.data[0]?.clientID)
+      console.log(response);
+
+      getcustomerresponses(response.data[0]?.clientID);
       setCaseData(response.data[0]);
       getNotice(response.data[0]?.tsb_ref);
       settsbref(response.data[0]?.tsb_ref);
-      switch (response.data[0]?.DocumentStatus) {
+
+      switch (response.data[0]?.isplanif) {
         case 1:
-          // Code to open a new task or perform any action when DocumentStatus is 1
-          setdocstatus("เปิดงานใหม่");
-          break;
+          return setGridstatus(6);
+        case 2:
+          return setGridstatus(12);
 
         default:
-          // Default case, you can add code here if needed
           break;
       }
     } catch (error) {
@@ -218,30 +245,50 @@ const BeforebaseSetting = () => {
     insurance_type: "",
     customer_reponsive: "",
     tsb_ref: "",
-
+    case_documentstatus: "",
   });
   const history = useNavigate();
   const update = async () => {
     try {
-      const response = await apiService.updateBeforecase(caseData)
-      getData()
+      const response = await apiService.updateBeforecase(caseData);
+      getData();
     } catch (error) {
       console.log(error.message);
     }
   };
-  const [cusresponse,setcusresponse] = React.useState([])
+  const [cusresponse, setcusresponse] = React.useState([]);
   const getcustomerresponses = async () => {
     try {
-      const response = await apiService.customerresponses()
+      const response = await apiService.customerresponses();
       console.log(response.data);
-      setcusresponse(response.data)
+      setcusresponse(response.data);
     } catch (error) {
       console.log(error.message);
     }
-  }
+  };
+
   const handleClick = () => {
     // Push the data along with the route to ReceiverComponent
     history("/beforecasetocase", { state: caseData });
+  };
+  const [open3, setOpen3] = React.useState(false);
+
+  const handleClickOpen3 = () => {
+    setOpen3(true);
+  };
+
+  const handleClose3 = () => {
+    setOpen3(false);
+  };
+
+  const updatedata = async () => {
+    try {
+      const response = await apiService.CreateBeforeUpdatecase(caseData.tsb_ref);
+      getData()
+    } catch (error) {
+      console.log(error.message);
+    }
+   
   };
   const [dis, setDis] = React.useState(true);
   return (
@@ -254,7 +301,6 @@ const BeforebaseSetting = () => {
                 variant="contained"
                 onClick={(e) => update()}
                 startIcon={<FaEdit />}
-                
                 fullWidth
               >
                 {" "}
@@ -263,7 +309,26 @@ const BeforebaseSetting = () => {
             </Item>
           )}
         </Grid>
+        {caseData.case_documentstatus == 2 && <></>}
         <Grid xs={12} md={2} xl={2}>
+          {caseData.case_documentstatus !== 2 && (
+            <>
+              <Item>
+                <Button
+                  variant="contained"
+                  onClick={(e) => handleClick()}
+                  startIcon={<FaEdit />}
+                  fullWidth
+                >
+                  {" "}
+                  อัพเดทฟ้อง{" "}
+                </Button>{" "}
+              </Item>
+            </>
+          )}
+        </Grid>
+
+        <Grid xs={12} md={1} xl={1}>
           <Item>
             <Button
               variant="contained"
@@ -276,34 +341,62 @@ const BeforebaseSetting = () => {
             </Button>{" "}
           </Item>
         </Grid>
-        <Grid xs={12} md={2} xl={2}>
+        <Grid xs={12} md={1} xl={1}>
           <Item>
-            <Button
-              variant="contained"
-              onClick={(e) => handleClick()}
-              startIcon={<FaEdit />}
-              fullWidth
-            >
-              {" "}
-              ฟ้อง{" "}
-            </Button>{" "}
+            {caseData.isclose == 0 && (
+              <Button
+                variant="contained"
+                onClick={handleClickOpen3}
+                startIcon={<FaEdit />}
+                fullWidth
+                color="error"
+              >
+                {" "}
+                ปิดงาน
+              </Button>
+            )}
+            {caseData.isclose == 1 && (
+              <Button
+                variant="contained"
+                onClick={updatedata}
+                startIcon={<FaEdit />}
+                fullWidth
+                color="primary"
+              >
+                {" "}
+                เปิดงาน
+              </Button>
+            )}
           </Item>
         </Grid>
+        <Dialog
+          open={open3}
+          onClose={handleClose3}
+          aria-labelledby="alert-dialog-title"
+          aria-describedby="alert-dialog-description"
+        >
+          <DialogContent>
+            <CloseBeforecase caseid={caseData.tsb_ref} loaddata={loaddata} />
+          </DialogContent>
+        </Dialog>
         <Grid xs={12} md={4} xl={4}></Grid>
-        <Grid xs={12} md={2} xl={2}>
-          <Item>
-            <Button
-              variant="contained"
-              startIcon={<FaSeedling />}
-              onClick={handleClickOpen}
-              fullWidth
-            >
-              {" "}
-              เพิ่ม Notice{" "}
-            </Button>{" "}
-          </Item>
-        </Grid>
-        <Grid xs={12} md={6} xl={6}>
+        {caseData.isplanif == 1 && (
+          <Grid xs={12} md={2} xl={2}>
+            <Item>
+              <Button
+                variant="contained"
+                startIcon={<FaSeedling />}
+                onClick={handleClickOpen}
+                fullWidth
+              >
+                {" "}
+                อัพเดท Notice{" "}
+              </Button>{" "}
+            </Item>
+          </Grid>
+        )}
+
+        <Grid xs={12} md={gridStatus} xl={gridStatus}>
           <Grid item container>
             <Grid xs={12} md={6} xl={6}>
               <Item>
@@ -338,7 +431,8 @@ const BeforebaseSetting = () => {
                     {cusresponse.map((res) => {
                       return (
                         <MenuItem value={res.customer_responses_id}>
-                          {res.customer_responses_firstname} {res.customer_responses_lastname}
+                          {res.customer_responses_firstname}{" "}
+                          {res.customer_responses_lastname}
                         </MenuItem>
                       );
                     })}
@@ -472,21 +566,7 @@ const BeforebaseSetting = () => {
                 </FormControl>
               </Item>{" "}
             </Grid>
-            <Grid xs={12} md={6} xl={6}>
-              {" "}
-              <Item>
-                <TextField
-                  InputLabelProps={{ shrink: true }}
-                  disabled={dis}
-                  className="TextField"
-                  id=""
-                  type="text"
-                  label="สถานะก่อนฟ้อง"
-                  value={docstatus}
-                />
-              </Item>{" "}
-            </Grid>
-            <Grid xs={12} md={6} xl={6}>
+            <Grid xs={12} md={12} xl={12}>
               {" "}
               <Item>
                 <FormControl fullWidth>
@@ -563,7 +643,6 @@ const BeforebaseSetting = () => {
                       },
                     }}
                     pageSizeOptions={[5, 10]}
-                    checkboxSelection
                   />
                 )}
               </Item>
@@ -579,7 +658,7 @@ const BeforebaseSetting = () => {
         aria-labelledby="alert-dialog-title"
         aria-describedby="alert-dialog-description"
       >
-        <DialogTitle id="alert-dialog-title">{"เพิ่ม Notice"} </DialogTitle>
+        <DialogTitle id="alert-dialog-title">{"อัพเดท Notice"} </DialogTitle>
         <IconButton
           aria-label="close"
           onClick={handleClose}

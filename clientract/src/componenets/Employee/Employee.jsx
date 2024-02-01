@@ -19,7 +19,6 @@ import CreateEmployee from "./create-employee/CreateEmployee";
 import apiService from "../Shared/Apiserver";
 import { styled } from "@mui/material/styles";
 const Item = styled("div")(({ theme }) => ({
-  
   ...theme.typography.body2,
   padding: theme.spacing(1),
   textAlign: "center",
@@ -33,10 +32,10 @@ function Employee() {
   React.useEffect(() => {
     getEmployeesData();
   }, []);
-  const loaddata = () =>{
-    getEmployeesData()
-    setOpen(false)
-  }
+  const loaddata = () => {
+    getEmployeesData();
+    setOpen(false);
+  };
   const getEmployeesData = async () => {
     try {
       const response = await apiService.getEmployee();
@@ -57,7 +56,7 @@ function Employee() {
                 fullWidth
                 color="primary"
               >
-                Add Employee
+                เพิ่มพนักงาน
               </Button>
             </Item>
           </Grid>
@@ -65,8 +64,6 @@ function Employee() {
             <List
               sx={{
                 width: "100%",
-                
-             
               }}
             >
               {employeeData.map((res) => {
@@ -81,7 +78,6 @@ function Employee() {
                       </ListItemAvatar>
                       <ListItemText
                         primary={`คุณ ${res.employee_firstname} ${res.employee_lastname}`}
-                        
                       />
                     </ListItem>
                     <Divider variant="inset" component="li" color="primary" />
@@ -101,7 +97,7 @@ function Employee() {
             {"เพิ่มข้อมูลพนักงาน"}
           </DialogTitle>
           <DialogContent>
-            <CreateEmployee loaddata={loaddata}/>
+            <CreateEmployee loaddata={loaddata} />
           </DialogContent>
         </Dialog>
       </Paper>

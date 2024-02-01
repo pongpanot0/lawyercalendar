@@ -12,17 +12,18 @@ import {
 import DeleteIcon from "@mui/icons-material/Delete";
 import AddBoxIcon from "@mui/icons-material/AddBox";
 import apiService from "../../../Shared/Apiserver";
-const Tasklist = ({ todolistData, onCheckboxChange }) => {
+const Tasklist = ({ todolistData, case_ids,onCheckboxChange,case_timeline_id }) => {
   const postData = async () => {
     try {
-      console.log(todolistData);
+ 
       const data = {
-        case_timeline_id: todolistData[0]?.case_timeline_id,
-        case_id: todolistData[0]?.case_id,
+        case_timeline_id: case_timeline_id,
+        case_id: case_ids,
         case_todolist_name: case_todolist_name,
       };
       const response = await apiService.Createtask(data);
-      onCheckboxChange(todolistData[0]?.case_timeline_id);
+      console.log(response);
+      onCheckboxChange(case_timeline_id);
     } catch (error) {
       console.log(error.message);
     }
@@ -33,6 +34,7 @@ const Tasklist = ({ todolistData, onCheckboxChange }) => {
         case_todolist: case_todolist,
         case_todolist_sucess: isChecked ? 0 : 1,
       };
+
       const response = await apiService.updateTask(data);
 
       onCheckboxChange(todolistData[0]?.case_timeline_id);

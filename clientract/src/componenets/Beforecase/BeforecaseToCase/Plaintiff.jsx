@@ -45,7 +45,7 @@ const Plaintiff = ({ PlaintiffSubmit }) => {
               <Chip label="ยกเลิกแถว" onClick={handleRemoveFields} />
             </Divider>
           </Grid>
-          <Grid item xs={12} md={6} xl={6}>
+          <Grid item xs={12} md={12} xl={12}>
             <Item>
               <TextField
                 labelId={`firstname-label-${index}`}
@@ -55,24 +55,11 @@ const Plaintiff = ({ PlaintiffSubmit }) => {
                   handleChangeInput(index, "firstname", event)
                 }
                 fullWidth
-                label="ชื่อ"
+                label={`โจทก์ที่ ${index + 1}`}
               />
             </Item>
           </Grid>
-          <Grid item xs={12} md={6} xl={6}>
-            <Item>
-              <TextField
-                labelId={`lastname-label-${index}`}
-                id={`lastname-${index}`}
-                value={inputField.lastname}
-                onChange={(event) =>
-                  handleChangeInput(index, "lastname", event)
-                }
-                fullWidth
-                label="นามสกุล"
-              />
-            </Item>
-          </Grid>
+      
         </Grid>
       ))}
     </div>

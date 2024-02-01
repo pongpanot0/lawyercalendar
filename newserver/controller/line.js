@@ -1,8 +1,8 @@
 const axios = require("axios");
+const api = require("../sql");
 exports.CreateLineToken = async (req, res) => {
   try {
     const { code, state } = req.body;
-
     const clientId = "B2SDUcej5I0rIBAK0CPhfE";
     const redirectUrl = "http://localhost:3000/lawyer/Testsendline";
     const client_secret = "krClHJ4XzatYrnxxPEETES69eW8RI8AWfIQABx54YQh";
@@ -23,19 +23,24 @@ exports.CreateLineToken = async (req, res) => {
           },
         }
       )
-      .then(async (res) => {
-        const message = "TestData"
+      .then(async (resultT) => {
+        const accestoken = resultT.data.access_token;
+        const query = await api(
+          `update employees set employee_linetoken='${accestoken}' where employee_id=${state}`
+        );
+        const message = "ทดสอบส่งการแจ้งเตือนจาก LawyerAPP";
         const request = axios
           .post("https://notify-api.line.me/api/notify", `message=${message}`, {
             headers: {
               "Content-Type": "application/x-www-form-urlencoded",
-              Authorization: `Bearer ${res.data.access_token}`,
+              Authorization: `Bearer ${resultT.data.access_token}`,
             },
           })
-          .then((res) => {
-            
+          .then(async (result) => {
+            res.send({ status: 200 });
           });
       })
+
       .catch((err) => {
         console.log(err.message);
       });

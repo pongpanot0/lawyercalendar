@@ -2,11 +2,11 @@ import React from "react";
 import TextField from "@mui/material/TextField";
 import { Button, Container, Grid } from "@mui/material";
 import apiService from "../../Shared/Apiserver";
-function Casetype() {
+function Casetype({okdata}) {
   const [CaseTypeName, setCaseTypeName] = React.useState("");
   const postData = async () => {
     const response = await apiService.CreateCaseType(CaseTypeName);
-    
+    okdata()
   };
   return (
     <Container maxWidth="xl">
@@ -17,13 +17,13 @@ function Casetype() {
             onChange={(e) => setCaseTypeName(e.target.value)}
             fullWidth
             id=""
-            label="Casetype Name"
+            label="ประเภทคดี"
           />
         </Grid>
         <Grid xs={12} mt={2} mb={2}>
           {" "}
           <Button onClick={(e) => postData(e)} variant="contained" fullWidth>
-            Add data
+            เพิ่ม
           </Button>
         </Grid>
       </Grid>

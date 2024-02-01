@@ -13,7 +13,6 @@ const Item = styled("div")(({ theme }) => ({
 const Beforecase = () => {
   const columns = [
     { field: "tsb_ref", headerName: "TSB Ref.", width: 200 },
-    { field: "beforecase_name", headerName: "ประเภทการรับเอกสาร", width: 200 },
     {
       field: "ClientName",
       headerName: "ลูกค้า",
@@ -55,6 +54,29 @@ const Beforecase = () => {
       width: 200,
       valueGetter: (params) =>
         `${dayjs(params.row.timebar).format("DD/MM/YYYY")}`,
+    },
+    {
+      field: "case_documentstatus",
+      headerName: "สถานะ",
+      width: 200,
+      valueGetter: (params) => {
+        switch (params.row.case_documentstatus) {
+          case 0:
+            return "รอดำเนินการ";
+          case 1:
+            if (params.row.isplanif == 1) {
+              return "รอออก Notice";
+            } else {
+              return "รอดำเนินการ";
+            }
+          case 2:
+            return "ออก Notice แล้ว";
+          case 3:
+            return "ดำเนินการขั้นตอนทางศาล";
+          default:
+            break;
+        }
+      },
     },
     {
       field: "ACtion",

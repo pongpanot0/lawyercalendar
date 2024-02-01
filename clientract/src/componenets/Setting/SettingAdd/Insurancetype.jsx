@@ -2,11 +2,12 @@ import React from "react";
 import TextField from "@mui/material/TextField";
 import { Button, Container, Grid } from "@mui/material";
 import apiService from "../../Shared/Apiserver";
-const Insurancetype = () => {
+const Insurancetype = ({okdata}) => {
   const [expensesType_name, setexpensesType_name] = React.useState("");
   const postData = async () => {
     try {
         const response = await apiService.createinsuredtype(expensesType_name);
+        okdata()
     } catch (error) {
         
     }
@@ -21,13 +22,13 @@ const Insurancetype = () => {
             onChange={(e) => setexpensesType_name(e.target.value)}
             fullWidth
             id=""
-            label="expenses Name"
+            label="ประเภทประกัน"
           />
         </Grid>
         <Grid xs={12} mt={2} mb={2}>
           {" "}
           <Button onClick={(e) => postData(e)} variant="contained" fullWidth>
-            Add data
+            เพิ่ม
           </Button>
         </Grid>
       </Grid>

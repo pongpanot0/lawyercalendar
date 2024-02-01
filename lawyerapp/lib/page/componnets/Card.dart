@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+import 'package:lawyerapp/themes.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
-class MyCard extends StatelessWidget {
+class MyCard extends StatefulWidget {
   final double balance;
   final int cardNumber;
   final int expiredMonth;
@@ -19,6 +22,45 @@ class MyCard extends StatelessWidget {
   });
 
   @override
+  State<MyCard> createState() => _MyCardState();
+}
+
+class _MyCardState extends State<MyCard> {
+  late MyTheme myTheme = Theme2();
+
+  @override
+  void initState() {
+    _loadCurrentTheme();
+    super.initState();
+  }
+
+  _loadCurrentTheme() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? themeName = prefs.getString('current_theme');
+
+    if (themeName == 'theme1') {
+      myTheme = Theme1();
+    } else if (themeName == 'theme2') {
+      myTheme = Theme2();
+    } else if (themeName == 'theme3') {
+      myTheme = Theme3();
+    }
+  }
+
+  _switchTheme(MyTheme newTheme) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+
+    myTheme = newTheme;
+    if (newTheme is Theme1) {
+      prefs.setString('current_theme', 'theme1');
+    } else if (newTheme is Theme2) {
+      prefs.setString('current_theme', 'theme2');
+    } else if (newTheme is Theme3) {
+      prefs.setString('current_theme', 'theme3');
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 10),
@@ -26,7 +68,7 @@ class MyCard extends StatelessWidget {
         height: 150,
         padding: EdgeInsets.all(20),
         decoration: BoxDecoration(
-          color: color,
+          color: widget.color,
           borderRadius: BorderRadius.circular(16),
         ),
         child: Column(
@@ -37,16 +79,17 @@ class MyCard extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  "Balance",
-                  style: TextStyle(color: Colors.white, fontSize: 28),
+                  "จำนวนเงิน",
+                  style: TextStyle(color: myTheme.cardfontColors, fontSize: 28),
                 ),
               ],
             ),
             const SizedBox(height: 10),
             Text(
-              '\$' + balance.toString(),
+              NumberFormat.currency(locale: 'en_US', symbol: '\$ ')
+                  .format(widget.balance),
               style: TextStyle(
-                color: Colors.white,
+                color: myTheme.cardfontColors,
                 fontSize: 28,
                 fontWeight: FontWeight.bold,
               ),

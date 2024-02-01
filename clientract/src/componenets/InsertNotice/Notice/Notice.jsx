@@ -4,7 +4,7 @@ import { styled } from "@mui/material/styles";
 import { DataGrid } from "@mui/x-data-grid";
 import { Link } from "react-router-dom";
 import apiService from "../../Shared/Apiserver";
-import dayjs from 'dayjs'
+import dayjs from "dayjs";
 const Item = styled("div")(({ theme }) => ({
   ...theme.typography.body2,
   padding: theme.spacing(1),
@@ -23,8 +23,14 @@ const Notice = () => {
     {
       field: "CaseNotice_to",
       headerName: "ส่งถึง",
-
       width: 200,
+      valueGetter: (params) => {
+        if (params.row.CaseNotice_to !== "undefined") {
+          return params.row.CaseNotice_to;
+        } else {
+          return "ยังไม่ได้เพิ่มผู้ส่ง";
+        }
+      },
     },
 
     {
@@ -32,8 +38,7 @@ const Notice = () => {
       headerName: "วันที่ส่ง",
       width: 200,
       valueGetter: (params) =>
-      `${dayjs(params.row.CaseNotice_senddate).format('DD/MM/YYYY') || ""}`,
-      
+        `${dayjs(params.row.CaseNotice_senddate).format("DD/MM/YYYY") || ""}`,
     },
     {
       field: "employee_firstname",
@@ -62,7 +67,7 @@ const Notice = () => {
   return (
     <Container maxWidth="xl">
       <Grid container item spacing={2}>
-       {/*  <Grid xs={12} md={12} xl={12}>
+        {/*  <Grid xs={12} md={12} xl={12}>
           <Link to={"/insert-notice"}>
             <Button variant="contained" color="primary">
               {" "}

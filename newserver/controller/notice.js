@@ -1,16 +1,43 @@
 const api = require("../sql");
+
+exports.createwaitNotice = async (req, res) => {
+  try {
+    const data = req.body.data;
+    const updateStatus = `update casedocuments set case_documentstatus = 1  where tsb_ref='${data}'`;
+    const queryupdateStatus = await api(updateStatus);
+    console.log(data);
+    res.send({
+      status: 200,
+      data: queryupdateStatus,
+    });
+  } catch (error) {
+    res.send({
+      status: 400,
+      data: error.message,
+    });
+  }
+};
+
 exports.createnotice = async (req, res) => {
   try {
     const dataforloop = req.body.data;
-    console.log(dataforloop);
+
     const getLastData = `SELECT tsb_ref FROM casedocuments where tsb_ref='${dataforloop[0]?.DocumentID}'`;
+
     const querylastData = await api(getLastData);
     let lastRefNumber = querylastData[0]?.tsb_ref;
     for (let index = 0; index < dataforloop.length; index++) {
       const element = dataforloop[index];
+      let valueforiswait;
+      if (element.waitnotice == false) {
+        valueforiswait = 0;
+        const updateStatus = `update casedocuments set case_documentstatus = 2 where tsb_ref='${dataforloop[0]?.DocumentID}'`;
+        const queryupdateStatus = await api(updateStatus);
+      } else {
+        valueforiswait = 1;
+      }
 
       // Create the new reference with a leading 'R' and padding zeros
-      const newRef = "R" + lastRefNumber.toString().padStart(3, "0");
 
       const sql = `insert into casenotice 
       (
@@ -18,28 +45,28 @@ exports.createnotice = async (req, res) => {
       CaseNotice_amount,
       CaseNotice_to,
       CaseNotice_ref,
-      CaseNotice_senddate) 
+      CaseNotice_senddate
+      ) 
       values 
       (
       '${element.Payer}',
       '${element.expenses}',
       '${element.CaseNotice_to}',
       '${lastRefNumber}',
-      '${element.PaymentDate}') 
+      '${element.PaymentDate}'
+      ) 
       `;
       const query = await api(sql);
 
       const updateexpenses = `insert into caseexpenses (Payer,expensesType,expenses_ref,expenses,PaymentDate) 
-      values  ('${element.Payer}','${element.expensesType}','${lastRefNumber}',${element.expenses},'${element.PaymentDate}')`
-      const queryupdate = await api(updateexpenses)
-      
+      values  ('${element.Payer}','${element.expensesType}','${lastRefNumber}',${element.expenses},'${element.PaymentDate}')`;
+      const queryupdate = await api(updateexpenses);
     }
 
     res.send({ status: 200 });
   } catch (error) {
     console.log(error.message);
     res.send({
-      
       status: 400,
       data: error.message,
     });
@@ -75,7 +102,7 @@ exports.getnoticeBydocID = async (req, res) => {
     `;
 
     const query = await api(sql);
-  
+
     res.send({
       status: 200,
       data: query,

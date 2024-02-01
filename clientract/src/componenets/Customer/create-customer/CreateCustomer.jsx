@@ -150,9 +150,7 @@ function CreateCustomer() {
   };
   return (
     <Grid item container mt={3}>
-      <Grid xs={12} xl={12} md={12}>
-        <h1>CreateCustomer</h1>
-      </Grid>{" "}
+    
       <Grid xs={12} xl={8} md={8}></Grid>{" "}
       <Grid xs={12} mt={3} xl={4} md={4}>
         <Item>
@@ -161,7 +159,7 @@ function CreateCustomer() {
             style={{ width: "100%" }}
             variant="contained"
           >
-            Add data
+            เพิ่มข้อมูล
           </Button>
         </Item>
       </Grid>{" "}
@@ -223,7 +221,7 @@ function CreateCustomer() {
       <Grid xs={12} mt={3} xl={6} md={6}>
         <Item>
           <DropdownList
-            label="Province: "
+            label="จังหวัด"
             id="province_id"
             list={provinces}
             val={selected.province_id}
@@ -237,7 +235,7 @@ function CreateCustomer() {
       <Grid xs={12} mt={3} xl={6} md={6}>
         <Item>
           <DropdownList
-            label="District: "
+            label="อำเภอ / เขต"
             id="amphure_id"
             list={amphures}
             val={selected.amphure_id}
@@ -251,7 +249,7 @@ function CreateCustomer() {
       <Grid xs={12} mt={3} xl={6} md={6}>
         <Item>
           <DropdownList
-            label="Sub-district: "
+            label="ตำบล / แขวง"
             val={selected.tambon_id}
             id="tambon_id"
             setChilds={[setzip_code]}
@@ -266,7 +264,7 @@ function CreateCustomer() {
           <TextField
             fullWidth
             id="zip_code"
-            label="zip_code"
+            label="รหัสไปรษณีย์"
             value={zip_code}
           />
         </Item>

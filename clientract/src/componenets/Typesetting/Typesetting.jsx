@@ -136,7 +136,7 @@ function Typesetting() {
   const [beforecaseData, setbeforecaseData] = React.useState([]);
   const [EmployeecaseType, setEmployeecaseType] = React.useState([]);
   const [expensesType, setexpensesType] = React.useState([]);
-  const [insuredType,setinsuredType] = React.useState([])
+  const [insuredType, setinsuredType] = React.useState([]);
   const getDataCasetype = async () => {
     try {
       const response = await apiService.GetCaseType();
@@ -193,7 +193,7 @@ function Typesetting() {
       console.log(error.message);
     }
   };
-  
+
   const [open, setOpen] = React.useState(false);
   const [setting, setSetting] = React.useState(0);
   const handleClickOpen = (id) => {
@@ -204,6 +204,17 @@ function Typesetting() {
   const handleClose = () => {
     setOpen(false);
   };
+  const okdata = () =>{
+    setOpen(false);   
+    getDataCasetype();
+    getDataCustomertype();
+    getDataemployeestype();
+    getDatabeforecase();
+    getDataemployeesCasetype();
+    getDataexpensestype();
+    getDatainsuredType();
+
+  }
   return (
     <Container maxWidth="xl">
       <Dialog
@@ -216,52 +227,45 @@ function Typesetting() {
       >
         <DialogTitle id="alert-dialog-title">
           {setting === 1 && (
-            <div style={{ textAlign: "center" }}>เพิ่มข้อมูลประเภท Case</div>
+            <div style={{ textAlign: "center" }}>เพิ่มข้อมูลประเภทคดี</div>
           )}
           {setting === 2 && (
-            <div style={{ textAlign: "center" }}>เพิ่มข้อมูลประเภท ลูกค้า</div>
+            <div style={{ textAlign: "center" }}>เพิ่มข้อมูลประเภทลูกค้า</div>
           )}
 
           {setting === 4 && (
-            <div style={{ textAlign: "center" }}>
-              เพิ่มข้อมูลประเภท EmployeeJob
-            </div>
+            <div style={{ textAlign: "center" }}>เพิ่มข้อมูลประเภท</div>
           )}
         </DialogTitle>
         {setting === 1 && (
           <div>
-            <Casetype />
+            <Casetype okdata={okdata} />
           </div>
         )}
         {setting === 2 && (
           <div>
-            <CustomerType />
+            <CustomerType okdata={okdata} />
           </div>
         )}
 
-        {setting === 4 && (
-          <div>
-            <EmployeeJob />
-          </div>
-        )}
         {setting === 5 && (
           <div>
-            <SettingBeforeCase />
+            <SettingBeforeCase okdata={okdata} />
           </div>
         )}
         {setting === 6 && (
           <div>
-            <Employeecasetype />
+            <Employeecasetype okdata={okdata} />
           </div>
         )}
         {setting === 7 && (
           <div>
-            <ExpensesType />
+            <ExpensesType okdata={okdata} />
           </div>
         )}
-         {setting === 8 && (
+        {setting === 8 && (
           <div>
-            <Insurancetype />
+            <Insurancetype okdata={okdata} />
           </div>
         )}
       </Dialog>
@@ -270,11 +274,11 @@ function Typesetting() {
         onChange={handleChange("panel1")}
       >
         <AccordionSummary aria-controls="panel1d-content" id="panel1d-header">
-          <Typography>Case Type Settings</Typography>
+          <Typography>ประเภทคดี</Typography>
         </AccordionSummary>
         <AccordionDetails>
           <Button variant="contained" onClick={(e) => handleClickOpen(1)}>
-            Add new
+            เพิ่ม
           </Button>
 
           <div style={{ height: 400, width: "100%", marginTop: 10 }}>
@@ -298,11 +302,11 @@ function Typesetting() {
         onChange={handleChange("panel2")}
       >
         <AccordionSummary aria-controls="panel2d-content" id="panel2d-header">
-          <Typography>Customer Type Setting</Typography>
+          <Typography>ประเภทลูกค้า</Typography>
         </AccordionSummary>
         <AccordionDetails>
           <Button variant="contained" onClick={(e) => handleClickOpen(2)}>
-            Add new
+            เพิ่ม
           </Button>
           <div style={{ height: 400, width: "100%", marginTop: 10 }}>
             <DataGrid
@@ -321,16 +325,16 @@ function Typesetting() {
         </AccordionDetails>
       </Accordion>
 
-      <Accordion
+  {/*     <Accordion
         expanded={expanded === "panel4"}
         onChange={handleChange("panel4")}
       >
         <AccordionSummary aria-controls="panel4d-content" id="panel4d-header">
-          <Typography>Employee Job</Typography>
+          <Typography>ตำแหน่งพนักงาน</Typography>
         </AccordionSummary>
         <AccordionDetails>
           <Button variant="contained" onClick={(e) => handleClickOpen(4)}>
-            Add new
+            เพิ่ม
           </Button>
           <div style={{ height: 400, width: "100%", marginTop: 10 }}>
             <DataGrid
@@ -347,17 +351,17 @@ function Typesetting() {
             />
           </div>
         </AccordionDetails>
-      </Accordion>
+      </Accordion> */}
       <Accordion
         expanded={expanded === "panel5"}
         onChange={handleChange("panel5")}
       >
         <AccordionSummary aria-controls="panel5d-content" id="panel5d-header">
-          <Typography>Recive Type</Typography>
+          <Typography>ประเภทการรับข้อมูล</Typography>
         </AccordionSummary>
         <AccordionDetails>
           <Button variant="contained" onClick={(e) => handleClickOpen(5)}>
-            Add new
+            เพิ่ม
           </Button>
           <div style={{ height: 400, width: "100%", marginTop: 10 }}>
             <DataGrid
@@ -380,11 +384,11 @@ function Typesetting() {
         onChange={handleChange("panel6")}
       >
         <AccordionSummary aria-controls="panel6d-content" id="panel6d-header">
-          <Typography>EmployeeCaseType</Typography>
+          <Typography>ประเภทพนักงานในคดี</Typography>
         </AccordionSummary>
         <AccordionDetails>
           <Button variant="contained" onClick={(e) => handleClickOpen(6)}>
-            Add new
+            เพิ่ม
           </Button>
           <div style={{ height: 400, width: "100%", marginTop: 10 }}>
             <DataGrid
@@ -407,11 +411,11 @@ function Typesetting() {
         onChange={handleChange("panel7")}
       >
         <AccordionSummary aria-controls="panel7d-content" id="panel7d-header">
-          <Typography>ExpensesTypeSetting</Typography>
+          <Typography>ประเภทค่าใช้จ่าย</Typography>
         </AccordionSummary>
         <AccordionDetails>
           <Button variant="contained" onClick={(e) => handleClickOpen(7)}>
-            Add new
+            เพิ่ม
           </Button>
           <div style={{ height: 400, width: "100%", marginTop: 10 }}>
             <DataGrid
@@ -434,11 +438,11 @@ function Typesetting() {
         onChange={handleChange("panel8")}
       >
         <AccordionSummary aria-controls="panel7d-content" id="panel7d-header">
-          <Typography>Insured</Typography>
+          <Typography>ประเภทประกัน</Typography>
         </AccordionSummary>
         <AccordionDetails>
           <Button variant="contained" onClick={(e) => handleClickOpen(8)}>
-            Add new
+            เพิ่ม
           </Button>
           <div style={{ height: 400, width: "100%", marginTop: 10 }}>
             <DataGrid

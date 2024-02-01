@@ -2,10 +2,11 @@ import React from "react";
 import TextField from "@mui/material/TextField";
 import { Button, Container, Grid } from "@mui/material";
 import apiService from "../../Shared/Apiserver";
-const ExpensesType = () => {
+const ExpensesType = ({okdata}) => {
   const [expensesType_name, setexpensesType_name] = React.useState("");
   const postData = async () => {
     const response = await apiService.createexpensesType(expensesType_name);
+    okdata()
   };
   return (
     <Container maxWidth="xl">
@@ -16,13 +17,13 @@ const ExpensesType = () => {
             onChange={(e) => setexpensesType_name(e.target.value)}
             fullWidth
             id=""
-            label="expenses Name"
+            label="ประเภทค่าใช้จ่าย"
           />
         </Grid>
         <Grid xs={12} mt={2} mb={2}>
           {" "}
           <Button onClick={(e) => postData(e)} variant="contained" fullWidth>
-            Add data
+            เพิ่ม
           </Button>
         </Grid>
       </Grid>

@@ -44,7 +44,7 @@ const CustomerReponsible = ({ onDataSubmit }) => {
         style={{ marginTop: 5 }}
         onClick={handleAddFields}
       >
-        Add New Row
+        เพิ่มผู้รับผิดชอบ
       </Button>
 
       {inputFields.map((inputField, index) => (
@@ -62,7 +62,7 @@ const CustomerReponsible = ({ onDataSubmit }) => {
                   handleChangeInput(index, "firstname", event)
                 }
                 fullWidth
-                label="FirstName"
+                label="ชื่อ"
               />
             </Item>
           </Grid>
@@ -76,7 +76,7 @@ const CustomerReponsible = ({ onDataSubmit }) => {
                   handleChangeInput(index, "lastname", event)
                 }
                 fullWidth
-                label="Lastname"
+                label="นามสกุล"
               />
             </Item>
           </Grid>
@@ -88,7 +88,7 @@ const CustomerReponsible = ({ onDataSubmit }) => {
                 value={inputField.email}
                 onChange={(event) => handleChangeInput(index, "email", event)}
                 fullWidth
-                label="Email"
+                label="อีเมลล์"
               />
             </Item>
           </Grid>
@@ -100,7 +100,7 @@ const CustomerReponsible = ({ onDataSubmit }) => {
                 value={inputField.phone}
                 onChange={(event) => handleChangeInput(index, "phone", event)}
                 fullWidth
-                label="Phone"
+                label="เบอร์โทรศัพท์"
               />
             </Item>
           </Grid>

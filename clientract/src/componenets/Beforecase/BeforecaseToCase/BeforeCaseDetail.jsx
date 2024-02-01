@@ -16,30 +16,38 @@ const Item = styled("div")(({ theme }) => ({
   textAlign: "center",
   color: theme.palette.text.secondary,
 }));
-const BeforeCaseDetail = ({ onBeforeCaseDataSubmit }) => {
+const BeforeCaseDetail = ({ onBeforeCaseDataSubmit, isplanif }) => {
   const [groupdate, setgroupData] = React.useState("1");
- 
+
   const [caseData, setCaseData] = React.useState({
     ReciveWarrantDate: "",
     DuedateSummittree: "",
-    groupdate:groupdate,
+    groupdate: isplanif,
     rednum: "",
     blacknum: "",
     remark: "",
+    closetime: "",
+    firstmeet: "",
   });
-  const onChange = (e) => {
-  
-    setCaseData({
-      ...caseData,
-      groupdate: e.target.value,
-    });
- 
-    onBeforeCaseDataSubmit(groupdate);
-  };
+
   const handletimebar = (event) => {
     setCaseData({
       ...caseData,
       ReciveWarrantDate: event,
+    });
+    onBeforeCaseDataSubmit(caseData);
+  };
+  const handleclosetimebar = (event) => {
+    setCaseData({
+      ...caseData,
+      closetime: event,
+    });
+    onBeforeCaseDataSubmit(caseData);
+  };
+  const handlefirstmeettimebar = (event) => {
+    setCaseData({
+      ...caseData,
+      firstmeet: event,
     });
     onBeforeCaseDataSubmit(caseData);
   };
@@ -75,61 +83,96 @@ const BeforeCaseDetail = ({ onBeforeCaseDataSubmit }) => {
     <>
       {" "}
       <Grid item container>
-        <Grid xs={12} xl={12} md={12}>
-          <FormControl>
-            <RadioGroup
-              row
-              aria-labelledby="demo-row-radio-buttons-group-label"
-              name="row-radio-buttons-group"
-              onChange={(e) => onChange(e)}
-              value={caseData.groupdate}
-            >
-              <FormControlLabel
-                defaultChecked={true}
-                value="1"
-                control={<Radio />}
-                label="โจทก์"
-              />
-              <FormControlLabel value="2" control={<Radio />} label="จำเลย" />
-            </RadioGroup>
-          </FormControl>
-        </Grid>
-
-      
-          <Grid xs={12} xl={4} md={4}>
-            <Item>
-              <LocalizationProvider dateAdapter={AdapterDayjs}>
-                <DatePicker
-                  sx={{ width: "100%" }}
-                  name="TimeBar"
-                  label="ครบกำหนดปิดหมาย / วันที่ครบกำหนดยื่นคำให้การ"
-                  format="DD-MM-YYYY"
-                  value={caseData.ReciveWarrantDate}
-                  onChange={handletimebar}
-                />
-              </LocalizationProvider>
-            </Item>
-          </Grid>
-        
-        
-        <Grid xs={12} md={4} xl={4}>
+        {isplanif == 1 && (
+          <>
+            <Grid xs={12} xl={12} md={12}>
+              <Item>
+                <LocalizationProvider dateAdapter={AdapterDayjs}>
+                  <DatePicker
+                    sx={{ width: "100%" }}
+                    name="TimeBar"
+                    label="รับหมาย / ปิดหมายวันที่"
+                    format="DD-MM-YYYY"
+                    value={caseData.ReciveWarrantDate}
+                    onChange={handletimebar}
+                  />
+                </LocalizationProvider>
+              </Item>
+            </Grid>
+            <Grid xs={12} xl={12} md={12}>
+              <Item>
+                <LocalizationProvider dateAdapter={AdapterDayjs}>
+                  <DatePicker
+                    sx={{ width: "100%" }}
+                    name="TimeBar"
+                    label="ครบกำหนด / รับหมายปิดหมาย"
+                    format="DD-MM-YYYY"
+                    value={caseData.closetime}
+                    onChange={handleclosetimebar}
+                  />
+                </LocalizationProvider>
+              </Item>
+            </Grid>
+            <Grid xs={12} xl={12} md={12}>
+              <Item>
+                <LocalizationProvider dateAdapter={AdapterDayjs}>
+                  <DatePicker
+                    sx={{ width: "100%" }}
+                    name="TimeBar"
+                    label="นัดครั้งที่ 1 "
+                    format="DD-MM-YYYY"
+                    value={caseData.firstmeet}
+                    onChange={handlefirstmeettimebar}
+                  />
+                </LocalizationProvider>
+              </Item>
+            </Grid>
+          </>
+        )}
+        {isplanif == 2 && (
+          <>
+            <Grid xs={12} xl={12} md={12}>
+              <Item>
+                <LocalizationProvider dateAdapter={AdapterDayjs}>
+                  <DatePicker
+                    sx={{ width: "100%" }}
+                    name="TimeBar"
+                    label="ครบกำหนดปิดหมาย / ครบกำหนดยื่นคำให้การ"
+                    format="DD-MM-YYYY"
+                    value={caseData.ReciveWarrantDate}
+                    onChange={handletimebar}
+                  />
+                </LocalizationProvider>
+              </Item>
+            </Grid>
+          </>
+        )}
+        <Grid xs={12} md={6} xl={6}>
           <Item>
-            <TextField onChange={e=>handleblacknum(e.target.value)} fullWidth label="หมายเลขคดีดำ" />
+            <TextField
+              onChange={(e) => handleblacknum(e.target.value)}
+              fullWidth
+              label="หมายเลขคดีดำ"
+            />
           </Item>
         </Grid>
-        <Grid xs={12} md={4} xl={4}>
+        <Grid xs={12} md={6} xl={6}>
           <Item>
-            <TextField onChange={e=>handlerednum(e.target.value)} fullWidth label="หมายเลขคดีแดง" />
+            <TextField
+              onChange={(e) => handlerednum(e.target.value)}
+              fullWidth
+              label="หมายเลขคดีแดง"
+            />
           </Item>
         </Grid>
         <Grid xs={12} md={12} xl={12}>
           <Item>
             <TextField
               fullWidth
-              onChange={e=>handleremark(e.target.value)}
-              label="รายละเอียดเพิ่มเติม"
+              onChange={(e) => handleremark(e.target.value)}
+              label="รายละเอียดคดี"
               multiline
-              rows={4}
+              rows={5}
             />
           </Item>
         </Grid>

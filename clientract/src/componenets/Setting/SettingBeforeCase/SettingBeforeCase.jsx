@@ -3,10 +3,11 @@ import { DataGrid } from "@mui/x-data-grid";
 import { Button, Container, Grid, TextField } from "@mui/material";
 import apiService from "../../Shared/Apiserver";
 
-const SettingBeforeCase = () => {
+const SettingBeforeCase = ({ okdata }) => {
   const [beforecase_name, setbeforecase_name] = React.useState("");
   const postData = async () => {
     const response = await apiService.createbeforecase(beforecase_name);
+    okdata();
   };
   return (
     <Container maxWidth="xl">
@@ -17,7 +18,7 @@ const SettingBeforeCase = () => {
             onChange={(e) => setbeforecase_name(e.target.value)}
             fullWidth
             id=""
-            label="Beforecase Name"
+            label="ประเภทการรับข้อมูล"
           />
         </Grid>
         <Grid xs={12} mt={2} mb={2}>

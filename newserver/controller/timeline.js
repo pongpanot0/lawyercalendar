@@ -19,6 +19,7 @@ exports.getTimeLinetype = async (req, res) => {
   try {
     const sql = `select * from  timeline_status`;
     const query = await api(sql);
+
     res.send({
       status: 200,
       data: query,
@@ -38,12 +39,16 @@ exports.createcaseTimeline = async (req, res) => {
       case_timebar_status,
       case_id,
     } = req.body.data;
+
     const update = `update case_timeline set case_timeline_end=1 where case_id=${case_id}`;
     const queryupdate = await api(update);
     const sql = `insert into case_timeline (case_timeline_detail,case_timebar_incoming,case_timebar_status,case_id)
       values ('${case_timeline_detail}','${case_timebar_incoming}','${case_timebar_status}','${case_id}')
       `;
     const query = await api(sql);
+    const insertId = query.insertId;
+    const updatecase = `update cases set case_status='${insertId}' where CaseID=${case_id}`;
+    const queryupdatecase = await api(updatecase);
     res.send({
       status: 200,
       data: query,
@@ -92,9 +97,8 @@ exports.getcaseTimeline = async (req, res) => {
       case_timeline_id
   ) AS failure_counts ON failure_counts.case_timeline_id = ct.case_timeline_id
   WHERE
-    ct.case_id = ${case_id};`;
+    ct.case_id = ${case_id} order by ct.case_timeline_id desc;`;
     const query = await api(sql);
-    console.log(query);
     res.send({
       status: 400,
       data: query,

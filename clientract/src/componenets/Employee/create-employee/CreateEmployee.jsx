@@ -64,7 +64,7 @@ function CreateEmployee({loaddata}) {
             <TextField
               fullWidth
               id="outlined-basic"
-              label="FirstName"
+              label="ชื่อจริง"
               variant="outlined"
               onChange={(e) => setemployee_firstname(e.target.value)}
             />
@@ -75,7 +75,7 @@ function CreateEmployee({loaddata}) {
             <TextField
               fullWidth
               id="outlined-basic"
-              label="SurName"
+              label="นามสกุล"
               variant="outlined"
               onChange={(e) => setemployee_lastname(e.target.value)}
             />
@@ -86,7 +86,7 @@ function CreateEmployee({loaddata}) {
             <TextField
               fullWidth
               id="outlined-basic"
-              label="CardNo"
+              label="เลขบัตรประชาชน"
               variant="outlined"
               onChange={(e) => setemployee_cardno(e.target.value)}
             />
@@ -97,7 +97,7 @@ function CreateEmployee({loaddata}) {
             <TextField
               fullWidth
               id="outlined-basic"
-              label="Phone"
+              label="เบอร์โทรศัพท์"
               variant="outlined"
               onChange={(e) => setemployee_phone(e.target.value)}
             />
@@ -108,7 +108,7 @@ function CreateEmployee({loaddata}) {
             <TextField
               fullWidth
               id="outlined-basic"
-              label="Email"
+              label="อีเมลล์"
               onChange={(e) => setemployee_email(e.target.value)}
               variant="outlined"
             />
@@ -117,7 +117,7 @@ function CreateEmployee({loaddata}) {
         <Grid xs={12} md={6} xl={6}>
           <Item>
             <FormControl fullWidth>
-              <InputLabel id="demo-simple-select-label">Role</InputLabel>
+              <InputLabel id="demo-simple-select-label">ตำแหน่ง</InputLabel>
               <Select
                 labelId="demo-simple-select-label"
                 id="demo-simple-select"
@@ -137,7 +137,7 @@ function CreateEmployee({loaddata}) {
         <Grid xs={12} md={12} xl={12}>
           <Item>
             <Button onClick={(e) => postData(e)} fullWidth variant="contained">
-              Add data
+              เพิ่ม
             </Button>
           </Item>
         </Grid>

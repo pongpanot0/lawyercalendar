@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lawyerapp/page/componnets/notication/notification.dart';
 
 class CustomAppBar extends StatelessWidget {
   final IconData leftIcon;
@@ -22,22 +23,63 @@ class CustomAppBar extends StatelessWidget {
         children: [
           GestureDetector(
             onTap: leftCallback != null ? () => leftCallback!() : null,
-            child: _buildIcon(leftIcon),
+            child: _buildLeftIcon(leftIcon),
           ),
-          _buildIcon(rightIcon),
+          _buildIcon(rightIcon, 10, context),
         ],
       ),
     );
   }
 
-  Widget _buildIcon(IconData icon) {
-    return Container(
-      padding: EdgeInsets.all(8),
-      decoration: BoxDecoration(
-        shape: BoxShape.circle,
-        color: Colors.white,
+  Widget _buildLeftIcon(IconData icon) {
+    return GestureDetector(
+      child: Container(
+        padding: EdgeInsets.all(8),
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          color: Colors.white,
+        ),
+        child: Icon(icon),
       ),
-      child: Icon(icon),
+    );
+  }
+
+  Widget _buildIcon(
+      IconData icon, int notificationCount, BuildContext context) {
+    return GestureDetector(
+      onTap: () {
+        Navigator.of(context).pushReplacement(
+          MaterialPageRoute(builder: (context) => NotificationScreen()),
+        );
+      },
+      child: Stack(
+        children: [
+          Container(
+            padding: EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: Colors.white,
+            ),
+            child: Icon(icon),
+          ),
+          if (notificationCount > 0)
+            Positioned(
+              right: 0,
+              top: 0,
+              child: Container(
+                padding: EdgeInsets.all(4),
+                decoration: BoxDecoration(
+                  color: Colors.red,
+                  shape: BoxShape.circle,
+                ),
+                child: Text(
+                  notificationCount.toString(),
+                  style: TextStyle(color: Colors.white),
+                ),
+              ),
+            ),
+        ],
+      ),
     );
   }
 }

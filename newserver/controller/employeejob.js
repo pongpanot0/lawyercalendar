@@ -11,12 +11,4 @@ exports.createemployeejob = async (req, res) => {
   }
 };
 
-exports.getemployeejobs = async (req, res) => {
-  try {
-    const sql = `select * from employeesjob`;
-    const query = await api(sql);
-    res.send({ status: 200, data: query });
-  } catch (error) {
-    res.send({ status: 400, data: error.message });
-  }
-};
+

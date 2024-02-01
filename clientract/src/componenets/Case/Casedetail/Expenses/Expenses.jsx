@@ -18,7 +18,7 @@ import {
 import apiService from "../../../Shared/Apiserver";
 import dayjs from "dayjs";
 import InsertExpenses from "../../../Expenses/InsertExpenses/InsertExpenses";
-function Expenses({ caseExpenses }) {
+function Expenses({ caseExpenses,loaddata2 }) {
   console.log(caseExpenses);
   const [open, setOpen] = React.useState(false);
 
@@ -29,8 +29,10 @@ function Expenses({ caseExpenses }) {
   const handleClose = () => {
     setOpen(false);
   };
+
   const loaddata = () =>{
     setOpen(false);
+    loaddata2()
   }
   return (
     <Container maxWidth="xl" >

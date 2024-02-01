@@ -2,8 +2,6 @@ var admin = require("firebase-admin");
 
 var serviceAccount = require("../google-services.json");
 
-
-
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
 });
@@ -22,7 +20,8 @@ exports.sendPushNotification = (req, res, next) => {
 
 function sendNotification(token, title, body) {
   return messaging.send({
-    token: "e-PtjViBQuaUPyrexjf7Qp:APA91bGPirsBAXO_0LadFa8XKeN6DwYy39mNTArN-F2RnxmiXB_mFKeGXf6DzMPAesnoglDMuy07IXs0dYFutPUlYfIhVYJIHUASD3Gqxlt2Ahd49Y15L8WIfDFA2UbRtkkrqm1LjwdQ",
+    token:
+      "dhsP7XNgRMODajvFomwb7V:APA91bGkyy6xrDsN3pss7rYTzCGHWUwlbd2HBs3aHBIk4h1Gic4qj4eVE5n8-oBcdkEVNPkGW6uTBVR3GQuukfqfIPRgk4jBAEEnvh2KVr-250228ER9o9znj5uZmC4dOt6wsJPCYCjX",
     notification: {
       title: title,
       body: body,

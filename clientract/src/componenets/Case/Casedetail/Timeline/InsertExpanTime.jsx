@@ -13,7 +13,7 @@ const Item = styled("div")(({ theme }) => ({
 }));
 
 const InsertExpanTime = ({ tsb_ref ,loaddata}) => {
-  console.log(tsb_ref);
+  
   const [caseData, setCaseData] = React.useState({
     case_expantime_date: "",
     case_expantime_remark: "",
@@ -34,7 +34,6 @@ const InsertExpanTime = ({ tsb_ref ,loaddata}) => {
   const postData = async () => {
     try {
       const response = await apiService.creatcaseeExpantime(caseData);
-      console.log(response);
       loaddata()
     } catch (error) {
       console.log(error.message);

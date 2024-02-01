@@ -7,6 +7,8 @@ import {
   MenuItem,
   Select,
   Grid,
+  Divider,
+  Chip,
 } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import apiService from "../../Shared/Apiserver";
@@ -16,7 +18,7 @@ const Item = styled("div")(({ theme }) => ({
   padding: theme.spacing(1),
   textAlign: "center",
 }));
-const CaseEmployee = ({ onDataSubmit , onCloseDialog}) => {
+const CaseEmployee = ({ onDataSubmit, onCloseDialog }) => {
   const [inputFields, setInputFields] = useState([{ value: "", age: "" }]);
   const [formControls, setFormControls] = useState([0]);
 
@@ -70,7 +72,11 @@ const CaseEmployee = ({ onDataSubmit , onCloseDialog}) => {
   const handleSubmit = () => {
     // You can perform any validation or processing here before sending data to the parent
     onDataSubmit(inputFields);
-  
+  };
+  const handleDelete = (indexToDelete) => {
+    setInputFields((prevInputFields) =>
+      prevInputFields.filter((inputField, index) => index !== indexToDelete)
+    );
   };
   return (
     <div>
@@ -79,11 +85,16 @@ const CaseEmployee = ({ onDataSubmit , onCloseDialog}) => {
         style={{ marginTop: 5 }}
         onClick={handleAddFields}
       >
-        เพิ่ม
+        เพิ่มผู้รับผิดชอบ
       </Button>
-   
+
       {inputFields.map((inputField, index) => (
         <Grid container item spacing={2} mt={2} key={index}>
+          <Grid item xs={12} sm={12} xl={12}>
+            <Item>
+            <Divider textAlign="right" ><Chip label="ยกเลิกแถว" onClick={e=>handleDelete(index)} /></Divider>
+            </Item>
+          </Grid>
           <Grid item xs={12} sm={12} xl={6}>
             <Item>
               <FormControl fullWidth>

@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:lawyerapp/firebase_options.dart';
 import 'package:lawyerapp/page/Mainscreen.dart';
+import 'package:lawyerapp/page/componnets/Apiservice.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -9,6 +13,59 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
+  final TextEditingController usernameController = TextEditingController();
+  final TextEditingController passwordController = TextEditingController();
+  late String mobiletoken;
+  void initState() {
+    super.initState();
+    // Initialize the mobiletoken in the initState method
+    getFirebaseToken();
+  }
+
+  Future<void> getFirebaseToken() async {
+    WidgetsFlutterBinding.ensureInitialized();
+    await Firebase.initializeApp(
+      options: DefaultFirebaseOptions.currentPlatform,
+    );
+
+    FirebaseMessaging messaging = FirebaseMessaging.instance;
+    FirebaseMessaging.instance.getToken().then((value) {
+      print("getTokenLogin :$value");
+
+      setState(() {
+        mobiletoken = value ?? "";
+      });
+    });
+  }
+
+  Future<void> sendDataToApi() async {
+    final String username = usernameController.text;
+    final String password = passwordController.text;
+
+    try {
+      WidgetsFlutterBinding.ensureInitialized();
+      await Firebase.initializeApp(
+        options: DefaultFirebaseOptions.currentPlatform,
+      );
+
+      FirebaseMessaging messaging = FirebaseMessaging.instance;
+      String firebaseToken = await FirebaseMessaging.instance.getToken() ?? "";
+      print(firebaseToken);
+
+      String token =
+          await ApiService().Login(username, password, firebaseToken ?? "");
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => Mainscreen(data:'ok')),
+      );
+      // Check the response data and perform actions accordingly
+      print('Login successful. Received token: $token');
+    } catch (e) {
+      // Handle login failure
+      print('Login failed. Exception: $e');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -33,6 +90,7 @@ class _LoginPageState extends State<LoginPage> {
             SizedBox(height: 30.0), // Space between logo and form fields
             // Username Field
             TextField(
+              controller: usernameController,
               decoration: InputDecoration(
                 labelText: 'Username',
                 border: OutlineInputBorder(),
@@ -42,6 +100,7 @@ class _LoginPageState extends State<LoginPage> {
             // Password Field
             TextField(
               obscureText: true,
+              controller: passwordController,
               decoration: InputDecoration(
                 labelText: 'Password',
                 border: OutlineInputBorder(),
@@ -59,10 +118,7 @@ class _LoginPageState extends State<LoginPage> {
                     Size(MediaQuery.of(context).size.width, 40), //////// HERE
               ),
               onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => Mainscreen()),
-                );
+                sendDataToApi();
               },
               child: Text('Login'),
             ),

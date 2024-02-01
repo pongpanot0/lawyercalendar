@@ -3,7 +3,7 @@ import axios from "axios";
 
 /* https://mcon-oil.mconcrete.co.th/api_lawyer */
 
-const baseURL = "https://mcon-oil.mconcrete.co.th/api_lawyer/"; // Replace with your API base URL
+const baseURL = "https://mcon-oil.mconcrete.co.th/api_lawyer"; // Replace with your API base URL
 const token = localStorage.getItem('token')
 const axiosInstance = axios.create({
   baseURL,
@@ -17,7 +17,40 @@ const axiosInstance = axios.create({
 
 const apiService = {
   // Example API function
+ 
   
+  async getDashboards(code,state) {
+    try {
+      const response = await axiosInstance.post("/dashboard/get");
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching posts:", error);
+      throw error;
+    }
+  },
+  async createLine(code,state) {
+    try {
+      const response = await axiosInstance.post("/line/create", {
+        code,
+        state,
+      });
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching posts:", error);
+      throw error;
+    }
+  },
+  async getProfile(data) {
+    try {
+      const response = await axiosInstance.post("/get/profile", {
+        data,
+      });
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching posts:", error);
+      throw error;
+    }
+  },
   async updateBeforecase(data) {
     try {
       const response = await axiosInstance.post("/beforecase/update", {
@@ -40,6 +73,29 @@ const apiService = {
       throw error;
     }
   },
+  async CreateBeforeCasecreateClose(data) {
+    try {
+      const response = await axiosInstance.post("/beforecasedocuments/createClose", {
+        data,
+      });
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching posts:", error);
+      throw error;
+    }
+  },
+  async CreateBeforeUpdatecase(data) {
+    try {
+      const response = await axiosInstance.post("/beforecasedocuments/updateOpenBeforecase", {
+        data,
+      });
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching posts:", error);
+      throw error;
+    }
+  },
+  
   async CreateCase(data) {
     try {
       const response = await axiosInstance.post("/case/create", { data });
@@ -51,13 +107,51 @@ const apiService = {
   },
   async getCase(data) {
     try {
-      const response = await axiosInstance.get("/case/get");
+      const response = await axiosInstance.post("/case/get");
       return response.data;
     } catch (error) {
       console.error("Error fetching posts:", error);
       throw error;
     }
   },
+  async exportExcelCase(data) {
+    try {
+      const response = await axiosInstance.post("/exportExcelCase",{data});
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching posts:", error);
+      throw error;
+    }
+  },
+  async exportExcelExpenses(data) {
+    try {
+      const response = await axiosInstance.post("/excel/export",{data});
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching posts:", error);
+      throw error;
+    }
+  },
+  
+  async createCloseDetail(data) {
+    try {
+      const response = await axiosInstance.post("/case/createClose", { data });
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching posts:", error);
+      throw error;
+    }
+  },
+  async updateOpencase(data) {
+    try {
+      const response = await axiosInstance.post("/case/open", { data });
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching posts:", error);
+      throw error;
+    }
+  },
+  
   async getCaseByid(data) {
     try {
       const response = await axiosInstance.post("/caseByid/get", { data });
@@ -217,6 +311,16 @@ const apiService = {
       throw error;
     }
   },
+  
+  async gettsbref(data) {
+    try {
+      const response = await axiosInstance.get("/tsbref/get");
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching posts:", error);
+      throw error;
+    }
+  },
   async getcustomer(data) {
     try {
       const response = await axiosInstance.get("/customer/get");
@@ -351,7 +455,7 @@ const apiService = {
   },
   async getcaseexpenses(data) {
     try {
-      const response = await axiosInstance.get("/caseexpenses/get", {
+      const response = await axiosInstance.post("/caseexpenses/get", {
         data,
       });
       return response.data;
@@ -362,6 +466,7 @@ const apiService = {
   },
 
   //notice
+  
   async createnotice(data) {
     try {
       const response = await axiosInstance.post("/notice/create", {
@@ -373,6 +478,19 @@ const apiService = {
       throw error;
     }
   },
+  async createwaitnotice(data) {
+    try {
+      const response = await axiosInstance.post("/noticewait/create", {
+        data,
+      });
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching posts:", error);
+      throw error;
+    }
+  },
+
+  
   async getNotice(data) {
     try {
       const response = await axiosInstance.get("/notice/get", {

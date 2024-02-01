@@ -1,0 +1,323 @@
+@startuml
+
+skinparam monochrome true
+hide empty members
+
+!define Table(name, desc) entity name << (T,#FFAAAA) >> {
+    desc
+}
+
+!define ForeignTable(name, desc) entity name << (T,#FFAAAA) >> {
+    desc
+}
+
+!define PrimaryKey(color) {
+    -- <color> id: int
+    <color> id: int
+}
+
+!define ForeignKey(color, from, to) {
+    -- <color> from_id: int
+    <color> from_id: int
+    <color> to_id: int
+}
+
+!define OneToOne(color, from, to) {
+    <color> from_id: int
+    -- <color> to_id: int
+    <color> to_id: int
+}
+
+!define ManyToOne(color, from, to) {
+    -- <color> from_id: int
+    <color> from_id: int
+    <color> to_id: int
+}
+
+!define OneToMany(color, from, to) {
+    <color> from_id: int
+    -- <color> to_id: int
+    <color> to_id: int
+}
+
+!define ManyToMany(color, from, to) {
+    -- <color> from_id: int
+    <color> from_id: int
+    <color> to_id: int
+    -- <color> from_id: int
+    <color> from_id: int
+    <color> to_id: int
+}
+
+Table(beforecase, 
+    + beforecase_id: int
+    --
+    + beforecase_name: varchar(100)
+)
+
+Table(casedocuments, 
+    + DocumentID: int
+    + LawyerID: int
+    + DocumentStatus: int
+    + DateReceived: varchar(50)
+    + clientID: int
+    + Receiver: int
+    + Customer_ref: varchar(50)
+    + tsb_ref: varchar(100)
+    + claimamount: int
+    + assured: varchar(100)
+    + timebar: varchar(50)
+    + insurance_type: int
+    + create_date: datetime
+    + case_documentstatus: int
+    + created_by: int
+    + customer_reponsive: int
+    + policy_ref: varchar(50)
+    + isplanif: int
+    + status: int
+    + close_time: varchar(50)
+)
+
+Table(caseexpenses, 
+    + ExpenseID: int
+    + Payer: int
+    + PaymentStatus: int
+    + PaymentDate: varchar(100)
+    + expensesType: int
+    + expenses_ref: varchar(50)
+    + expenses: int
+    + paid_type: int
+)
+
+Table(caselawyer, 
+    + caselawyer_id: int
+    + caselawyer_case_id: int
+    + caselawyer_employee_id: int
+    + caselawyer_employee_type: int
+)
+
+Table(casenotice, 
+    + CaseNotice_id: int
+    + CaseNotice_lawyer_id: int
+    + CaseNotice_amount: int
+    + CaseNotice_to: varchar(50)
+    + CaseNotice_ref: varchar(50)
+    + CaseNotice_senddate: varchar(50)
+    + CaseNotice_callback_type: int
+    + CaseNotice_callback_who: varchar(200)
+    + CaseNotice_iswait: int
+)
+Table(cases, 
+    + CaseID: int
+    + ClientID: int
+    + CaseTypeID: int
+    + CourtID: int
+    + Customer_ref: varchar(50)
+    + Customer_res: int
+    + case_courtType: int
+    + plaintiff_type: tinyint(1)
+    + rednum: varchar(50)
+    + blacknum: varchar(50)
+    + ReciveWarrantDate: varchar(50)
+    + DuedateSummittree: varchar(50)
+    + tsb_ref: varchar(100)
+    + insurance_type: int
+    + case_remark: text
+    + claimAmount: int
+    + customer_resposive: int
+    + case_status: int
+    + case_close: int
+    + closetime: varchar(50)
+)
+
+Table(casetypes, 
+    + CaseTypeID: int
+    + CaseTypeName: varchar(100)
+)
+
+Table(case_defendant, 
+    + case_defendant_id: int
+    + case_defendant_firstname: varchar(200)
+    + case_id: int
+)
+
+Table(case_expantime, 
+    + case_expantime: int
+    + case_expantime_remark: varchar(255)
+    + case_expantime_date: varchar(50)
+    + case_id: int
+)
+
+Table(case_plainiff, 
+    + case_plainiff_id: int
+    + case_plainiff_firstname: varchar(200)
+    + case_id: int
+)
+Table(case_timeline, 
+    + case_timeline_id: int
+    + case_timeline_detail: varchar(255)
+    + case_timebar_incoming: varchar(50)
+    + case_timebar_status: int
+    + case_id: int
+    + case_timeline_end: int
+)
+
+Table(case_todolist, 
+    + case_todolist: int
+    + case_todolist_name: varchar(50)
+    + case_todolist_sucess: int
+    + case_timeline_id: int
+    + case_id: int
+)
+
+Table(clients, 
+    + ClientID: int
+    + ClientName: varchar(100)
+    + ClientType: int
+    + ClientHomenum: varchar(50)
+    + ClientProvince: varchar(20)
+    + Clientamphure: varchar(20)
+    + Clienttambon: varchar(20)
+    + Clientzipcode: varchar(5)
+    + ClientTax: varchar(20)
+)
+
+Table(client_user, 
+    + client_user_id: int
+    + client_user_firstname: varchar(50)
+    + client_user_lastname: varchar(50)
+    + client_user_phone: varchar(10)
+    + client_user_email: varchar(50)
+    + client_ID: int
+)
+
+Table(courts, 
+    + CourtID: int
+    + CourtName: varchar(100)
+    + CourtType: int
+)
+
+Table(customertypes, 
+    + customertypes_id: int
+    + customertypes_name: varchar(100)
+)
+
+Table(customer_responses, 
+    + customer_responses_id: int
+    + customer_responses_firstname: varchar(20)
+    + customer_responses_lastname: varchar(20)
+    + customer_responses_email: varchar(50)
+    + customer_responses_phone: varchar(50)
+    + customer_id: int
+)
+
+Table(employees, 
+    + employee_id: int
+    + employee_role: int
+    + employee_firstname: varchar(100)
+    + employee_cardno: varchar(100)
+    + employee_lastname: varchar(100)
+    + employee_phone: char(10)
+    + employee_email: varchar(50)
+    + employee_username: varchar(50)
+    + employee_password: varchar(255)
+    + employee_linetoken: varchar(200)
+    + employee_mobiletoken: varchar(255)
+    + employee_notificationday: varchar(25)
+    + employee_notificationtime: varchar(25)
+)
+Table(employeescasetype, 
+    + employeescasetype_id: int
+    + employeescasetype_name: varchar(100)
+)
+
+Table(expensestype, 
+    + expensesType_id: int
+    + expensesType_name: varchar(50)
+)
+
+Table(insurance_type, 
+    + insurance_type_id: int
+    + insurance_type_name: varchar(50)
+)
+
+Table(role, 
+    + role_id: int
+    + role_name: varchar(100)
+)
+
+Table(settingsusers, 
+    + settingsusers_primarybutton: varchar(20)
+    + settingsusers_cancelbutton: varchar(20)
+    + settingsusers_fontsize: int
+    + settingsusers_fontcolor: varchar(20)
+    + settingsusers_primarycolor: varchar(20)
+    + settingsusers_user_id: int
+    + settingsusers_fontbuttoncolor: varchar(20)
+    + settingsusers_backgroundcolor: varchar(20)
+)
+
+Table(timeline_status, 
+    + timeline_status_id: int
+    + timeline_status_name: varchar(50)
+)
+
+Table(transaction_notification, 
+    + transaction_notification_id: int
+    + transaction_notification_isread: int
+    + transaction_notification_iscase: int
+    + transaction_notification_caseid: int
+    + transaction_notification_datetime: datetime
+    + transaction_notification_userid: int
+)
+
+
+ForeignKey(, cases, clients)
+ForeignKey(, cases, casetypes)
+ForeignKey(, cases, courts)
+ForeignKey(, cases, insurance_type)
+ForeignKey(, cases, customer_responses)
+ForeignKey(, cases, case_timeline)
+
+ForeignKey(, case_defendant, cases)
+
+ForeignKey(, case_expantime, cases)
+
+ForeignKey(, case_plainiff, cases)
+ForeignKey(, casedocuments, beforecase)
+
+ForeignKey(, casedocuments, employees)
+
+ForeignKey(, casedocuments, customer_responses)
+
+ForeignKey(, casedocuments, insurance_type)
+
+ForeignKey(, casedocuments, clients)
+
+ForeignKey(, caseexpenses, employees)
+
+ForeignKey(, caseexpenses, expensestype)
+
+ForeignKey(, caselawyer, cases)
+
+ForeignKey(, caselawyer, employees)
+
+ForeignKey(, caselawyer, employeescasetype)
+
+ForeignKey(, casenotice, employees)
+ForeignKey(, case_timeline, cases)
+ForeignKey(, case_timeline, timeline_status)
+
+ForeignKey(, case_todolist, case_timeline)
+ForeignKey(, case_todolist, cases)
+
+ForeignKey(, client_user, clients)
+
+ForeignKey(, customertypes, clients)
+
+ForeignKey(, customer_responses, clients)
+
+ForeignKey(, employees, role)
+ForeignKey(, settingsusers, employees)
+ForeignKey(, transaction_notification, employees)
+@enduml

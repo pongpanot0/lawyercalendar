@@ -4,8 +4,8 @@ import { Button, Container, Grid } from "@mui/material";
 import apiService from "../../Shared/Apiserver";
 function EmployeeJob() {
   const [employeesjob, setemployeesjob] = React.useState("");
-  const postData = async () => {
-    const response = await apiService.createEmployeejob(employeesjob);
+  const postData = async ({okdata}) => {
+    const response = await apiService.createEmployeejob(employeesjob); okdata()
   };
   return (
     <Container maxWidth="xl">
@@ -16,13 +16,13 @@ function EmployeeJob() {
             onChange={(e) => setemployeesjob(e.target.value)}
             fullWidth
             id=""
-            label="EmployeeJob Name"
+            label="ตำแหน่งพนักงาน"
           />
         </Grid>
         <Grid xs={12} mt={2} mb={2}>
           {" "}
           <Button onClick={(e) => postData(e)} variant="contained" fullWidth>
-            Add data
+            เพิ่ม
           </Button>
         </Grid>
       </Grid>

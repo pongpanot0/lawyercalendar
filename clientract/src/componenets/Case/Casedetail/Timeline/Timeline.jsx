@@ -29,7 +29,7 @@ import Tasklist from "./Tasklist";
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
 });
-const TimelineDetail = ({ id ,loaddata }) => {
+const TimelineDetail = ({ id, loaddata }) => {
   const [open, setOpen] = React.useState(false);
   const [open2, setOpen2] = React.useState(false);
   const [idtotask, setidtotask] = React.useState("");
@@ -46,17 +46,24 @@ const TimelineDetail = ({ id ,loaddata }) => {
     setOpen(false);
   };
   const [todolistData, settodolistData] = React.useState([]);
+  const [case_timeline_id, settcase_timeline_id] = React.useState([]);
+  const [case_ids, setcase_ids] = React.useState("");
   const getDAta = async (id) => {
     try {
       const response = await apiService.gettask(id.case_timeline_id);
+
       settodolistData(response.data);
+      setcase_ids(id.case_id);
+
+      settcase_timeline_id(id.case_timeline_id);
+
       setOpen2(true);
     } catch (error) {
       console.log(error.message);
     }
   };
-  
-  const handleDataBeforeFromCaseEmployee =  async (data) => {
+
+  const handleDataBeforeFromCaseEmployee = async (data) => {
     // Handle the data received from CaseEmployee
     getData();
     setOpen(!open);
@@ -83,6 +90,7 @@ const TimelineDetail = ({ id ,loaddata }) => {
       const updatedData = await apiService.gettask(taskId);
       console.log(updatedData);
       settodolistData(updatedData.data);
+      getData(id);
     } catch (error) {
       console.error("Error updating data:", error);
     }
@@ -129,10 +137,13 @@ const TimelineDetail = ({ id ,loaddata }) => {
                   <CardActions>
                     <Button
                       variant="contained"
-                      onClick={(e) => handleClickOpen2(res)}
+                      onClick={(e) =>
+                        handleClickOpen2(res, res.case_timeline_id)
+                      }
                     >
                       {" "}
-                      TODO LIST: {res.case_todolist_sucess_1_count}/{res.total_count}
+                      TODO LIST: {res.case_todolist_sucess_1_count}/
+                      {res.total_count}
                     </Button>
                   </CardActions>
                 </Card>
@@ -165,9 +176,9 @@ const TimelineDetail = ({ id ,loaddata }) => {
         <DialogTitle>{"เพิ่มสถานะงาน"}</DialogTitle>
         <DialogContent>
           <Tasklist
-          
             todolistData={todolistData}
-           
+            case_timeline_id={case_timeline_id}
+            case_ids={case_ids}
             onCheckboxChange={handleCheckboxChange}
           />
         </DialogContent>

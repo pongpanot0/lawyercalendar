@@ -7,6 +7,7 @@ import {
   Paper,
   Typography,
   TextField,
+  Container,
 } from "@mui/material";
 
 import SettingsIcon from "@mui/icons-material/Settings";
@@ -24,11 +25,12 @@ import ColorPicker from "../Shared/ColorPicker";
 
 import ArticleIcon from "@mui/icons-material/Article";
 import Typesetting from "../Typesetting/Typesetting";
-import { lighten } from "polished";
+
 import Gettoken from "./SettingLine/Gettoken";
 import SettingBeforeCase from "./SettingBeforeCase/SettingBeforeCase";
 import apiService from "../Shared/Apiserver";
 import Insurancetype from "./SettingAdd/Insurancetype";
+import PersonAddIcon from '@mui/icons-material/PersonAdd';
 const Item = styled("div")(({ theme }) => ({
   ...theme.typography.body2,
   padding: theme.spacing(1),
@@ -41,23 +43,23 @@ function Setting({ loaddata }) {
     {
       icon: <SettingsIcon style={{ fontSize: 80 }} />,
       show: 1,
-      text: "ตั้งค่าทั่วไป",
+      text: "ตั้งค่าข้อมูลสี",
     },
     {
       icon: <AccountBoxIcon style={{ fontSize: 80 }} />,
-      show: 2,
-      text: "ข้อมูลพนักงาน",
+      show: 5,
+      text: "ข้อมูลส่วนตัว",
     },
+
     {
       icon: <ArticleIcon style={{ fontSize: 80 }} />,
       show: 3,
       text: "ตั้งค่าข้อมูล ประเภท",
     },
-
     {
-      icon: <AssessmentIcon style={{ fontSize: 80 }} />,
-      show: 5,
-      text: "ตั้งค่าทั่วไป",
+      icon: <PersonAddIcon style={{ fontSize: 80 }} />,
+      show: 2,
+      text: "เพิ่มพนักงาน",
     },
   ];
 
@@ -81,7 +83,6 @@ function Setting({ loaddata }) {
 
   React.useEffect(() => {
     getData();
-    console.log(loaddata);
   }, []);
   const postdata = async (e) => {
     try {
@@ -120,9 +121,9 @@ function Setting({ loaddata }) {
   };
 
   return (
-    <>
+    <Container maxWidth="xl">
       {" "}
-      <Grid item container style={{ overflow: "hidden" }}>
+      <Grid item container>
         <Grid xs={12} md={12} xl={12}>
           <Typography variant="h5">Setting</Typography>
         </Grid>
@@ -172,21 +173,21 @@ function Setting({ loaddata }) {
                 <Grid xs={12} md={6} xl={6}>
                   <Item>
                     <FormControl fullWidth>
-                      <InputLabel id="demo-simple-select-label">Age</InputLabel>
+                      <InputLabel id="demo-simple-select-label">ขนาด Font</InputLabel>
                       <Select
                         labelId="demo-simple-select-label"
                         id="demo-simple-select"
                         value={fontSize}
                         InputLabelProps={{ shrink: true }}
-                        label="Age"
+                        label="ขนาด Font"
                         onChange={handleChange}
                         fullWidth
                       >
+                        <MenuItem value={18}>18</MenuItem>
                         <MenuItem value={20}>20</MenuItem>
-                        <MenuItem value={30}>30</MenuItem>
-                        <MenuItem value={40}>40</MenuItem>
-                        <MenuItem value={50}>50</MenuItem>
-                        <MenuItem value={60}>60</MenuItem>
+                        <MenuItem value={22}>22</MenuItem>
+                        <MenuItem value={24}>24</MenuItem>
+                        <MenuItem value={26}>26</MenuItem>
                       </Select>
                     </FormControl>
                   </Item>
@@ -325,7 +326,7 @@ function Setting({ loaddata }) {
                       variant="contained"
                     >
                       {" "}
-                      Add data
+                      อัพเดทข้อมูล
                     </Button>
                   </Item>
                 </Grid>
@@ -349,10 +350,9 @@ function Setting({ loaddata }) {
               <Gettoken />
             </div>
           )}
-          
         </Grid>
       </Grid>
-    </>
+    </Container>
   );
 }
 

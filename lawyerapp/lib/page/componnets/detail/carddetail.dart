@@ -24,7 +24,7 @@ class CardDetail extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 25),
       child: Container(
-        height: 150,
+        height: 100,
         padding: EdgeInsets.all(20),
         decoration: BoxDecoration(
           color: color,
@@ -49,30 +49,12 @@ class CardDetail extends StatelessWidget {
             ),
             const SizedBox(height: 10),
             Text(
-              "รายละเอียด",
+              cardType,
               style: TextStyle(
                 color: Colors.black,
                 fontSize: 12,
                 fontWeight: FontWeight.bold,
               ),
-            ),
-            const SizedBox(height: 30),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  "ค่าใช้จ่าย",
-                  style: TextStyle(
-                    color: Colors.black,
-                  ),
-                ),
-                Text(
-                  "500 บาท",
-                  style: TextStyle(
-                    color: Colors.black,
-                  ),
-                ),
-              ],
             ),
           ],
         ),
