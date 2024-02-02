@@ -29,7 +29,7 @@ exports.createxpenses = async (req, res) => {
         '${expenses_ref}',
         '${expenses}')`;
     const query = await api(sql);
-
+    console.log(query);
     const accessToken = `select employee_linetoken from employees where employee_id='${Payer}'`;
     const text = 'มีการเพิ่มค่าใช้จ่ายใหม่ของคุณ'
     const queryaccesstoken = await api(accessToken)
@@ -39,6 +39,7 @@ exports.createxpenses = async (req, res) => {
     }
     res.send({ status: 200, data: query });
   } catch (error) {
+    console.log(error.message);
     res.send({ status: 400, data: error.message });
   }
 };
@@ -47,7 +48,7 @@ exports.getexpenses = async (req, res) => {
   try {
     const data = req.body.data;
     
-  console.log(data);
+
     let casewhen;
     if (data == undefined) {
       casewhen = "ORDER BY CONVERT(ce.PaymentDate, DATE) DESC";

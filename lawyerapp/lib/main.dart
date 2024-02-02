@@ -20,9 +20,7 @@ void main() async {
   );
 
   FirebaseMessaging messaging = FirebaseMessaging.instance;
-  FirebaseMessaging.instance.getToken().then((value) {
-    print("getToken :$value");
-  });
+
   NotificationSettings settings = await messaging.requestPermission(
     alert: true,
     announcement: false,
@@ -37,19 +35,12 @@ void main() async {
   } else {
     print('User declined or has not accepted permission');
   }
-
-  FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-    // Handle foreground messages
-    print(message.notification?.title);
-    print(message.notification?.body);
-  });
-
   FirebaseMessaging.onBackgroundMessage(_firebaseMessageingBackgroundHandler);
 
   FirebaseMessaging.onMessage.listen((RemoteMessage message) {
     // Handle foreground messages
-
-    notificationService.sendNotification();
+    print("Handling a background message: ${message.notification?.body}");
+    notificationService.sendNotification(message.notification?.body);
   });
   runApp(MyApp());
 }
@@ -64,10 +55,8 @@ Future<void> _firebaseMessageingBackgroundHandler(RemoteMessage message) async {
 
 @pragma('vm:entry-point') //สำคัญสำหรับ Run background
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
-  print("Handling a background message: ${message.messageId}");
   // Process the message and handle notifications, etc.
-  notificationService
-      .sendNotification(); // Ensure notificationService is properly initialized
+  notificationService.sendNotification(message.notification?.body);
 }
 
 class MyApp extends StatelessWidget {

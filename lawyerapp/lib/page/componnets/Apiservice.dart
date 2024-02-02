@@ -7,7 +7,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
 class ApiService {
-  static const String baseUrl = 'http://172.18.64.1:3123';
+  static const String baseUrl = 'http://192.168.1.230:3123';
   Future<void> saveToken(String token) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.setString('token', token);
@@ -27,6 +27,32 @@ class ApiService {
         url,
         headers: <String, String>{
           'Content-Type': 'application/json; charset=UTF-8',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        print('Data posted successfully');
+        var responseData = json.decode(response.body);
+        return responseData['data'];
+      } else {
+        throw Exception('Failed to post data to API');
+      }
+    } catch (e) {
+      // Handle network or server errors
+      throw Exception('Exception: $e');
+    }
+  }
+
+  Future<List<dynamic>> getProfile() async {
+    var url =
+        Uri.parse('$baseUrl/get/profile'); // Replace with your API endpoint
+
+    try {
+      var response = await http.post(
+        url,
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+          'Token': "${await getToken()}" ?? ""
         },
       );
 

@@ -27,6 +27,12 @@ exports.login = async (req, res) => {
     const password = req.body.password;
     const sql = `select count(*) as count from  employees where employee_username='${username}'`;
     const query = await api(sql);
+    if (query[0]?.count == 0) {
+      res.send({
+        status: 400,
+        data: error.message,
+      });
+    }
     if (query[0]?.count > 0) {
       const sql2 = `select *  from  employees where employee_username='${username}'`;
       const query2 = await api(sql2);
@@ -56,6 +62,7 @@ exports.login = async (req, res) => {
               .status(500)
               .send({ status: 500, message: "Internal Server Error" });
           } else {
+            console.log(555);
             if (enhash === true) {
               res.send({
                 status: 200,
@@ -70,7 +77,6 @@ exports.login = async (req, res) => {
       );
     }
   } catch (error) {
-    
     res.send({
       status: 400,
       data: error.message,
@@ -82,14 +88,14 @@ exports.loginMobile = async (req, res) => {
     const username = req.body.username;
     const password = req.body.password;
     const mobiletoken = req.body.employee_mobiletoken;
-
+    console.log({username,password});
     const sql = `select count(*) as count from  employees where employee_username='${username}'`;
     const query = await api(sql);
     if (query[0]?.count > 0) {
       const sql2 = `select *  from  employees where employee_username='${username}'`;
       const query2 = await api(sql2);
-      const updateusertoken  = `update employees set employee_mobiletoken='${mobiletoken}' where employee_id=${query2[0]?.employee_id}`
-      const queryupdateusertoken = await api(updateusertoken)
+      const updateusertoken = `update employees set employee_mobiletoken='${mobiletoken}' where employee_id=${query2[0]?.employee_id}`;
+      const queryupdateusertoken = await api(updateusertoken);
       const enhash = await bcrypt.compare(
         password,
         query2[0]?.employee_password

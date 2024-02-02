@@ -31,7 +31,7 @@ class _SplashScreenState extends State<SplashScreen>
     _controller.forward().then((_) {
       // เมื่อ Animation ทำงานเสร็จสิ้น
       Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (context) => Mainscreen(data:'ok')),
+        MaterialPageRoute(builder: (context) => Mainscreen(data:'ok',screen: 0,)),
       );
     });
   }

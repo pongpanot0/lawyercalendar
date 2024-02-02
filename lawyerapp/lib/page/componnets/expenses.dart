@@ -192,7 +192,7 @@ class _ExpensesPageState extends State<ExpensesPage> {
                   ),
                   Expanded(
                     child: Container(
-                      height: 100, // Fixed height for MyCard
+                      height: 150, // Fixed height for MyCard
                       child: MyCard(
                         balance: sumExpenses,
                         cardNumber: 10,
@@ -309,7 +309,7 @@ class _ExpensesPageState extends State<ExpensesPage> {
         onPressed: () {
           _showDialog(context);
         },
-        label: const Text('Add'),
+        label: const Text('ตกลง'),
         icon: const Icon(Icons.add, color: Colors.white, size: 25),
       ),
     );
@@ -333,7 +333,7 @@ class _ExpensesPageState extends State<ExpensesPage> {
                         return DropdownButtonHideUnderline(
                           child: DropdownButton2<int?>(
                             isExpanded: true,
-                            hint: Text('Select Timeline'),
+                            hint: Text('ประเภทค่าใช้จ่าย'),
                             value: selectPayID,
                             onChanged: (int? newValue) {
                               setState(() {
@@ -356,7 +356,7 @@ class _ExpensesPageState extends State<ExpensesPage> {
                         return DropdownButtonHideUnderline(
                           child: DropdownButton2<int?>(
                             isExpanded: true,
-                            hint: Text('Select paid_type'),
+                            hint: Text('ประเภทการเบิก'),
                             value: selectPaidType,
                             onChanged: (int? newValue) {
                               setState(() {
@@ -372,31 +372,31 @@ class _ExpensesPageState extends State<ExpensesPage> {
                           ),
                         );
                       }),
-                      Container(
-                        width: MediaQuery.of(context).size.width,
-                        child: ElevatedButton(
-                          onPressed: () async {
-                            var datePicked =
-                                await DatePicker.showSimpleDatePicker(
-                              context,
-                              // initialDate: DateTime(2020),
-                              firstDate: DateTime(2020),
-                              lastDate: DateTime(2090),
-                              dateFormat: "dd-MMMM-yyyy",
-                              locale: DateTimePickerLocale.en_us,
-                              looping: true,
-                            );
-                            if (datePicked != null) {
-                              if (this.mounted) {
-                                setState(() {
-                                  selectedDate = datePicked;
-                                });
-                              }
-                            }
-                          },
-                          child: Text(
-                              '${selectedDate != null ? DateFormat('dd-MM-yyyy').format(selectedDate!) : 'Choose a Date'}'),
-                        ),
+                      StatefulBuilder(
+                        builder: (BuildContext context, StateSetter setState) {
+                          return Container(
+                            width: MediaQuery.of(context).size.width,
+                            child: ElevatedButton(
+                              onPressed: () async {
+                                var datePicked = await showDatePicker(
+                                  context: context,
+                                  initialDate: DateTime.now(),
+                                  firstDate: DateTime(2020),
+                                  lastDate: DateTime(2090),
+                                );
+
+                                if (datePicked != null) {
+                                  setState(() {
+                                    selectedDate = datePicked;
+                                  });
+                                }
+                              },
+                              child: Text(
+                                '${selectedDate != null ? DateFormat('dd-MM-yyyy').format(selectedDate!) : 'วันที่จ่ายเงิน'}',
+                              ),
+                            ),
+                          );
+                        },
                       ),
                       Padding(
                         padding: const EdgeInsets.all(8.0),
@@ -429,7 +429,7 @@ class _ExpensesPageState extends State<ExpensesPage> {
                             Navigator.pop(context);
                           },
                           child: const Text(
-                            'Save',
+                            'ตกลง',
                             style: TextStyle(color: Colors.black),
                           ),
                         ),

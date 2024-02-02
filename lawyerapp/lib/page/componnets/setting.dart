@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:lawyerapp/page/Mainscreen.dart';
+import 'package:lawyerapp/page/componnets/Apiservice.dart';
 import 'package:lawyerapp/page/login.dart';
 import 'package:lawyerapp/themes.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:image_picker/image_picker.dart';
 
 class SettingPage extends StatefulWidget {
   const SettingPage({super.key});
@@ -24,6 +26,22 @@ class _SettingPageState extends State<SettingPage> {
     super.initState();
     myTheme = Theme1(); // หรือใช้ธีมเริ่มต้นที่คุณต้องการ
     _loadCurrentTheme();
+    getProfile();
+  }
+
+  late List<dynamic> ProfileData; // <-- Change the type here
+  Future<dynamic> getProfile() async {
+    try {
+      final apiService = ApiService();
+      dynamic profileData =
+          await apiService.getProfile(); // Call your API function
+      await Future.delayed(Duration(seconds: 1));
+      return profileData;
+    } catch (e) {
+      // Handle errors
+      print('Error: $e');
+      throw e; // Rethrow the error to handle it in the caller
+    }
   }
 
   _loadCurrentTheme() async {
@@ -71,168 +89,201 @@ class _SettingPageState extends State<SettingPage> {
         ),
         child: Stack(
           children: [
-            // Centered Circular Image
-            Positioned(
-              top: MediaQuery.of(context).size.height / 2 -
-                  350.0, // Adjust as needed
-              left: MediaQuery.of(context).size.width / 2 -
-                  180.0, // Adjust as needed
-              child: Column(
-                children: [
-                  Container(
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      border: Border.all(
-                        color: Colors.amber
-                            .shade200, // Set the border color for the CircleAvatar
-                        width: 2.0, // Set the border width for the CircleAvatar
-                      ),
-                    ),
-                    child: CircleAvatar(
-                      radius: 100.0,
-                      backgroundImage: NetworkImage(
-                        'https://lh3.googleusercontent.com/a/ACg8ocIC3gCkeVlsLFfcbp2I_3N_GKhSKrjjqdbdlG6BhHweCg=s360-c-no',
-                      ),
-                    ),
-                  ),
-                  SizedBox(
-                    height: 10,
-                  ),
-                  GestureDetector(
-                    onTap: () {
-                      _showColorInfo();
-                    },
-                    child: Container(
-                        height: 70,
-                        width: MediaQuery.of(context).size.width / 1.1,
-                        padding: EdgeInsets.all(20),
-                        decoration: BoxDecoration(
-                          color: myTheme.cardColors,
-                          borderRadius: BorderRadius.circular(16),
-                        ),
-                        child: Column(
-                          children: [
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Text("เลือกธีม",
-                                    style: TextStyle(
-                                        fontSize: 18,
-                                        color: myTheme.cardfontColors)),
-                              ],
-                            ),
-                          ],
-                        )),
-                  ),
-                  SizedBox(
-                    height: 10,
-                  ),
-                  Container(
-                      height: 100,
-                      width: MediaQuery.of(context).size.width / 1.1,
-                      padding: EdgeInsets.all(20),
-                      decoration: BoxDecoration(
-                        color: myTheme.cardColors,
-                        borderRadius: BorderRadius.circular(16),
-                      ),
+            FutureBuilder(
+                future: getProfile(),
+                builder: (context, snapshot) {
+                  print(snapshot);
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return Center(
+                      child: CircularProgressIndicator(),
+                    );
+                  } else if (snapshot.hasError) {
+                    return Center(
+                      child: Text('Error: ${snapshot.error}'),
+                    );
+                  } else {
+                    var dataArray = snapshot.data as List<dynamic>;
+                    print(dataArray);
+                    return Positioned(
+                      top: MediaQuery.of(context).size.height / 2 -
+                          350.0, // Adjust as needed
+                      left: MediaQuery.of(context).size.width / 2 -
+                          180.0, // Adjust as needed
                       child: Column(
                         children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Text("พงศ์ปณต สมัครการ",
-                                  style: TextStyle(
-                                      fontSize: 18,
-                                      color: myTheme.cardfontColors)),
-                            ],
+                          Container(
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              border: Border.all(
+                                color: Colors.amber
+                                    .shade200, // Set the border color for the CircleAvatar
+                                width:
+                                    2.0, // Set the border width for the CircleAvatar
+                              ),
+                            ),
+                            child: GestureDetector(
+                              onTap: () {
+                                _pickImageFromGallery(); // Call the method to pick an image from the gallery
+                              },
+                              child: CircleAvatar(
+                                radius: 100.0,
+                                backgroundImage: dataArray[0]['employee_pic'] !=
+                                        null
+                                    ? NetworkImage(dataArray[0]['employee_pic'])
+                                    : NetworkImage(
+                                        'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSN9lZxcVeTkoj27911KSV__OmKqgFRYhMTUw&usqp=CAUg',
+                                      ),
+                              ),
+                            ),
                           ),
                           SizedBox(
                             height: 10,
                           ),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Text("Email : Pongpanot0@gmail.com",
-                                  style: TextStyle(
-                                      fontSize: 18,
-                                      color: myTheme.cardfontColors)),
-                            ],
-                          ),
-                        ],
-                      )),
-                  SizedBox(
-                    height: 20,
-                  ),
-                  Container(
-                      height: 70,
-                      width: MediaQuery.of(context).size.width / 1.1,
-                      padding: EdgeInsets.all(20),
-                      decoration: BoxDecoration(
-                        color: myTheme.cardColors,
-                        borderRadius: BorderRadius.circular(16),
-                      ),
-                      child: Column(
-                        children: [
-                          InkWell(
+                          GestureDetector(
                             onTap: () {
-                              clearToken();
-                              Navigator.pushReplacement(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => LoginPage()),
-                              );
+                              _showColorInfo();
                             },
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Text(
-                                  "LogOut",
-                                  style: TextStyle(
-                                      fontSize: 18,
-                                      color: myTheme.cardfontColors),
+                            child: Container(
+                                height: 70,
+                                width: MediaQuery.of(context).size.width / 1.1,
+                                padding: EdgeInsets.all(20),
+                                decoration: BoxDecoration(
+                                  color: myTheme.cardColors,
+                                  borderRadius: BorderRadius.circular(16),
                                 ),
-                                Icon(
-                                  Icons.logout_outlined,
-                                  color: myTheme.cardfontColors,
-                                )
-                              ],
-                            ),
+                                child: Column(
+                                  children: [
+                                    Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Text("เลือกธีม",
+                                            style: TextStyle(
+                                                fontSize: 18,
+                                                color: myTheme.cardfontColors)),
+                                      ],
+                                    ),
+                                  ],
+                                )),
                           ),
-                        ],
-                      )),
-                  SizedBox(
-                    height: 20,
-                  ),
-                  Container(
-                      height: 70,
-                      width: MediaQuery.of(context).size.width / 1.1,
-                      padding: EdgeInsets.all(20),
-                      decoration: BoxDecoration(
-                        color: myTheme.danger,
-                        borderRadius: BorderRadius.circular(16),
-                      ),
-                      child: Column(
-                        children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Text(
-                                "Delete Account",
-                                style: TextStyle(
-                                    fontSize: 18, color: myTheme.fontColors),
+                          SizedBox(
+                            height: 10,
+                          ),
+                          Container(
+                              height: 100,
+                              width: MediaQuery.of(context).size.width / 1.1,
+                              padding: EdgeInsets.all(20),
+                              decoration: BoxDecoration(
+                                color: myTheme.cardColors,
+                                borderRadius: BorderRadius.circular(16),
                               ),
-                              Icon(
-                                Icons.delete_sweep_outlined,
-                                size: 30,
-                                color: myTheme.fontColors,
-                              )
-                            ],
+                              child: Column(
+                                children: [
+                                  Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Text(
+                                          "${dataArray[0]['employee_firstname']} ${dataArray[0]['employee_lastname']}",
+                                          style: TextStyle(
+                                              fontSize: 18,
+                                              color: myTheme.cardfontColors)),
+                                    ],
+                                  ),
+                                  SizedBox(
+                                    height: 5,
+                                  ),
+                                  Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Text("${dataArray[0]['employee_email']}",
+                                          style: TextStyle(
+                                              fontSize: 18,
+                                              color: myTheme.cardfontColors)),
+                                    ],
+                                  ),
+                                ],
+                              )),
+                          SizedBox(
+                            height: 20,
                           ),
+                          Container(
+                              height: 70,
+                              width: MediaQuery.of(context).size.width / 1.1,
+                              padding: EdgeInsets.all(20),
+                              decoration: BoxDecoration(
+                                color: myTheme.cardColors,
+                                borderRadius: BorderRadius.circular(16),
+                              ),
+                              child: Column(
+                                children: [
+                                  InkWell(
+                                    onTap: () {
+                                      clearToken();
+                                      Navigator.pushReplacement(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) => LoginPage()),
+                                      );
+                                    },
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Text(
+                                          "LogOut",
+                                          style: TextStyle(
+                                              fontSize: 18,
+                                              color: myTheme.cardfontColors),
+                                        ),
+                                        Icon(
+                                          Icons.logout_outlined,
+                                          color: myTheme.cardfontColors,
+                                        )
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              )),
+                          SizedBox(
+                            height: 20,
+                          ),
+                          Container(
+                              height: 70,
+                              width: MediaQuery.of(context).size.width / 1.1,
+                              padding: EdgeInsets.all(20),
+                              decoration: BoxDecoration(
+                                color: myTheme.danger,
+                                borderRadius: BorderRadius.circular(16),
+                              ),
+                              child: Column(
+                                children: [
+                                  Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Text(
+                                        "Delete Account",
+                                        style: TextStyle(
+                                            fontSize: 18,
+                                            color: myTheme.fontColors),
+                                      ),
+                                      Icon(
+                                        Icons.delete_sweep_outlined,
+                                        size: 30,
+                                        color: myTheme.fontColors,
+                                      )
+                                    ],
+                                  ),
+                                ],
+                              )),
                         ],
-                      )),
-                ],
-              ),
-            ),
+                      ),
+                    );
+                  }
+                }),
+            // Centered Circular Image
           ],
         ),
       ),
@@ -436,11 +487,11 @@ class _SettingPageState extends State<SettingPage> {
               SizedBox(height: 16.0),
               ElevatedButton(
                 onPressed: () {
-                  Navigator.of(context).pop();
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => Mainscreen(data: 'update'),
+                      builder: (context) =>
+                          Mainscreen(data: 'update', screen: 3),
                     ),
                   );
                 },
@@ -451,5 +502,18 @@ class _SettingPageState extends State<SettingPage> {
         );
       },
     );
+  }
+
+  void _pickImageFromGallery() async {
+    final picker = ImagePicker();
+    final image = await ImagePicker().pickImage(source: ImageSource.gallery);
+    if (image != null) {
+      // Handle the picked image file, for example, you can display it
+      // You can use File(pickedFile.path) to get the file path
+      // For simplicity, we just print the file path here
+      print('Image picked: ${image.path}');
+    } else {
+      print('No image selected.');
+    }
   }
 }

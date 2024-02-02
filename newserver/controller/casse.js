@@ -250,6 +250,7 @@ exports.getCaseByid = async (req, res) => {
     const querygetplanif = await api(getplanif);
     const querygetdefendant = await api(getdefendant);
     const querygetcase_complinant = await api(getcase_complainant);
+    console.log(querycase_defendant);
     res.send({
       status: 200,
       data: query,

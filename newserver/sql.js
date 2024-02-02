@@ -1,10 +1,10 @@
 const mysql = require("mysql");
 
 const config = {
-  host: process.env.DB_HOST || "10.222.98.153",
+  host: process.env.DB_HOST || "localhost",
   user: process.env.DB_USER || "root",
-  password: process.env.DB_PASSWORD || "root",
-  database: process.env.DB_DATABASE || "lawyer_production",
+  password: process.env.DB_PASSWORD || "",
+  database: process.env.DB_DATABASE || "lawyer",
 };
 
 const pool = mysql.createPool(config);

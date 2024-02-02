@@ -8,8 +8,9 @@ import 'package:flutter_holo_date_picker/flutter_holo_date_picker.dart';
 import 'package:intl/intl.dart';
 import 'dart:convert';
 import 'dart:async';
-
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:lawyerapp/page/componnets/detail/todolist.dart';
+import 'package:lawyerapp/themes.dart';
 
 class User {
   final String tsb_ref;
@@ -52,13 +53,15 @@ class _CaseDetailState extends State<CaseDetail> {
   List<dynamic> case_plainiff = [];
   List<dynamic> case_defendant = [];
   List<dynamic> timelien = [];
+
   List<dynamic> timelineTypes = [];
   String? dropdownvalue;
   int _selectedIndex = 0;
-
+  late MyTheme myTheme = Theme2();
   void initState() {
     fetchData();
     getTimelineType();
+    _loadCurrentTheme();
     super.initState();
   }
 
@@ -84,7 +87,7 @@ class _CaseDetailState extends State<CaseDetail> {
   }
 
   Color getColorBasedOnStatus(int caseTimelineEnd) {
-    return caseTimelineEnd == 1 ? Colors.green : Colors.orange;
+    return caseTimelineEnd == 1 ? myTheme.cardColors : myTheme.activeColors;
   }
 
   List<StepperStep> stepperList = [];
@@ -93,15 +96,17 @@ class _CaseDetailState extends State<CaseDetail> {
       print('fetchData successful');
       final apiService = ApiService();
       var response = await apiService.getCaseByid(widget.CaseID);
+
       setState(() {
         data = response['data'];
         caseExpenses = response['caseExpenses'];
         CaseNotices = response['CaseNotices'];
         caseLawyer = response['caseLawyer'];
         timelien = response['timelien'];
-
+        case_defendant = response['case_defendant'];
+        case_plainiff = response['case_plainiff'];
+        print(case_plainiff);
         stepperList = timelien.map((timelineItem) {
-          print(timelineItem);
           String incomingDateString = timelineItem['case_timebar_incoming'];
 
           DateTime incomingDate = DateTime.parse(
@@ -146,6 +151,21 @@ class _CaseDetailState extends State<CaseDetail> {
     }
   }
 
+  _loadCurrentTheme() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? themeName = prefs.getString('current_theme');
+
+    setState(() {
+      if (themeName == 'theme1') {
+        myTheme = Theme1();
+      } else if (themeName == 'theme2') {
+        myTheme = Theme2();
+      } else if (themeName == 'theme3') {
+        myTheme = Theme3();
+      }
+    });
+  }
+
   Future<void> createCasetimeline(
       String textController, int selectedValue, String selectedDate) async {
     try {
@@ -182,7 +202,7 @@ class _CaseDetailState extends State<CaseDetail> {
     String formattedAmount = NumberFormat('#,###').format(claimAmount);
     return Scaffold(
         appBar: AppBar(
-          backgroundColor: Colors.grey.shade900,
+          backgroundColor: myTheme.cardColors,
         ),
         floatingActionButton: FloatingActionButton.extended(
           onPressed: () {
@@ -256,8 +276,86 @@ class _CaseDetailState extends State<CaseDetail> {
                         child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              Text("โจทย์ : พงศ์ปณต สมัครการ"),
-                              Text("จำเลย : พงศ์ปณต สมัครการ"),
+                              GestureDetector(
+                                  onTap: () {
+                                    showModalBottomSheet(
+                                      context: context,
+                                      builder: (BuildContext context) {
+                                        // Build your bottom sheet content here
+                                        return Container(
+                                          height: 200,
+                                          child: Center(
+                                            child: ListView.builder(
+                                              shrinkWrap: true,
+                                              physics:
+                                                  NeverScrollableScrollPhysics(),
+                                              itemCount: case_defendant.length,
+                                              itemBuilder: (context, index) {
+                                                return Padding(
+                                                  padding:
+                                                      const EdgeInsets.all(8.0),
+                                                  child: Center(
+                                                    child: Text(
+                                                      "${case_defendant[index]['case_defendant_firstname']} จำเลยที่ ${index + 1}",
+                                                      style: TextStyle(
+                                                          fontSize: 16,
+                                                          fontWeight:
+                                                              FontWeight.bold),
+                                                      textAlign:
+                                                          TextAlign.center,
+                                                    ),
+                                                  ),
+                                                );
+                                              },
+                                            ),
+                                          ),
+                                        );
+                                      },
+                                    );
+                                  },
+                                  child: Text("จำเลย",
+                                      style: TextStyle(color: Colors.blue))),
+                              GestureDetector(
+                                  onTap: () {
+                                    showModalBottomSheet(
+                                      context: context,
+                                      builder: (BuildContext context) {
+                                        // Build your bottom sheet content here
+                                        return Container(
+                                          height: 200,
+                                          child: Center(
+                                            child: ListView.builder(
+                                              shrinkWrap: true,
+                                              physics:
+                                                  NeverScrollableScrollPhysics(),
+                                              itemCount: case_plainiff.length,
+                                              itemBuilder: (context, index) {
+                                                return Padding(
+                                                  padding:
+                                                      const EdgeInsets.all(8.0),
+                                                  child: Center(
+                                                    child: Text(
+                                                      "${case_plainiff[index]['case_plainiff_firstname']} โจทก์ที่ ${index + 1}",
+                                                      style: TextStyle(
+                                                          fontSize: 16,
+                                                          fontWeight:
+                                                              FontWeight.bold),
+                                                      textAlign:
+                                                          TextAlign.center,
+                                                    ),
+                                                  ),
+                                                );
+                                              },
+                                            ),
+                                          ),
+                                        );
+                                      },
+                                    );
+                                  },
+                                  child: Text(
+                                    "โจทก์",
+                                    style: TextStyle(color: Colors.blue),
+                                  )),
                             ]),
                       ),
                     ),
@@ -358,26 +456,31 @@ class _CaseDetailState extends State<CaseDetail> {
                 SizedBox(width: 20),
                 Container(
                   width: MediaQuery.of(context).size.width / 2,
-                  child: ElevatedButton(
-                    onPressed: () async {
-                      var datePicked = await DatePicker.showSimpleDatePicker(
-                        context,
-                        // initialDate: DateTime(2020),
-                        firstDate: DateTime(2020),
-                        lastDate: DateTime(2090),
-                        dateFormat: "dd-MMMM-yyyy",
-                        locale: DateTimePickerLocale.en_us,
-                        looping: true,
+                  child: StatefulBuilder(
+                    builder: (BuildContext context, StateSetter setState) {
+                      return ElevatedButton(
+                        onPressed: () async {
+                          var datePicked =
+                              await DatePicker.showSimpleDatePicker(
+                            context,
+                            firstDate: DateTime(2020),
+                            lastDate: DateTime(2090),
+                            dateFormat: "dd-MMMM-yyyy",
+                            locale: DateTimePickerLocale.en_us,
+                            looping: true,
+                          );
+                          if (datePicked != null) {
+                            // Update the button text with the selected date
+                            setState(() {
+                              selectedDate = datePicked;
+                            });
+                          }
+                        },
+                        child: Text(
+                          '${selectedDate != null ? DateFormat('dd-MM-yyyy').format(selectedDate!) : 'นัดหมายครั้งถัดไป'}',
+                        ),
                       );
-                      if (datePicked != null) {
-                        // Update the button text with the selected date
-                        setState(() {
-                          selectedDate = datePicked;
-                        });
-                      }
                     },
-                    child: Text(
-                        '${selectedDate != null ? DateFormat('dd-MM-yyyy').format(selectedDate!) : 'Choose a Date'}'),
                   ),
                 ),
               ],
@@ -392,7 +495,7 @@ class _CaseDetailState extends State<CaseDetail> {
             child: const Text('Close'),
           ),
           TextButton(
-            onPressed: ()  {
+            onPressed: () {
               // Perform actions with
               //prithe selected values
               createCasetimeline(textController.text, selectedTimelineId ?? 1,

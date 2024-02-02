@@ -45,6 +45,7 @@ dependencies:
   webview_flutter: ^4.4.3
   fl_chart: ^0.65.0
   accordion: ^2.6.0
+  image_picker: ^0.8.4+4
   timelines: ^0.1.0
   casa_vertical_stepper: ^0.0.5
   flutter_launcher_icons: ^0.13.1

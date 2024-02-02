@@ -43,41 +43,55 @@ class _HomepageState extends State<Homepage> {
     WidgetsFlutterBinding.ensureInitialized();
     fetchData();
     _loadCurrentTheme();
+    getProfile();
     super.initState();
   }
 
   List<User> users = [];
-  Future<void> fetchData() async {
+  Future<List<User>> fetchData() async {
     try {
       final apiService = ApiService();
+      await Future.delayed(Duration(seconds: 1));
       List<dynamic> apiData =
           await apiService.getCase(); // Call your API function
 
-      setState(() {
-        // Update the 'users' list with the fetched data
-        users = apiData.map((data) {
-          return User(
-              tsb_ref: data['tsb_ref'] ??
-                  '', // Use an empty string if 'do_no' is null
-              rednum: data['rednum'] ??
-                  '', // Use an empty string if 'do_no' is null
-              blacknum: data['blacknum'] ??
-                  "", // Use an empty string if 'do_no' is null
+      // Transform apiData into a list of User objects
+      List<User> users = apiData.map((data) {
+        return User(
+          tsb_ref: data['tsb_ref'] ?? '',
+          rednum: data['rednum'] ?? '',
+          blacknum: data['blacknum'] ?? '',
+          DuedateSummittree: data['DuedateSummittree'] ?? '',
+          Customer_ref: data['Customer_ref'] ?? '',
+          ClientName: data['ClientName'] ?? '',
+          CaseTypeName: data['CaseTypeName'] ?? '',
+          CaseID: data['CaseID'] ?? 1,
+          timeline_status_name: data['timeline_status_name'] ?? '',
+          case_timebar_incoming: data['case_timebar_incoming'] ?? '',
+        );
+      }).toList();
 
-              DuedateSummittree: data['DuedateSummittree'] ??
-                  "", // Use an empty string if 'do_no' is null
-
-              Customer_ref: data['Customer_ref'] ?? "",
-              ClientName: data['ClientName'] ?? "",
-              CaseTypeName: data['CaseTypeName'] ?? "",
-              CaseID: data['CaseID'] ?? 1,
-              timeline_status_name: data['timeline_status_name'] ?? "",
-              case_timebar_incoming: data['case_timebar_incoming'] ?? " ");
-        }).toList();
-      });
+      return users; // Return the list of User objects
     } catch (e) {
       // Handle errors
-      print('ja $e');
+      print('Error: $e');
+      // Return an empty list if there's an error
+      return [];
+    }
+  }
+
+  late List<dynamic> ProfileData; // <-- Change the type here
+  Future<dynamic> getProfile() async {
+    try {
+      final apiService = ApiService();
+      dynamic profileData =
+          await apiService.getProfile(); // Call your API function
+      await Future.delayed(Duration(seconds: 1));
+      return profileData;
+    } catch (e) {
+      // Handle errors
+      print('Error: $e');
+      throw e; // Rethrow the error to handle it in the caller
     }
   }
 
@@ -136,7 +150,22 @@ class _HomepageState extends State<Homepage> {
             height: 10,
           ),
           CustomAppBar(leftIcon: Icons.home, rightIcon: Icons.notifications),
-          RestaurantInfo(),
+          FutureBuilder<dynamic>(
+            future: getProfile(),
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return Center();
+              } else if (snapshot.hasError) {
+                return Center(
+                  child: Text('Error: ${snapshot.error}'),
+                );
+              } else {
+                dynamic profileData = snapshot.data!;
+
+                return RestaurantInfo(ProfileData: profileData);
+              }
+            },
+          ),
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: Row(
@@ -148,74 +177,101 @@ class _HomepageState extends State<Homepage> {
             ),
           ),
           Expanded(
-            child: Container(
-              child: Stack(children: [
-                ListView.builder(
-                  itemCount: users.length,
-                  itemBuilder: (BuildContext context, int index) {
-                    String incomingDateString =
-                        users[index].case_timebar_incoming ??
-                            "2024-01-24 00:00:00.000";
-               
-                    DateTime incomingDate = DateTime.parse(
-                        incomingDateString); // Assuming incomingDateString is in a parseable format
+            child: FutureBuilder<List<User>>(
+              future:
+                  fetchData(), // Call the function that fetches your data asynchronously
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return Center(
+                    child:
+                        CircularProgressIndicator(), // Show a loading indicator while waiting for data
+                  );
+                } else if (snapshot.hasError) {
+                  return Center(
+                    child: Text(
+                        'Error: ${snapshot.error}'), // Show an error message if data fetching fails
+                  );
+                } else {
+                  List<User> users = snapshot.data ??
+                      []; // Retrieve the list of users from the snapshot
 
-                    String formattedDate =
-                        DateFormat('dd-MM-yyyy').format(incomingDate!);
-                    return Padding(
-                      padding: const EdgeInsets.only(
-                          top: 0, bottom: 20, left: 8, right: 8),
-                      child: Card(
-                        color: myTheme.cardTabColors,
-                        elevation: 4.0,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(16.0),
-                        ),
-                        child: ListTile(
-                          dense: true,
-                          title: Row(
-                            children: [
-                              Icon(Icons
-                                  .add_circle_rounded), // Change this to the desired icon
-                              SizedBox(
-                                width: 10,
+                  return Container(
+                    child: Stack(
+                      children: [
+                        ListView.builder(
+                          itemCount: users.length,
+                          itemBuilder: (BuildContext context, int index) {
+                            String incomingDateString =
+                                users[index].case_timebar_incoming ??
+                                    "2024-01-24 00:00:00.000";
+
+                            DateTime incomingDate = DateTime.parse(
+                                incomingDateString); // Assuming incomingDateString is in a parseable format
+
+                            String formattedDate =
+                                DateFormat('dd-MM-yyyy').format(incomingDate!);
+                            return Padding(
+                              padding: const EdgeInsets.only(
+                                  top: 0, bottom: 20, left: 8, right: 8),
+                              child: Card(
+                                color: myTheme.cardTabColors,
+                                elevation: 4.0,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(16.0),
+                                ),
+                                child: ListTile(
+                                  dense: true,
+                                  title: Row(
+                                    children: [
+                                      Icon(Icons
+                                          .add_circle_rounded), // Change this to the desired icon
+                                      SizedBox(
+                                        width: 10,
+                                      ),
+                                      Text(users[index].tsb_ref),
+                                      Spacer(), // Add Spacer to push the icon to the right
+                                    ],
+                                  ),
+                                  subtitle: Column(
+                                    mainAxisAlignment: MainAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      SizedBox(
+                                        height: 10,
+                                      ),
+                                      Text(
+                                          '${users[index].timeline_status_name}'),
+                                      SizedBox(
+                                        height: 10,
+                                      ),
+                                      Text(
+                                          'กำหนดการครั้งถัดไปวันที่ ${formattedDate}'),
+                                      SizedBox(
+                                        height: 5,
+                                      ),
+                                    ],
+                                  ),
+                                  trailing: Icon(
+                                      Icons.arrow_forward), // ตัวอย่าง icon
+                                  onTap: () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) => CaseDetail(
+                                              CaseID: users[index].CaseID)),
+                                    );
+                                  },
+                                ),
                               ),
-                              Text(users[index].tsb_ref),
-                              Spacer(), // Add Spacer to push the icon to the right
-                            ],
-                          ),
-                          subtitle: Column(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              SizedBox(
-                                height: 10,
-                              ),
-                              Text('${users[index].timeline_status_name}'),
-                              SizedBox(
-                                height: 10,
-                              ),
-                              Text('กำหนดการครั้งถัดไปวันที่ ${formattedDate}'),
-                              SizedBox(
-                                height: 5,
-                              ),
-                            ],
-                          ),
-                          trailing: Icon(Icons.arrow_forward), // ตัวอย่าง icon
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) =>
-                                      CaseDetail(CaseID: users[index].CaseID)),
                             );
                           },
                         ),
-                      ),
-                    );
-                  },
-                ),
-              ]),
+                      ],
+                    ),
+                  );
+                }
+              },
             ),
           ),
         ],

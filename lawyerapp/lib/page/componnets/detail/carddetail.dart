@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:lawyerapp/themes.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class CardDetail extends StatelessWidget {
   final double balance;
@@ -21,6 +23,21 @@ class CardDetail extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    late MyTheme myTheme = Theme2();
+
+    _loadCurrentTheme() async {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      String? themeName = prefs.getString('current_theme');
+
+      if (themeName == 'theme1') {
+        myTheme = Theme1();
+      } else if (themeName == 'theme2') {
+        myTheme = Theme2();
+      } else if (themeName == 'theme3') {
+        myTheme = Theme3();
+      }
+    }
+
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 25),
       child: Container(
@@ -40,7 +57,7 @@ class CardDetail extends StatelessWidget {
                 Text(
                   Balance,
                   style: TextStyle(
-                    color: Colors.black,
+                    color: myTheme.fontColors,
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
                   ),
@@ -51,7 +68,7 @@ class CardDetail extends StatelessWidget {
             Text(
               cardType,
               style: TextStyle(
-                color: Colors.black,
+                color: myTheme.fontColors,
                 fontSize: 12,
                 fontWeight: FontWeight.bold,
               ),

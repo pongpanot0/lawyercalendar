@@ -2,11 +2,13 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
 import 'package:flutter/rendering.dart';
+import 'package:lawyerapp/page/componnets/Apiservice.dart';
 import 'package:lawyerapp/themes.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class RestaurantInfo extends StatefulWidget {
-  const RestaurantInfo({super.key});
+  final dynamic? ProfileData;
+  const RestaurantInfo({Key? key, this.ProfileData});
 
   @override
   State<RestaurantInfo> createState() => _RestaurantInfoState();
@@ -17,6 +19,7 @@ class _RestaurantInfoState extends State<RestaurantInfo> {
   @override
   void initState() {
     _loadCurrentTheme();
+    super.initState();
   }
 
   _loadCurrentTheme() async {
@@ -74,7 +77,7 @@ class _RestaurantInfoState extends State<RestaurantInfo> {
                     Row(
                       children: [
                         Text(
-                          "นาย พงศ์ปณต สมัครการ",
+                          "${widget.ProfileData?[0]['employee_firstname']} ${widget.ProfileData?[0]['employee_lastname']}",
                           style: TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.bold,

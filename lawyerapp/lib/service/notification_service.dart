@@ -6,26 +6,30 @@ class NotificationService {
   final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
       FlutterLocalNotificationsPlugin();
 
-  final AndroidInitializationSettings androidInitializationSettings =
-      const AndroidInitializationSettings('mipmap/launcher_icon');
+  void initialize() async {
+    // Initialize time zone settings
+    tz.initializeTimeZones();
 
-  void initalNotification() async {
-    InitializationSettings initializationSettings =
-        InitializationSettings(android: androidInitializationSettings);
-    flutterLocalNotificationsPlugin.initialize(initializationSettings);
+    // Initialize local notifications plugin
+    const AndroidInitializationSettings androidInitializationSettings =
+        AndroidInitializationSettings('mipmap/launcher_icon');
+    final InitializationSettings initializationSettings =
+        InitializationSettings(
+            android: androidInitializationSettings, iOS: null);
+    await flutterLocalNotificationsPlugin.initialize(initializationSettings);
   }
 
-  void sendNotification() async {
-    AndroidNotificationDetails androidNotificationDetails =
+  void sendNotification(String? message) async {
+    const AndroidNotificationDetails androidNotificationDetails =
         AndroidNotificationDetails("channelId", "channelName",
             importance: Importance.max,
             priority: Priority.max,
             icon: 'mipmap/launcher_icon');
 
-    NotificationDetails notificationDetails =
+    const NotificationDetails notificationDetails =
         NotificationDetails(android: androidNotificationDetails);
 
     await flutterLocalNotificationsPlugin.show(
-        0, 'MconOil', 'คุณได้รับแจ้งเตือนใหม่', notificationDetails);
+        0, 'LawyerApp', message, notificationDetails);
   }
 }

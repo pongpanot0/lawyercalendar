@@ -9,16 +9,17 @@ function jwtVerify(params) {
   }
 }
 exports.getProfile = async (req, res) => {
-    try {
-        const header = req.headers;
-        const user = jwtVerify(header)
-        const sql = `select * from employees where employee_id=${user}`
-        const query = await api(sql)
-        res.send({
-            status:200,
-            data:query
-        })
-    } catch (error) {
-        console.log(error.message);
-    }
-}
+  try {
+  
+    const header = req.headers;
+    const user = jwtVerify(header);
+    const sql = `select * from employees where employee_id=${user}`;
+    const query = await api(sql);
+    res.send({
+      status: 200,
+      data: query,
+    });
+  } catch (error) {
+    console.log(error.message);
+  }
+};

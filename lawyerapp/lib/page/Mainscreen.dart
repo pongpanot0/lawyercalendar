@@ -12,8 +12,9 @@ import '../themes.dart';
 
 class Mainscreen extends StatefulWidget {
   final String data;
+  final int screen;
 
-  const Mainscreen({Key? key, required this.data});
+  const Mainscreen({Key? key, required this.data, required this.screen});
 
   @override
   State<Mainscreen> createState() => _MainscreenState();
@@ -25,7 +26,7 @@ class _MainscreenState extends State<Mainscreen> {
     Homepage(),
     CalendarViewPage(),
     ExpensesPage(),
-    SettingPage()
+    SettingPage(),
   ];
 
   String message = "";
@@ -48,6 +49,7 @@ class _MainscreenState extends State<Mainscreen> {
   @override
   void initState() {
     super.initState();
+    _selectedIndex = widget.screen;
     _loadCurrentTheme();
     if (data == "update") {
       _loadCurrentTheme();
@@ -69,19 +71,6 @@ class _MainscreenState extends State<Mainscreen> {
     });
   }
 
-  _switchTheme(MyTheme newTheme) async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    setState(() {
-      myTheme = newTheme;
-      if (newTheme is Theme1) {
-        prefs.setString('current_theme', 'theme1');
-      } else if (newTheme is Theme2) {
-        prefs.setString('current_theme', 'theme2');
-      } else if (newTheme is Theme3) {
-        prefs.setString('current_theme', 'theme3');
-      }
-    });
-  }
 
   @override
   Widget build(BuildContext context) {

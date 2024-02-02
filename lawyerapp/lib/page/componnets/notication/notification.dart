@@ -21,7 +21,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
           icon: Icon(Icons.arrow_back),
           onPressed: () {
             Navigator.of(context).pushReplacement(
-              MaterialPageRoute(builder: (context) => Mainscreen(data:'ok')),
+              MaterialPageRoute(builder: (context) => Mainscreen(data:'ok',screen: 0,)),
             );
           },
         ),

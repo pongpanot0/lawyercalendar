@@ -1,7 +1,10 @@
 import React from "react";
 import "./Login.scss";
 import apiService from "../Shared/Apiserver";
-
+import Button from "@mui/material/Button";
+import Snackbar from "@mui/material/Snackbar";
+import IconButton from "@mui/material/IconButton";
+import CloseIcon from "@mui/icons-material/Close";
 import { useNavigate, useParams } from "react-router-dom";
 const Login = () => {
   const [username, setUsername] = React.useState("");
@@ -10,19 +13,53 @@ const Login = () => {
   const postData = async () => {
     try {
       const reponse = await apiService.login(username, password);
-      console.log(reponse);
+
       if (reponse.status == 200) {
         localStorage.setItem("token", reponse.token);
         navigate("/");
+      } else {
+        setOpen(true);
       }
     } catch (error) {
-      console.log(error.message);
+      console.log({data:error.message});
     }
   };
+  const [open, setOpen] = React.useState(false);
+
+  const handleClose = (event, reason) => {
+    if (reason === "clickaway") {
+      return;
+    }
+
+    setOpen(false);
+  };
+  const action = (
+    <React.Fragment>
+      <Button color="secondary" size="small" onClick={handleClose}>
+        ยืนยัน
+      </Button>
+      <IconButton
+        size="large"
+        aria-label="close"
+        color="inherit"
+        onClick={handleClose}
+      >
+        <CloseIcon fontSize="small" />
+      </IconButton>
+    </React.Fragment>
+  );
   return (
     <div className="body">
       <div class="login-wrap">
         <div class="container2" id="container">
+          <Snackbar
+            open={open}
+            anchorOrigin={{ vertical: "top", horizontal: "right" }}
+            autoHideDuration={6000}
+            onClose={handleClose}
+            message="Username หรือ Password ผิดพลาด"
+            action={action}
+          />
           <div class="form-container sign-up-container">
             <form action="#">
               <h1>Create Account</h1>
@@ -85,7 +122,6 @@ const Login = () => {
           </div>
         </div>
       </div>
-     
     </div>
   );
 };

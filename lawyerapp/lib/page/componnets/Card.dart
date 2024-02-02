@@ -65,7 +65,7 @@ class _MyCardState extends State<MyCard> {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 10),
       child: Container(
-        height: 150,
+        height: 180,
         padding: EdgeInsets.all(20),
         decoration: BoxDecoration(
           color: widget.color,
@@ -94,7 +94,7 @@ class _MyCardState extends State<MyCard> {
                 fontWeight: FontWeight.bold,
               ),
             ),
-            const SizedBox(height: 30),
+           
           ],
         ),
       ),

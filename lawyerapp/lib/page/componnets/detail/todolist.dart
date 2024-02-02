@@ -2,7 +2,8 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:lawyerapp/page/componnets/Apiservice.dart';
-
+import 'package:lawyerapp/themes.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 class Task {
   final int id;
   final String title;
@@ -23,14 +24,29 @@ class TodoList extends StatefulWidget {
 
 class _TodoListState extends State<TodoList> {
   List<Task> tasks = [];
+  late MyTheme myTheme = Theme2();
   late Future<List<Task>> _tasksFuture;
   @override
   void initState() {
     super.initState();
+    _loadCurrentTheme();
     _tasksFuture = fetchData();
   }
 
   List<dynamic> apiData = [];
+
+  _loadCurrentTheme() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? themeName = prefs.getString('current_theme');
+
+    if (themeName == 'theme1') {
+      myTheme = Theme1();
+    } else if (themeName == 'theme2') {
+      myTheme = Theme2();
+    } else if (themeName == 'theme3') {
+      myTheme = Theme3();
+    }
+  }
 
   Future<void> createtodolist(String taskController) async {
     try {
@@ -45,25 +61,27 @@ class _TodoListState extends State<TodoList> {
       final apiService = ApiService();
 
       var postResponse = await apiService.createtodolist(data);
-      tasks.clear();
-      _tasksFuture = fetchData();
+
+      setState(() {
+        _tasksFuture = fetchData();
+      });
     } catch (e) {
       print('Error: $e');
     }
   }
 
   Future<List<Task>> fetchData() async {
+    tasks.clear();
     final apiService = ApiService();
+
     apiData = await apiService.caseTodolist(widget.case_timeline_id);
-    await Future.delayed(Duration(seconds: 2));
+    await Future.delayed(Duration(seconds: 1));
 
     tasks.addAll(apiData.map((taskData) {
-      bool isCompleted = taskData['case_todolist_sucess'] == 1;
-      print(isCompleted);
       return Task(
           id: taskData['case_todolist'] ?? "",
           title: taskData['case_todolist_name'] ?? "",
-          isCompleted:  taskData['case_todolist_sucess'] == 1);
+          isCompleted: taskData['case_todolist_sucess'] == 1);
     }));
 
     return tasks;
@@ -81,7 +99,7 @@ class _TodoListState extends State<TodoList> {
       appBar: AppBar(
         title: Text("TODOLIST"),
         centerTitle: true,
-        backgroundColor: Colors.grey.shade900,
+        backgroundColor: myTheme.cardColors,
       ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () {
@@ -116,7 +134,6 @@ class _TodoListState extends State<TodoList> {
                     "สิ่งที่ต้องทำ",
                     style: TextStyle(fontSize: 18),
                   ),
-                 
                 ],
               ),
             ),
@@ -136,7 +153,7 @@ class _TodoListState extends State<TodoList> {
                         return Text('Error: ${snapshot.error}');
                       } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
                         // If the Future completes successfully but with no data, show a message
-                        return Text('No tasks found.');
+                        return Text('ไม่มีสิ่งที่ต้องทำ');
                       } else {
                         return ListView.builder(
                           itemCount: snapshot.data!.length,
@@ -191,11 +208,11 @@ class _TodoListState extends State<TodoList> {
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: Text('Add a Task'),
+          title: Text('เพิ่มสิ่งที่ต้องทำ'),
           content: TextField(
             controller: taskController,
             decoration: InputDecoration(
-              hintText: 'Enter your task...',
+              hintText: 'สิ่งที่ต้องทำ',
             ),
           ),
           actions: [
@@ -203,14 +220,14 @@ class _TodoListState extends State<TodoList> {
               onPressed: () {
                 Navigator.pop(context);
               },
-              child: Text('Cancel'),
+              child: Text('ยกเลิก'),
             ),
             ElevatedButton(
               onPressed: () async {
                 await createtodolist(taskController.text ?? "");
-                /* Navigator.pop(context); */
+                Navigator.pop(context);
               },
-              child: Text('Add'),
+              child: Text('ตกลง'),
             ),
           ],
         );

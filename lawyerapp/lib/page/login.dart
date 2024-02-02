@@ -56,7 +56,7 @@ class _LoginPageState extends State<LoginPage> {
           await ApiService().Login(username, password, firebaseToken ?? "");
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (context) => Mainscreen(data:'ok')),
+        MaterialPageRoute(builder: (context) => Mainscreen(data:'ok',screen: 0,)),
       );
       // Check the response data and perform actions accordingly
       print('Login successful. Received token: $token');

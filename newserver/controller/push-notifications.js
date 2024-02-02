@@ -9,7 +9,7 @@ const messaging = admin.messaging();
 
 exports.sendPushNotification = (req, res, next) => {
   try {
-    sendNotification(req.body.token, "Test", "test");
+    sendNotification(req.body.token, req.body.title, req.body.body);
     res.send({
       status: 200,
     });
@@ -21,7 +21,7 @@ exports.sendPushNotification = (req, res, next) => {
 function sendNotification(token, title, body) {
   return messaging.send({
     token:
-      "dhsP7XNgRMODajvFomwb7V:APA91bGkyy6xrDsN3pss7rYTzCGHWUwlbd2HBs3aHBIk4h1Gic4qj4eVE5n8-oBcdkEVNPkGW6uTBVR3GQuukfqfIPRgk4jBAEEnvh2KVr-250228ER9o9znj5uZmC4dOt6wsJPCYCjX",
+      "fgwTpManSGyGqT6QJId34S:APA91bH7g9HbokAZoLp5hFN8epwza5z_bamrxVos3TIqclPjrElDAvPDSd9B9NlP4rGMX4px41KA4jte5rQKYOAHs22dlNBF9axpXqCllDEbdGphhD7b0_ppNgk4Z87SmEPNYyrDy4Xn",
     notification: {
       title: title,
       body: body,
