@@ -75,7 +75,7 @@ const Sign = () => {
               <div class="overlay-panel overlay-right">
                 <h1>Hello!</h1>
                 <p>Enter your personal details and start journey with us</p>
-                {/*   <button class="ghost" id="signUp">
+            {/*     <button class="ghost" id="signUp">
                   Sign Up
                 </button> */}
               </div>

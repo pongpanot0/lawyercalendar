@@ -1,13 +1,15 @@
 import 'dart:convert';
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-
+import 'package:path/path.dart' as path;
 import 'package:shared_preferences/shared_preferences.dart';
 
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
+/* https://mcon-oil.mconcrete.co.th/api_lawyer */
 class ApiService {
-  static const String baseUrl = 'http://192.168.1.230:3123';
+  static const String baseUrl = 'https://mcon-oil.mconcrete.co.th/api_lawyer';
   Future<void> saveToken(String token) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.setString('token', token);
@@ -27,6 +29,36 @@ class ApiService {
         url,
         headers: <String, String>{
           'Content-Type': 'application/json; charset=UTF-8',
+          'Token': await getToken() ?? ""
+        },
+        body: jsonEncode({
+          'data': 'mobile',
+        }),
+      );
+
+      if (response.statusCode == 200) {
+        print('Data posted successfully');
+        var responseData = json.decode(response.body);
+        return responseData['data'];
+      } else {
+        throw Exception('Failed to post data to API');
+      }
+    } catch (e) {
+      // Handle network or server errors
+      throw Exception('Exception: $e');
+    }
+  }
+
+  Future<List<dynamic>> getTransactions() async {
+    var url = Uri.parse(
+        '$baseUrl/transactionnotification/get'); // Replace with your API endpoint
+
+    try {
+      var response = await http.post(
+        url,
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+          'Token': "${await getToken()}" ?? ""
         },
       );
 
@@ -40,6 +72,58 @@ class ApiService {
     } catch (e) {
       // Handle network or server errors
       throw Exception('Exception: $e');
+    }
+  }
+
+  Future<dynamic> updateProfile(File imageFile) async {
+    try {
+      var apiUrl = '$baseUrl/update/profile'; // Replace with your API endpoint
+
+      // Create a multipart request
+      var request = http.MultipartRequest('POST', Uri.parse(apiUrl));
+
+      // Add the image file to the request
+      var fileStream = http.ByteStream(Stream.castFrom(imageFile.openRead()));
+      var length = await imageFile.length();
+      Map<String, String> headers = {
+        "Content-type": "multipart/form-data",
+        'Token': await getToken() ?? ""
+      };
+      var multipartFile = http.MultipartFile(
+        'image',
+        fileStream,
+        length,
+        filename: imageFile.path.split('/').last,
+      );
+      request.headers.addAll(headers);
+      request.files.add(multipartFile);
+
+      // Send the request
+      var response = await request.send();
+
+      // Check the response status
+      if (response.statusCode == 200) {
+        // Request was successful
+
+        var responseBody = await response.stream.bytesToString();
+        print('Response Body: $responseBody');
+
+        // Optionally, you can parse the response body as JSON if applicable
+        var responseData = json.decode(responseBody);
+
+        // Handle the response accordingly
+
+        await imageFile.delete();
+        return responseData['status'];
+      } else {
+        // Request failed
+        var errorResponse = await response.stream.bytesToString();
+        print(errorResponse);
+        // Handle the error response accordingly
+      }
+    } catch (error) {
+      // Handle other errors
+      print('Error uploading image: $error');
     }
   }
 
@@ -118,7 +202,11 @@ class ApiService {
         url,
         headers: <String, String>{
           'Content-Type': 'application/json; charset=UTF-8',
+          'Token': "${await getToken()}" ?? ""
         },
+        body: jsonEncode({
+          'data': "mobile",
+        }),
       );
 
       if (response.statusCode == 200) {

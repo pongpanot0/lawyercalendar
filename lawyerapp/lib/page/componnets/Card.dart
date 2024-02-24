@@ -44,6 +44,8 @@ class _MyCardState extends State<MyCard> {
       myTheme = Theme2();
     } else if (themeName == 'theme3') {
       myTheme = Theme3();
+    } else if (themeName == 'theme4') {
+      myTheme = Theme4();
     }
   }
 
@@ -94,7 +96,6 @@ class _MyCardState extends State<MyCard> {
                 fontWeight: FontWeight.bold,
               ),
             ),
-           
           ],
         ),
       ),

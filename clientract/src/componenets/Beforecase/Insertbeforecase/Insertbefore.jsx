@@ -12,6 +12,7 @@ import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import dayjs from "dayjs";
 import SweetAlert from "../../Shared/SweetAlrt";
+import CancelSweetAlert from "../../Shared/CancelSweealrt";
 const Item = styled("div")(({ theme }) => ({
   ...theme.typography.body2,
   padding: theme.spacing(1),
@@ -173,10 +174,15 @@ const Insertbefore = () => {
   };
 
   const [showSweetAlert, setShowSweetAlert] = useState(false);
+  const [showSweetAlert2, setShowSweetAlert2] = useState(false);
   const postData = async () => {
     try {
       const response = await apiService.createbeforecasedocuments(caseData);
-      setShowSweetAlert(true);
+      if (response.status == 200) {
+        setShowSweetAlert(true);
+      } else {
+        setShowSweetAlert2(true);
+      }
     } catch (error) {
       console.log(error.message);
     }
@@ -187,6 +193,9 @@ const Insertbefore = () => {
         <Item>
           {showSweetAlert && (
             <SweetAlert text="สร้างก่อนฟ้องสำเร็จ" path="/beforecase" />
+          )}
+          {showSweetAlert2 && (
+            <CancelSweetAlert text="กรุณากรอกข้อมูลให้ครบถ้วน"/>
           )}
           <FormControl fullWidth>
             <InputLabel id="demo-simple-select-label">ลูกค้า</InputLabel>
@@ -310,7 +319,6 @@ const Insertbefore = () => {
           />
         </Item>
       </Grid>
-
       <Grid xs={12} md={6} xl={6}>
         <Item>
           <TextField
@@ -323,7 +331,6 @@ const Insertbefore = () => {
           />
         </Item>
       </Grid>
-    
       <Grid xs={12} md={6} xl={6}>
         <Item>
           <FormControl fullWidth>
@@ -373,7 +380,6 @@ const Insertbefore = () => {
           />
         </Item>
       </Grid>
-     
       <Grid xs={12} md={6} xl={6}>
         <Item>
           <FormControl fullWidth>
@@ -390,7 +396,7 @@ const Insertbefore = () => {
               required={true}
             >
               <MenuItem value={1}>{"ผู้เรียกร้อง"}</MenuItem>
-              <MenuItem value={2}>{"ผู้ที่เรียกร้อง"}</MenuItem>
+              <MenuItem value={2}>{"ผู้ถูกเรียกร้อง"}</MenuItem>
             </Select>
           </FormControl>
         </Item>

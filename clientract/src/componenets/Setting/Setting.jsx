@@ -107,7 +107,7 @@ function Setting({ loaddata }) {
   const getData = async () => {
     try {
       const response = await apiService.getsetting(1);
-      console.log(response);
+  
       setFontSize(response.data[0]?.settingsusers_fontsize);
       setPrimaryColor(response.data[0]?.settingsusers_primarycolor);
       setAccentColor(response.data[0]?.settingsusers_primarybutton);

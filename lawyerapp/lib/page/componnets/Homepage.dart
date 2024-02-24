@@ -47,6 +47,24 @@ class _HomepageState extends State<Homepage> {
     super.initState();
   }
 
+  List<dynamic> NotifyArray = [];
+  int NotifyCount = 0;
+  Future<int> NotifyCountFetct() async {
+    try {
+      final apiService = ApiService();
+      NotifyArray =
+          await apiService.getTransactions(); // Call your API function
+      int notifyCount = NotifyArray.where((notification) =>
+          notification['transaction_notification_isread'] == 0).length;
+    
+      return notifyCount;
+    } catch (e) {
+      // Handle errors
+      print('Error: $e');
+      return 0; // Return an empty list or modify according to your use case
+    }
+  }
+
   List<User> users = [];
   Future<List<User>> fetchData() async {
     try {
@@ -70,7 +88,7 @@ class _HomepageState extends State<Homepage> {
           case_timebar_incoming: data['case_timebar_incoming'] ?? '',
         );
       }).toList();
-
+  _loadCurrentTheme();
       return users; // Return the list of User objects
     } catch (e) {
       // Handle errors
@@ -113,6 +131,8 @@ class _HomepageState extends State<Homepage> {
       myTheme = Theme2();
     } else if (themeName == 'theme3') {
       myTheme = Theme3();
+    } else if (themeName == 'theme4') {
+      myTheme = Theme4();
     }
   }
 
@@ -149,7 +169,17 @@ class _HomepageState extends State<Homepage> {
           SizedBox(
             height: 10,
           ),
-          CustomAppBar(leftIcon: Icons.home, rightIcon: Icons.notifications),
+          FutureBuilder<dynamic>(
+              future: NotifyCountFetct(),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return Center();
+                }
+                return CustomAppBar(
+                    leftIcon: Icons.home,
+                    rightIcon: Icons.notifications,
+                    NotifyCount: snapshot.data!);
+              }),
           FutureBuilder<dynamic>(
             future: getProfile(),
             builder: (context, snapshot) {

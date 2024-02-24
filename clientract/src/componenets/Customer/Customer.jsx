@@ -10,6 +10,8 @@ import { Link } from "react-router-dom";
 import RecentActorsIcon from "@mui/icons-material/RecentActors";
 import apiService from "../Shared/Apiserver";
 import CustomerCard from "./Card/CustomerCard";
+import SweetAlert from "../Shared/SweetAlrt";
+import CancelSweetAlert from "../Shared/CancelSweealrt";
 const columns = [
   { field: "ClientName", headerName: "ชื่อลูกค้า", width: 200 },
   {
@@ -29,7 +31,6 @@ const columns = [
     width: 300,
     type: "number",
   },
-  
 ];
 
 function Customer() {
@@ -49,6 +50,7 @@ function Customer() {
     }
   };
   const [showValues, setshowValues] = React.useState(1);
+
   return (
     <Container maxWidth="xl">
       <Grid container item>

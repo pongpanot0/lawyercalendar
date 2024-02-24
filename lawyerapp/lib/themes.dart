@@ -8,6 +8,8 @@ abstract class MyTheme {
   late Color fontColors;
   late Color danger;
   late Color cardfontColors;
+
+  static const Color colorHex = Color(0xFFFFffffff);
 }
 
 class Theme1 extends MyTheme {
@@ -16,6 +18,7 @@ class Theme1 extends MyTheme {
   Color activeColors = const Color(0xFFB19470);
   Color bottomColor = const Color(0xFF76453B);
   Color fontColors = Colors.white;
+  Color colorHex = const Color(0xFFFFffffff);
   Color cardfontColors = Colors.white;
   Color danger = Colors.red;
 }
@@ -27,6 +30,7 @@ class Theme2 extends MyTheme {
   Color bottomColor = const Color(0xFF000000);
   Color fontColors = Colors.white;
   Color cardfontColors = Colors.black;
+  Color colorHex = const Color(0xFFFFffffff);
   Color danger = Colors.red;
 }
 
@@ -37,5 +41,17 @@ class Theme3 extends MyTheme {
   Color bottomColor = const Color(0xFF874356);
   Color fontColors = Colors.white;
   Color cardfontColors = Colors.black;
+  Color colorHex = const Color(0xFFFFffffff);
+  Color danger = Colors.red;
+}
+
+class Theme4 extends MyTheme {
+  Color cardColors = const Color(0xFFF0B60B0);
+  Color cardTabColors = const Color(0xFFF0EDCF);
+  Color activeColors = const Color(0xFF40A2D8);
+  Color bottomColor = const Color(0xFFF000000);
+  Color fontColors = Colors.white;
+  Color cardfontColors = Colors.white;
+  Color colorHex = const Color(0xFFFFffffff);
   Color danger = Colors.red;
 }

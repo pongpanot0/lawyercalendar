@@ -127,7 +127,8 @@ class _CalendarViewPageState extends State<CalendarViewPage> {
                                               ),
                                               SizedBox(height: 15),
                                               Text(
-                                              'ลูกค้า : ' +    event['ClientName'],
+                                                'ลูกค้า : ' +
+                                                    event['ClientName'],
                                                 style: TextStyle(
                                                     color: Colors.black),
                                               ),

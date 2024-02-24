@@ -59,7 +59,7 @@ class _ExpensesPageState extends State<ExpensesPage> {
       final apiService = ApiService();
 
       var response = await apiService.createcaseExpenses(data);
-      print(response);
+
       fetchData(selectPaidType);
     } catch (e) {
       print(e);
@@ -96,6 +96,8 @@ class _ExpensesPageState extends State<ExpensesPage> {
         myTheme = Theme2();
       } else if (themeName == 'theme3') {
         myTheme = Theme3();
+      } else if (themeName == 'theme4') {
+        myTheme = Theme4();
       }
     });
   }
@@ -309,8 +311,9 @@ class _ExpensesPageState extends State<ExpensesPage> {
         onPressed: () {
           _showDialog(context);
         },
-        label: const Text('ตกลง'),
-        icon: const Icon(Icons.add, color: Colors.white, size: 25),
+        label: const Text('เพิ่มค่าใช้จ่าย',
+            style: TextStyle(color: MyTheme.colorHex)),
+        icon: const Icon(Icons.add, color: MyTheme.colorHex, size: 25),
       ),
     );
   }

@@ -3,6 +3,7 @@ const api = require("../sql");
 const dayjs = require("dayjs");
 const jwt = require("jsonwebtoken");
 const { sendLineMessage } = require("../shared/sendline");
+const { sendMobileNotify } = require("../shared/sendMobile");
 const secretKey = "1234"; // Replace with your actual secret key
 function jwtVerify(params) {
   try {
@@ -84,11 +85,22 @@ exports.getbeforebasetype = async (req, res) => {
 };
 exports.gettsbref = async (req, res) => {
   try {
-    const sql = `SELECT MAX(CAST(SUBSTRING(tsb_ref, 4) AS UNSIGNED)) AS lastRefNumber FROM casedocuments`;
+    const sql = `SELECT MAX(tsb_ref) AS lastRefNumber FROM casedocuments`;
 
     const query = await api(sql);
-    const newRef =
-      "R" + (query[0]?.lastRefNumber + 1).toString().padStart(3, "0");
+
+    let newRef;
+    const newStr = query[0]?.lastRefNumber.slice(1);
+    if (query[0]?.lastRefNumber !== null) {
+      const lastRefNumber = parseInt(newStr, 10); // แปลงเป็นตัวเลข
+      const nextRefNumber = lastRefNumber + 1; // เพิ่มค่าขึ้นไปอีก 1
+
+      // สร้างเลขอ้างอิงใหม่ โดยเติม "R" ไว้ด้านหน้าและใช้ padStart เพื่อเติม "0" ด้านหน้าเพื่อให้ความยาวเท่ากับ 3 ตัวอักษร
+      newRef = "R" + nextRefNumber.toString().padStart(3, "0");
+    } else {
+      // กรณีไม่มีค่าในตาราง หรือค่าที่ได้กลับมาเป็น null
+      newRef = "R000"; // ให้เริ่มต้นที่ "R000"
+    }
     res.send({
       status: 200,
       data: newRef,
@@ -136,13 +148,26 @@ exports.createbeforecase = async (req, res) => {
 
     const text = "มีการเพิ่มก่อนฟ้องให้คุณ";
 
-    const accessToken = `select employee_linetoken from employees where employee_id='${Lawyer}'`;
+    const accessToken = `select employee_linetoken,employee_mobiletoken from employees where employee_id='${Lawyer}'`;
     const queryaccesstoken = await api(accessToken);
-    if (queryaccesstoken.length > 0) {
+    const insertTransaction = `insert into transaction_notification (transaction_notification_isbeforeecase,
+      transaction_notification_userid) values (1,'${Lawyer}')`;
+    const querytransaction = await api(insertTransaction);
+    if (
+      queryaccesstoken[0]?.employee_linetoken !== null &&
+      queryaccesstoken[0]?.employee_linetoken !== ""
+    ) {
       const token = queryaccesstoken[0]?.employee_linetoken;
-      sendLineMessage(text, token);
-    }
 
+      await sendLineMessage("มีการเพิ่มฟ้องคดีใหม่", token);
+    }
+    if (
+      queryaccesstoken[0]?.employee_mobiletoken !== null &&
+      queryaccesstoken[0]?.employee_mobiletoken !== ""
+    ) {
+      const mobiletoken = queryaccesstoken[0]?.employee_mobiletoken;
+      await sendMobileNotify(mobiletoken, "LawyerApp", "มีการเพิ่มฟ้องคดีใหม่");
+    }
     res.send({
       status: 200,
       data: query,
@@ -290,6 +315,7 @@ exports.createBeforeCaseTocase = async (req, res) => {
       '${caseData.claimamount}'
     )
     `;
+
     const querysql = await api(sql);
     const insertId = querysql.insertId;
 
@@ -308,12 +334,28 @@ exports.createBeforeCaseTocase = async (req, res) => {
     FromCase.forEach(async (element) => {
       const sqlFromCaseArray = `insert into caselawyer (caselawyer_case_id,caselawyer_employee_id,caselawyer_employee_type) values ("${insertId}",${element.value},"${element.age}")`;
       const querysqlFromCaseArray = await api(sqlFromCaseArray);
-      const accessToken = `select employee_linetoken from employees where employee_id='${element.value}'`;
-      const text = "มีการเพิ่มคุณเข้าไปในคดีใหม่";
+      const accessToken = `select employee_linetoken,employee_mobiletoken from employees where employee_id='${element.value}'`;
       const queryaccesstoken = await api(accessToken);
-      if (queryaccesstoken.length > 0) {
+      const insertTransaction = `insert into transaction_notification (transaction_notification_caseid,transaction_notification_iscase,transaction_notification_userid) values ("${insertId}",1,'${element.value}')`;
+      const querytransaction = await api(insertTransaction);
+      if (
+        queryaccesstoken[0]?.employee_linetoken !== null &&
+        queryaccesstoken[0]?.employee_linetoken !== ""
+      ) {
         const token = queryaccesstoken[0]?.employee_linetoken;
-        sendLineMessage(text, token);
+
+        await sendLineMessage("มีการเพิ่มฟ้องคดีใหม่", token);
+      }
+      if (
+        queryaccesstoken[0]?.employee_mobiletoken !== null &&
+        queryaccesstoken[0]?.employee_mobiletoken !== ""
+      ) {
+        const mobiletoken = queryaccesstoken[0]?.employee_mobiletoken;
+        await sendMobileNotify(
+          mobiletoken,
+          "LawyerApp",
+          "มีการเพิ่มฟ้องคดีใหม่"
+        );
       }
     });
     if (BeforeFromArray.groupdate == 1) {
@@ -341,6 +383,7 @@ exports.createBeforeCaseTocase = async (req, res) => {
       status: 200,
     });
   } catch (error) {
-    console.log(error.message);
+    res.send({ status: 400, data: error.message });
+    return;
   }
 };

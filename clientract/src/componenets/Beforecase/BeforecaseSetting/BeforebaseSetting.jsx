@@ -257,9 +257,9 @@ const BeforebaseSetting = () => {
     }
   };
   const [cusresponse, setcusresponse] = React.useState([]);
-  const getcustomerresponses = async () => {
+  const getcustomerresponses = async (data) => {
     try {
-      const response = await apiService.customerresponses();
+      const response = await apiService.customerresponses(data);
       console.log(response.data);
       setcusresponse(response.data);
     } catch (error) {
@@ -283,19 +283,20 @@ const BeforebaseSetting = () => {
 
   const updatedata = async () => {
     try {
-      const response = await apiService.CreateBeforeUpdatecase(caseData.tsb_ref);
-      getData()
+      const response = await apiService.CreateBeforeUpdatecase(
+        caseData.tsb_ref
+      );
+      getData();
     } catch (error) {
       console.log(error.message);
     }
-   
   };
   const [dis, setDis] = React.useState(true);
   return (
     <div>
       <Grid item container>
-        <Grid xs={12} md={2} xl={2}>
-          {dis == false && (
+        {dis == false && (
+          <Grid xs={12} md={12} xl={12}>
             <Item>
               <Button
                 variant="contained"
@@ -307,8 +308,8 @@ const BeforebaseSetting = () => {
                 Update{" "}
               </Button>{" "}
             </Item>
-          )}
-        </Grid>
+          </Grid>
+        )}
         {caseData.case_documentstatus == 2 && <></>}
         <Grid xs={12} md={2} xl={2}>
           {caseData.case_documentstatus !== 2 && (
@@ -328,7 +329,7 @@ const BeforebaseSetting = () => {
           )}
         </Grid>
 
-        <Grid xs={12} md={1} xl={1}>
+        <Grid xs={12} md={2} xl={2}>
           <Item>
             <Button
               variant="contained"
@@ -341,7 +342,7 @@ const BeforebaseSetting = () => {
             </Button>{" "}
           </Item>
         </Grid>
-        <Grid xs={12} md={1} xl={1}>
+        <Grid xs={12} md={2} xl={2}>
           <Item>
             {caseData.isclose == 0 && (
               <Button

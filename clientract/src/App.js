@@ -40,6 +40,7 @@ import BeforeCaseTocase from "./componenets/Beforecase/BeforecaseToCase/BeforeCa
 import Logout from "./componenets/Logout";
 import Sign from "./componenets/Signin/Sign";
 import InsertExpensesnull from "./componenets/Expenses/InsertExpenses/InsertExpensesNull";
+import CreateSendUser from "./componenets/Login/CreateSenduser/CreateSendUser";
 function App() {
   const [themeSettings, setthemeSettings] = React.useState([
     {
@@ -199,6 +200,7 @@ function App() {
           <Route path="/" exact element={<Home />} />
           <Route path="/login" exact element={<Login />} />
           <Route path="/register/:id" exact element={<Sign />} />
+          <Route path="/createusers" exact element={<CreateSendUser />} />
         </Routes>
       )}
       <ThemeProvider theme={theme}>

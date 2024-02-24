@@ -98,7 +98,7 @@ const InsertNotice = ({ beforecase_id, loaddata }) => {
     try {
       const response = await apiService.getbeforecasedocuments();
       setCase(response.data);
-      console.log(cases);
+  
     } catch (error) {
       console.log(error.message);
     }

@@ -16,6 +16,7 @@ import Plaintiff from "./Plaintiff";
 import Defendant from "./Defendant";
 import SweetAlert from "../../Shared/SweetAlrt";
 import Complainant from "./Complainant";
+import CancelSweetAlert from "../../Shared/CancelSweealrt";
 const Item = styled("div")(({ theme }) => ({
   ...theme.typography.body2,
   padding: theme.spacing(1),
@@ -184,19 +185,27 @@ const BeforeCaseTocase = () => {
         caseData: caseData,
         tsb_ref: state.tsb_ref,
         customer_resposive: state.customer_reponsive,
-        ComplaintArray:ComplaintArray
+        ComplaintArray: ComplaintArray,
       };
 
       const response = await apiService.CreateBeforeCaseToCase(data);
-      setShowSweetAlert(true);
+
+      if (response.status == 200) {
+        setShowSweetAlert(true);
+      }
+      if (response.status == 400) {
+        setShowSweetAlert2(true);
+        console.log(showSweetAlert2);
+      }
     } catch (error) {
+      setShowSweetAlert2(true);
       console.log(error.message);
     }
   };
   const [FromCase, setFromCaseArray] = React.useState([]);
   const handleDataFromCaseEmployee = (data) => {
     // Handle the data received from CaseEmployee
-    console.log("Data from CaseEmployee:", data);
+
     setFromCaseArray(data);
   };
   const [BeforeFromArray, setBeforeFromArray] = React.useState([]);
@@ -228,11 +237,13 @@ const BeforeCaseTocase = () => {
     });
   };
   const [showSweetAlert, setShowSweetAlert] = useState(false);
+  const [showSweetAlert2, setShowSweetAlert2] = useState(false);
 
   return (
     <div>
       {" "}
       {showSweetAlert && <SweetAlert text="สร้างฟ้องสำเร็จ" path="/case" />}
+      {showSweetAlert2 && <CancelSweetAlert text="กรุณากรอกข้อมูลให้ครบถ้วน" />}
       <Grid xs={12} md={6} xl={6}>
         <Divider textAlign="right">TSB Ref.{state.tsb_ref}</Divider>
         <Grid item container>
@@ -460,9 +471,7 @@ const BeforeCaseTocase = () => {
             />{" "}
           </Grid>
           <Grid xs={12} md={12} xl={12}>
-            <Complainant
-              Complainantsubmit={handleDataPlaniff}
-            />{" "}
+            <Complainant Complainantsubmit={handleDataPlaniff} />{" "}
           </Grid>
         </Grid>
       </Grid>

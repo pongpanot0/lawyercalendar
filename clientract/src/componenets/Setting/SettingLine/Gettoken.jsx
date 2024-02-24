@@ -100,7 +100,7 @@ const Gettoken = () => {
                   />{" "}
                 </Item>
               </Grid>
-              {person.employee_linetoken !== undefined && (
+              {person.employee_linetoken !== null && (
                 <>
                   <Grid item xs={12} md={12} xl={12}>
                     <Item>

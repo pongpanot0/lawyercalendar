@@ -21,11 +21,15 @@ const Login = () => {
         setOpen(true);
       }
     } catch (error) {
-      console.log({data:error.message});
+      console.log({ data: error.message });
     }
   };
   const [open, setOpen] = React.useState(false);
+  const [isRightPanelActive, setIsRightPanelActive] = React.useState(false);
 
+  const handleSignUpButtonClick = () => {
+    navigate("/createusers");
+  };
   const handleClose = (event, reason) => {
     if (reason === "clickaway") {
       return;
@@ -113,10 +117,14 @@ const Login = () => {
               </div>
               <div class="overlay-panel overlay-right">
                 <h1>Hello!</h1>
-                <p>Enter your personal details and start journey with us</p>
-                {/*   <button class="ghost" id="signUp">
+                <p>Enter you Username and Password To Continue</p>
+                <button
+                  onClick={handleSignUpButtonClick}
+                  class="ghost"
+                  id="signUp"
+                >
                   Sign Up
-                </button> */}
+                </button>
               </div>
             </div>
           </div>

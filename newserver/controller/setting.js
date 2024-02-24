@@ -17,16 +17,15 @@ exports.createsetting = async (req, res) => {
       settingsusers_fontsize,
       settingsusers_fontcolor,
       settingsusers_primarycolor,
-      settingsusers_user_id,
       settingsusers_fontButtonColor,
       settingsusers_backgroundcolor,
     } = req.body.data;
-   
+    const users = jwtVerify(req.headers);
     const sql = `update settingsusers set settingsusers_fontButtonColor='${settingsusers_fontButtonColor}',settingsusers_backgroundcolor='${settingsusers_backgroundcolor}',
     settingsusers_primarybutton='${settingsusers_primarybutton}',settingsusers_cancelbutton='${settingsusers_cancelbutton}',settingsusers_fontsize='${settingsusers_fontsize}',
-    settingsusers_fontcolor='${settingsusers_fontcolor}',settingsusers_primarycolor='${settingsusers_primarycolor}' where settingsusers_user_id=${settingsusers_user_id}`;
+    settingsusers_fontcolor='${settingsusers_fontcolor}',settingsusers_primarycolor='${settingsusers_primarycolor}' where settingsusers_user_id=${users}`;
     const query = await api(sql);
- 
+
     res.send({
       status: 200,
       data: query,
@@ -41,8 +40,8 @@ exports.createsetting = async (req, res) => {
 };
 exports.getsetting = async (req, res) => {
   try {
-    const user_id = jwtVerify(req.headers)
-    
+    const user_id = jwtVerify(req.headers);
+
     const sql = `select * from settingsusers where settingsusers_user_id=${user_id}`;
     const query = await api(sql);
     res.send({

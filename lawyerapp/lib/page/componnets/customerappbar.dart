@@ -4,12 +4,14 @@ import 'package:lawyerapp/page/componnets/notication/notification.dart';
 class CustomAppBar extends StatelessWidget {
   final IconData leftIcon;
   final IconData rightIcon;
+  final int NotifyCount;
   final Function()? leftCallback;
 
   const CustomAppBar(
       {Key? key,
       required this.leftIcon,
       required this.rightIcon,
+      required this.NotifyCount,
       this.leftCallback})
       : super(key: key);
 
@@ -25,7 +27,7 @@ class CustomAppBar extends StatelessWidget {
             onTap: leftCallback != null ? () => leftCallback!() : null,
             child: _buildLeftIcon(leftIcon),
           ),
-          _buildIcon(rightIcon, 10, context),
+          _buildIcon(rightIcon, NotifyCount, context),
         ],
       ),
     );

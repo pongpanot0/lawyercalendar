@@ -2,9 +2,19 @@ const api = require("../sql");
 const ExcelJS = require("exceljs");
 const moment = require("moment");
 const fs = require("fs");
+const jwt = require("jsonwebtoken");
 require("moment/locale/th"); // Import Thai locale
 
 moment.locale("th"); // Set locale to Thai
+
+function jwtVerify(params) {
+  try {
+    const token = jwt.decode(params.token);
+    return token.employee_id;
+  } catch (error) {
+    return "Something Wrong";
+  }
+}
 exports.createCase = async (req, res) => {
   try {
     const {
@@ -126,26 +136,24 @@ exports.createExpantime = async (req, res) => {
 exports.getCase = async (req, res) => {
   try {
     const data = req.body.data;
-
+    const users = jwtVerify(req.headers);
     let casewhen;
-    if (data == undefined) {
+    if (data !== "mobile") {
       casewhen = "ORDER BY CONVERT(newDate, DATE) DESC";
     } else {
-      casewhen = `where  cl.caselawyer_employee_id = ${data} ORDER BY CONVERT(newDate, DATE) DESC;`;
+      casewhen = ` left JOIN caselawyer cl ON a.CaseID = cl.caselawyer_case_id where  cl.caselawyer_employee_id = ${users} ORDER BY CONVERT(newDate, DATE) DESC;`;
     }
-
     const sql = `SELECT a.*, c.ClientName, ct.CaseTypeName,tls.timeline_status_name,ctl.case_timebar_incoming,
      DATE_FORMAT(ctl.case_timebar_incoming, '%Y-%m-%d 00:00:00.000Z') AS newDate
     FROM cases a
-    JOIN clients c ON a.ClientID = c.ClientID
-    JOIN casetypes ct ON a.CaseTypeID = ct.CaseTypeID
-    JOIN courts co ON a.CourtID = co.CourtID
-    JOIN caselawyer cl ON a.CaseID = cl.caselawyer_case_id
+    left JOIN clients c ON a.ClientID = c.ClientID
+    left JOIN casetypes ct ON a.CaseTypeID = ct.CaseTypeID
+    left JOIN courts co ON a.CourtID = co.CourtID
     left JOIN case_timeline ctl ON a.case_status = ctl.case_timeline_id 
     left JOIN timeline_status tls ON ctl.case_timebar_status = tls.timeline_status_id
     ${casewhen};`;
     const query = await api(sql);
-
+    console.log(query);
     res.send({
       status: 200,
       data: query,
@@ -293,7 +301,7 @@ exports.exportExcelCase = async (req, res) => {
        a.CaseID IN (${data})
    `;
     const query = await api(sql);
-
+    console.log(query);
     const sqlcase_plainiff = `SELECT * from  case_plainiff where case_id in (${data}) `;
     const querycase_plainiff = await api(sqlcase_plainiff);
 
@@ -305,7 +313,7 @@ exports.exportExcelCase = async (req, res) => {
 
     const datenow = moment(new Date()).format("DD MMMM YYYY"); // วันที่ 3 มกราคม 2567
     // Merge cells from A1 to B1
-    worksheet.mergeCells("A1:L1");
+    worksheet.mergeCells("A1:K1");
 
     worksheet.getCell("A1").alignment = { horizontal: "center" };
     worksheet.getCell("A1").font = { bold: true };
@@ -360,10 +368,10 @@ exports.exportExcelCase = async (req, res) => {
       horizontal: "center",
       vertical: "middle",
     };
-    worksheet.getColumn("L").alignment = {
+    /* worksheet.getColumn("L").alignment = {
       horizontal: "center",
       vertical: "middle",
-    };
+    }; */
 
     worksheet.getCell(
       "A1"
@@ -392,7 +400,7 @@ exports.exportExcelCase = async (req, res) => {
     worksheet.getCell("I2").border = border; // กำหนดเส้นขอบ
     worksheet.getCell("J2").border = border; // กำหนดเส้นขอบ
     worksheet.getCell("K2").border = border; // กำหนดเส้นขอบ
-    worksheet.getCell("L2").border = border; // กำหนดเส้นขอบ
+    /*  worksheet.getCell("L2").border = border; // กำหนดเส้นขอบ */
 
     worksheet.getCell("A2").value = `No.`;
 
@@ -428,13 +436,13 @@ exports.exportExcelCase = async (req, res) => {
     worksheet.mergeCells("J2:J3");
     worksheet.getCell("J2").value = `สถานะของคดี`;
 
+    /*     worksheet.getColumn("K").width = 20; // กำหนดความกว้างของคอลัมน์ I
+    worksheet.mergeCells("K2:K3");
+    worksheet.getCell("K2").value = `ค่าบริการค้างชำระ`; */
+
     worksheet.getColumn("K").width = 20; // กำหนดความกว้างของคอลัมน์ I
     worksheet.mergeCells("K2:K3");
-    worksheet.getCell("K2").value = `ค่าบริการค้างชำระ`;
-
-    worksheet.getColumn("L").width = 20; // กำหนดความกว้างของคอลัมน์ I
-    worksheet.mergeCells("L2:L3");
-    worksheet.getCell("L2").value = `ความเห็นทางกฎหมาย`;
+    worksheet.getCell("K2").value = `ความเห็นทางกฎหมาย`;
     // กำหนดให้ข้อความอยู่ตรงกลางของแต่ละเซลล์
 
     query.forEach((row, index) => {
@@ -471,8 +479,8 @@ exports.exportExcelCase = async (req, res) => {
       worksheet.getCell(`I${rowIndex}`).border = border; // หมายเลขคดีดำ
       worksheet.getCell(`J${rowIndex}`).border = border; // หมายเลขคดีดำ
       worksheet.getCell(`K${rowIndex}`).border = border; // หมายเลขคดีดำ
-      worksheet.getCell(`L${rowIndex}`).border = border; // หมายเลขคดีดำ
-
+      /*     worksheet.getCell(`L${rowIndex}`).border = border; // หมายเลขคดีดำ
+       */
       worksheet.getCell(`A${rowIndex}`).alignment = { horizontal: "center" };
       worksheet.getCell(`B${rowIndex}`).alignment = { horizontal: "center" };
       worksheet.getCell(`C${rowIndex}`).alignment = { horizontal: "center" };
@@ -558,8 +566,9 @@ exports.exportExcelCase = async (req, res) => {
       }
       worksheet.getCell(`J${rowIndex}`).value = remarkcase; // ประเภทคดี
       worksheet.getCell(`J${rowIndex}`).width = 200;
-      worksheet.getCell(`K${rowIndex}`).value = "ค่าบริการค้าชำระ"; // ประเภทคดี
-      worksheet.getCell(`L${rowIndex}`).value = "ความเห็นทางกฎหมาย"; // ประเภทคดี
+      /*   worksheet.getCell(`K${rowIndex}`).value = row.claimAmount; // ประเภทคดี */
+      worksheet.getCell(`K${rowIndex}`).width = 200;
+      worksheet.getCell(`K${rowIndex}`).value = row.case_close_detail; // ประเภทคดี
     });
     const filePath = "outpu2t.xlsx";
     workbook.xlsx
@@ -575,7 +584,6 @@ exports.exportExcelCase = async (req, res) => {
         fs.unlinkSync(filePath);
       })
       .catch((error) => {
-        console.log(error);
         console.error("Error creating Excel file:", error);
       });
   } catch (error) {

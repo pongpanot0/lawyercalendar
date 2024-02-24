@@ -8,6 +8,8 @@ import FormControl from "@mui/material/FormControl";
 import Select from "@mui/material/Select";
 import apiService from "../../Shared/Apiserver";
 import CustomerReponsible from "./CustomerReponsible";
+import CancelSweetAlert from "../../Shared/CancelSweealrt";
+import SweetAlert from "../../Shared/SweetAlrt";
 
 const Item = styled("div")(({ theme }) => ({
   ...theme.typography.body2,
@@ -35,6 +37,8 @@ function CreateCustomer() {
   };
   const [homeNum, setHomenum] = React.useState("");
   const [tax, settax] = React.useState("");
+  const [showSweetAlert, setShowSweetAlert] = React.useState(false);
+  const [showSweetAlert2, setShowSweetAlert2] = React.useState(false);
   const postdata = async () => {
     try {
       const data = {
@@ -46,11 +50,17 @@ function CreateCustomer() {
         Clienttambon: selected.tambon_id,
         Clientzipcode: selected.zip_code,
         ClientTax: tax,
-        customerRes:handleCusres
+        customerRes: handleCusres,
       };
       const response = await apiService.createcustomer(data);
       console.log(response.data);
+      if(response.status == 200){
+        setShowSweetAlert(true)
+      }else{
+        setShowSweetAlert2(true)
+      }
     } catch (error) {
+      setShowSweetAlert2(true)
       console.log(error.message);
     }
   };
@@ -88,7 +98,7 @@ function CreateCustomer() {
 
         // Set the zip code when a sub-district is selected
         zipCodeSetter(zip_code);
-    
+
         selected.zip_code = zip_code;
         const [setChild] = setChilds;
         setChild(childs);
@@ -98,6 +108,10 @@ function CreateCustomer() {
     return (
       <>
         <FormControl fullWidth>
+          {showSweetAlert && (
+            <SweetAlert text="สร้าง ลูกค้า สำเร็จ" path="/Customer" />
+          )}
+          {showSweetAlert2 && <CancelSweetAlert text="เกิดบางอย่างผิดพลาด" />}
           <InputLabel id="demo-simple-select-label">{label}</InputLabel>
           <Select
             labelId="demo-simple-select-label"
@@ -141,16 +155,14 @@ function CreateCustomer() {
         });
     })();
   }, []);
-  const [handleCusres,setHandlecusres]=React.useState([])
+  const [handleCusres, setHandlecusres] = React.useState([]);
   const handleDataFromCaseEmployee = (data) => {
     // Handle the data received from CaseEmployee
     console.log("Data from CaseEmployee:", data);
-    setHandlecusres(data)
-
+    setHandlecusres(data);
   };
   return (
     <Grid item container mt={3}>
-    
       <Grid xs={12} xl={8} md={8}></Grid>{" "}
       <Grid xs={12} mt={3} xl={4} md={4}>
         <Item>

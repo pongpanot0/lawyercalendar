@@ -61,7 +61,7 @@ exports.getCustomer = async (req, res) => {
 exports.getCustomerresponses = async (req, res) => {
   try {
     const data = req.body.data;
-    const sql = `select * from customer_responses`;
+    const sql = `select * from customer_responses where customer_id=${data}`;
     const query = await api(sql);
     res.send({
       status: 200,

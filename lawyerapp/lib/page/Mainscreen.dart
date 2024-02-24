@@ -67,10 +67,11 @@ class _MainscreenState extends State<Mainscreen> {
         myTheme = Theme2();
       } else if (themeName == 'theme3') {
         myTheme = Theme3();
+      } else if (themeName == 'theme4') {
+        myTheme = Theme4();
       }
     });
   }
-
 
   @override
   Widget build(BuildContext context) {

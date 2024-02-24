@@ -162,6 +162,8 @@ class _CaseDetailState extends State<CaseDetail> {
         myTheme = Theme2();
       } else if (themeName == 'theme3') {
         myTheme = Theme3();
+      } else if (themeName == 'theme4') {
+        myTheme = Theme4();
       }
     });
   }
