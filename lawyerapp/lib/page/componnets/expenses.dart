@@ -49,7 +49,7 @@ class _ExpensesPageState extends State<ExpensesPage> {
       String selectedDate, int selectPayID, int selectPaidType) async {
     try {
       var data = {
-        "Payer": 1,
+        "Payer": 'mobile',
         "PaymentDate": selectedDate,
         "expensesType": selectPayID,
         "expenses_ref": textController2,

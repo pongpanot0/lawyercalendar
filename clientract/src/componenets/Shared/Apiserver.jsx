@@ -3,7 +3,7 @@ import axios from "axios";
 
 /* https://mcon-oil.mconcrete.co.th/api_lawyer */
 
-const baseURL = "https://mcon-oil.mconcrete.co.th/api_lawyer"; // Replace with your API base URL
+const baseURL = "http://localhost:3123"; // Replace with your API base URL
 const token = localStorage.getItem('token')
 const axiosInstance = axios.create({
   baseURL,
@@ -33,6 +33,17 @@ const apiService = {
       const response = await axiosInstance.post("/line/create", {
         code,
         state,
+      });
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching posts:", error);
+      throw error;
+    }
+  },
+  async editProfile(data) {
+    try {
+      const response = await axiosInstance.post("/edit/profile", {
+        data,
       });
       return response.data;
     } catch (error) {

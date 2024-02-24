@@ -50,7 +50,7 @@ class _LoginPageState extends State<LoginPage> {
 
       FirebaseMessaging messaging = FirebaseMessaging.instance;
       String firebaseToken = await FirebaseMessaging.instance.getToken() ?? "";
-      print(firebaseToken);
+     
 
       String token =
           await ApiService().Login(username, password, firebaseToken ?? "");

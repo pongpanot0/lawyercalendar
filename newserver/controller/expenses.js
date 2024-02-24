@@ -23,7 +23,8 @@ exports.createxpenses = async (req, res) => {
     const PaymentStatus = 1;
     let Pay;
     const users = jwtVerify(req.headers);
-    if (Payer === undefined) {
+    console.log(req.headers);
+    if (Payer == 'mobile') {
       Pay = users;
     } else {
       Pay = Payer;

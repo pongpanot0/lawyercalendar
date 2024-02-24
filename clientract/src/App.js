@@ -241,7 +241,8 @@ function App() {
                 <Route path="/expenses-create" element={<InsertExpenses />} />
                 <Route path="/lawyer/Testsendline" element={<Testsendline />} />
                 <Route path="/notice" element={<Notice />} />
-                <Route path="/insert-notice" element={<InsertNotice />} />
+                <Route path="/insert-notice" element={<InsertNotice />} />{" "}
+                <Route path="/register/:id" exact element={<Sign />} />
                 <Route
                   path="/insert-expenesnull"
                   element={<InsertExpensesnull />}

@@ -56,11 +56,11 @@ function Setting({ loaddata }) {
       show: 3,
       text: "ตั้งค่าข้อมูล ประเภท",
     },
-    {
+  /*   {
       icon: <PersonAddIcon style={{ fontSize: 80 }} />,
       show: 2,
       text: "เพิ่มพนักงาน",
-    },
+    }, */
   ];
 
   const [fontSize, setFontSize] = useState(20);

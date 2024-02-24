@@ -16,7 +16,7 @@ const Login = () => {
 
       if (reponse.status == 200) {
         localStorage.setItem("token", reponse.token);
-        navigate("/");
+        window.location.href='/'
       } else {
         setOpen(true);
       }

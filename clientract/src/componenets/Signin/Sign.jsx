@@ -8,12 +8,15 @@ const Sign = () => {
   const [username, setUsername] = React.useState("");
   const [password, setPassword] = React.useState("");
   const navigate = useNavigate();
+  React.useEffect(() => {
+    localStorage.clear();
+  }, []);
   const postData = async () => {
     try {
       const reponse = await apiService.signin(username, password, id);
       if (reponse.status == 200) {
         localStorage.setItem("token", reponse.token);
-        navigate("/");
+        window.location.href = "/";
       }
     } catch (error) {
       console.log(error.message);
@@ -75,7 +78,7 @@ const Sign = () => {
               <div class="overlay-panel overlay-right">
                 <h1>Hello!</h1>
                 <p>Enter your personal details and start journey with us</p>
-            {/*     <button class="ghost" id="signUp">
+                {/*     <button class="ghost" id="signUp">
                   Sign Up
                 </button> */}
               </div>

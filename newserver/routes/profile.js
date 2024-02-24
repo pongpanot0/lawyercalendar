@@ -27,6 +27,8 @@ const upload = multer({ storage: storage });
 
 module.exports = function (app) {
   app.post("/get/profile", profile.getProfile);
+  app.post("/edit/profile", profile.editprofile);
+  
   app.post("/update/profile", upload.single("image"), async (req, res) => {
     try {
       const header = req.headers;

@@ -52,3 +52,29 @@ exports.updateProfile = async (req, res) => {
     console.log(error.message);
   }
 };
+
+exports.editprofile = async (req, res) => {
+  try {
+    const header = req.headers;
+  
+    const {
+      employee_firstname,
+      employee_lastname,
+      employee_phone,
+      employee_email,
+    } = req.body.data;
+    const user = jwtVerify(header);
+    const sql = `update employees set employee_firstname='${employee_firstname}'
+    ,employee_lastname='${employee_lastname}'
+    ,employee_phone='${employee_phone}'
+    ,employee_email='${employee_email}'
+     where employee_id = ${user}`;
+    const query = await api(sql);
+    res.send({
+      status: 200,
+      data: query,
+    });
+  } catch (error) {
+    console.log(error.message);
+  }
+};
